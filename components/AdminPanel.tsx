@@ -101,7 +101,7 @@ export default function AdminPanel() {
   const [newPlayerName, setNewPlayerName] = useState('')
   const [newPlayerTeamId, setNewPlayerTeamId] = useState('')
   const [newPlayerRole, setNewPlayerRole] = useState('Forward')
-  const [newPlayerNumber, setNewPlayerNumber] = useState(10)
+  const [newPlayerNumber, setNewPlayerNumber] = useState(0)
   const [newPlayerPhoto, setNewPlayerPhoto] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop')
   const [playerRosterSportFilter, setPlayerRosterSportFilter] = useState<string>('all')
   const [playerRosterTeamFilter, setPlayerRosterTeamFilter] = useState<string>('all')
