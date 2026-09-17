@@ -28,7 +28,7 @@ CREATE TABLE teams (
     logo_url TEXT,
     department TEXT NOT NULL DEFAULT 'Computer Science & Engineering',
     sport_id UUID NOT NULL REFERENCES sports(id) ON DELETE CASCADE,
-    formation TEXT DEFAULT '4-3-3',
+    formation TEXT DEFAULT '2-2-1',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

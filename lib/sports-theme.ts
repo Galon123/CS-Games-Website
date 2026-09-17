@@ -88,11 +88,11 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type,
       icon: Flame,
-      badgeText: '11 v 11',
+      badgeText: '6 v 6',
       colorClass: 'text-neon-lime',
       bgBadgeClass: 'bg-neon-lime/10 text-neon-lime border-neon-lime/30',
       borderHoverClass: 'hover:border-neon-lime/50',
-      description: 'Main outdoor championship with interactive 2D squad formation board.',
+      description: '6v6 football championship with interactive 2D squad formation board.',
       link: '/tactics',
       actionLabel: 'Open Pitch Board',
     }

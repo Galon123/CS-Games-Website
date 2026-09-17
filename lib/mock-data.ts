@@ -13,8 +13,67 @@ export const initialPlayers: Player[] = []
 export const initialMatches: Match[] = []
 export const initialLeaderboards: LeaderboardEntry[] = []
 
-// Extended library of football tactical formations
+// Extended library of football tactical formations (Primary: 6v6 tournament presets)
 export const FORMATION_PRESETS: Record<string, { role: string; x: number; y: number }[]> = {
+  // --- 6v6 TOURNAMENT FORMATIONS (1 GK + 5 Outfield Players = 6 Total) ---
+  '2-2-1': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Left Defender', x: 30, y: 74 },
+    { role: 'Right Defender', x: 70, y: 74 },
+    { role: 'Left Mid', x: 28, y: 46 },
+    { role: 'Right Mid', x: 72, y: 46 },
+    { role: 'Centre Forward', x: 50, y: 18 },
+  ],
+  '2-1-2': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Left Defender', x: 30, y: 74 },
+    { role: 'Right Defender', x: 70, y: 74 },
+    { role: 'Central Mid', x: 50, y: 48 },
+    { role: 'Left Forward', x: 35, y: 20 },
+    { role: 'Right Forward', x: 65, y: 20 },
+  ],
+  '3-1-1': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Left Defender', x: 22, y: 74 },
+    { role: 'Central Defender', x: 50, y: 76 },
+    { role: 'Right Defender', x: 78, y: 74 },
+    { role: 'Central Mid', x: 50, y: 46 },
+    { role: 'Centre Forward', x: 50, y: 18 },
+  ],
+  '1-3-1': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Sweeper / CB', x: 50, y: 74 },
+    { role: 'Left Mid', x: 20, y: 46 },
+    { role: 'Central Mid', x: 50, y: 48 },
+    { role: 'Right Mid', x: 80, y: 46 },
+    { role: 'Centre Forward', x: 50, y: 18 },
+  ],
+  '1-2-2': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Anchor / Defender', x: 50, y: 74 },
+    { role: 'Left Mid', x: 30, y: 48 },
+    { role: 'Right Mid', x: 70, y: 48 },
+    { role: 'Left Forward', x: 35, y: 20 },
+    { role: 'Right Forward', x: 65, y: 20 },
+  ],
+  '3-2-0': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Left Defender', x: 22, y: 74 },
+    { role: 'Central Defender', x: 50, y: 76 },
+    { role: 'Right Defender', x: 78, y: 74 },
+    { role: 'Left Mid', x: 35, y: 44 },
+    { role: 'Right Mid', x: 65, y: 44 },
+  ],
+  '2-3-0': [
+    { role: 'Goalkeeper', x: 50, y: 90 },
+    { role: 'Left Defender', x: 30, y: 74 },
+    { role: 'Right Defender', x: 70, y: 74 },
+    { role: 'Left Wing', x: 20, y: 42 },
+    { role: 'Central Mid', x: 50, y: 44 },
+    { role: 'Right Wing', x: 80, y: 42 },
+  ],
+
+  // --- 11v11 / Custom Shapes ---
   '4-3-3': [
     { role: 'Goalkeeper', x: 50, y: 90 },
     { role: 'Left Back', x: 16, y: 72 },
@@ -67,84 +126,6 @@ export const FORMATION_PRESETS: Record<string, { role: string; x: number; y: num
     { role: 'Striker L', x: 38, y: 20 },
     { role: 'Striker R', x: 62, y: 20 },
   ],
-  '4-1-4-1': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Left Back', x: 16, y: 74 },
-    { role: 'Centre Back', x: 38, y: 76 },
-    { role: 'Centre Back', x: 62, y: 76 },
-    { role: 'Right Back', x: 84, y: 74 },
-    { role: 'Defensive Anchor', x: 50, y: 62 },
-    { role: 'Left Mid', x: 20, y: 44 },
-    { role: 'Central Mid', x: 40, y: 44 },
-    { role: 'Central Mid', x: 60, y: 44 },
-    { role: 'Right Mid', x: 80, y: 44 },
-    { role: 'Target Striker', x: 50, y: 18 },
-  ],
-  '3-4-3': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Centre Back L', x: 28, y: 76 },
-    { role: 'Centre Back C', x: 50, y: 78 },
-    { role: 'Centre Back R', x: 72, y: 76 },
-    { role: 'Left Wing-Back', x: 14, y: 50 },
-    { role: 'Central Mid', x: 38, y: 52 },
-    { role: 'Central Mid', x: 62, y: 52 },
-    { role: 'Right Wing-Back', x: 86, y: 50 },
-    { role: 'Left Winger', x: 22, y: 20 },
-    { role: 'Centre Forward', x: 50, y: 16 },
-    { role: 'Right Winger', x: 78, y: 20 },
-  ],
-  '5-3-2': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Left Wing-Back', x: 14, y: 68 },
-    { role: 'Centre Back L', x: 32, y: 76 },
-    { role: 'Sweeper / CB', x: 50, y: 78 },
-    { role: 'Centre Back R', x: 68, y: 76 },
-    { role: 'Right Wing-Back', x: 86, y: 68 },
-    { role: 'Central Mid', x: 32, y: 48 },
-    { role: 'Central Mid', x: 50, y: 46 },
-    { role: 'Central Mid', x: 68, y: 48 },
-    { role: 'Striker L', x: 38, y: 18 },
-    { role: 'Striker R', x: 62, y: 18 },
-  ],
-  '4-1-2-1-2': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Left Back', x: 16, y: 74 },
-    { role: 'Centre Back', x: 38, y: 76 },
-    { role: 'Centre Back', x: 62, y: 76 },
-    { role: 'Right Back', x: 84, y: 74 },
-    { role: 'Holding Mid (DM)', x: 50, y: 62 },
-    { role: 'Centre Mid L', x: 32, y: 48 },
-    { role: 'Centre Mid R', x: 68, y: 48 },
-    { role: 'Playmaker (CAM)', x: 50, y: 34 },
-    { role: 'Striker L', x: 38, y: 18 },
-    { role: 'Striker R', x: 62, y: 18 },
-  ],
-  '5-4-1': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Left Wing-Back', x: 14, y: 70 },
-    { role: 'Centre Back L', x: 32, y: 77 },
-    { role: 'Centre Back C', x: 50, y: 78 },
-    { role: 'Centre Back R', x: 68, y: 77 },
-    { role: 'Right Wing-Back', x: 86, y: 70 },
-    { role: 'Left Mid', x: 20, y: 48 },
-    { role: 'Central Mid', x: 40, y: 50 },
-    { role: 'Central Mid', x: 60, y: 50 },
-    { role: 'Right Mid', x: 80, y: 48 },
-    { role: 'Lone Striker', x: 50, y: 18 },
-  ],
-  '3-4-2-1': [
-    { role: 'Goalkeeper', x: 50, y: 90 },
-    { role: 'Centre Back L', x: 28, y: 76 },
-    { role: 'Centre Back C', x: 50, y: 78 },
-    { role: 'Centre Back R', x: 72, y: 76 },
-    { role: 'Left Wing-Back', x: 14, y: 52 },
-    { role: 'Central Mid', x: 38, y: 54 },
-    { role: 'Central Mid', x: 62, y: 54 },
-    { role: 'Right Wing-Back', x: 86, y: 52 },
-    { role: 'Inside Forward L', x: 34, y: 32 },
-    { role: 'Inside Forward R', x: 66, y: 32 },
-    { role: 'Target Man', x: 50, y: 16 },
-  ],
 }
 
 export interface TacticalOptions {
@@ -153,7 +134,7 @@ export interface TacticalOptions {
 }
 
 /**
- * Dynamically computes tactical pitch coordinates for ANY arbitrary formation string (e.g. 4-3-3, 4-2-3-1, 3-2-4-1, 4-1-3-2)
+ * Dynamically computes tactical pitch coordinates for ANY arbitrary formation string (e.g. 2-2-1, 2-1-2, 3-1-1, 1-3-1, 4-3-3)
  * Automatically distributes outfield players across depth tiers and horizontal width.
  */
 export function generateTacticalCoordinates(
@@ -167,14 +148,14 @@ export function generateTacticalCoordinates(
     return FORMATION_PRESETS[cleanStr]
   }
 
-  // Parse lines e.g. "4-2-3-1" -> [4, 2, 3, 1]
+  // Parse lines e.g. "2-2-1" -> [2, 2, 1]
   const parsedLines = cleanStr
     .split('-')
     .map((n) => parseInt(n.trim(), 10))
     .filter((n) => !isNaN(n) && n > 0)
 
-  // Default to 4-3-3 if empty or unparseable
-  const lines = parsedLines.length > 0 ? parsedLines : [4, 3, 3]
+  // Default to 2-2-1 (6v6 football) if empty or unparseable
+  const lines = parsedLines.length > 0 ? parsedLines : [2, 2, 1]
 
   // Player 0 is always the Goalkeeper
   const result: { role: string; x: number; y: number }[] = [
@@ -214,22 +195,24 @@ export function generateTacticalCoordinates(
       // Assign descriptive role
       let role = 'Outfield'
       if (isDefense) {
-        if (count >= 4 && i === 0) role = 'Left Back'
+        if (count === 1) role = 'Sweeper / CB'
+        else if (count === 2) role = i === 0 ? 'Left Defender' : 'Right Defender'
+        else if (count === 3) role = i === 0 ? 'Left Defender' : i === 1 ? 'Central Defender' : 'Right Defender'
+        else if (count >= 4 && i === 0) role = 'Left Back'
         else if (count >= 4 && i === count - 1) role = 'Right Back'
-        else if (count === 3 && i === 0) role = 'Left Centre-Back'
-        else if (count === 3 && i === count - 1) role = 'Right Centre-Back'
         else if (count === 5 && (i === 0 || i === count - 1)) role = i === 0 ? 'Left Wing-Back' : 'Right Wing-Back'
         else role = 'Centre-Back'
       } else if (isAttack) {
         if (count === 1) role = 'Centre Forward'
-        else if (count === 2) role = i === 0 ? 'Left Striker' : 'Right Striker'
+        else if (count === 2) role = i === 0 ? 'Left Forward' : 'Right Forward'
         else if (count === 3) role = i === 0 ? 'Left Winger' : i === 1 ? 'Centre Forward' : 'Right Winger'
         else role = `Forward ${i + 1}`
       } else {
-        if (count === 1) role = 'Central Mid (Pivote)'
+        if (count === 1) role = 'Central Mid'
         else if (count === 2) role = i === 0 ? 'Left Mid' : 'Right Mid'
-        else if (count >= 3 && i === 0) role = 'Left Mid'
-        else if (count >= 3 && i === count - 1) role = 'Right Mid'
+        else if (count === 3) role = i === 0 ? 'Left Wing' : i === 1 ? 'Central Mid' : 'Right Wing'
+        else if (count >= 4 && i === 0) role = 'Left Mid'
+        else if (count >= 4 && i === count - 1) role = 'Right Mid'
         else role = 'Centre Mid'
       }
 

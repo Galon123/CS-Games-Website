@@ -32,10 +32,10 @@ export default function TacticalBoard() {
   const activeTeam = footballTeams.find((t) => t.id === selectedTeamId) || footballTeams[0]
   const teamPlayers = players.filter((p) => p.team_id === activeTeam?.id)
 
-  const starting11 = teamPlayers.slice(0, 11)
-  const benchPlayers = teamPlayers.slice(11)
+  const starting6 = teamPlayers.slice(0, 6)
+  const benchPlayers = teamPlayers.slice(6)
 
-  const availableFormations = ['4-3-3', '4-2-3-1', '3-5-2', '4-4-2']
+  const availableFormations = ['2-2-1', '2-1-2', '3-1-1', '1-3-1', '1-2-2']
 
   const handleFormationChange = (formation: string) => {
     if (!isAdmin) return
@@ -64,7 +64,7 @@ export default function TacticalBoard() {
             <Crosshair className="w-5 h-5 text-neon-lime" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ice-white tracking-tight">
-            INTERACTIVE TACTICAL FORMATION BOARD
+            INTERACTIVE 6v6 TACTICAL FORMATION BOARD
           </h1>
         </div>
 
@@ -72,9 +72,9 @@ export default function TacticalBoard() {
           <div className="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400">
             <Shield className="w-8 h-8 text-neon-lime" />
           </div>
-          <h2 className="text-xl font-bold font-mono text-ice-white">NO FOOTBALL TEAMS REGISTERED</h2>
+          <h2 className="text-xl font-bold font-mono text-ice-white">NO 6v6 FOOTBALL TEAMS REGISTERED</h2>
           <p className="text-sm text-muted-gray max-w-md">
-            There are currently no squads enrolled under Football. Enroll new teams and assign their tactical formations in the Administration Console.
+            There are currently no squads enrolled under 6v6 Football. Enroll new teams and assign their tactical formations in the Administration Console.
           </p>
           <Link
             href="/admin"
@@ -97,11 +97,11 @@ export default function TacticalBoard() {
               <Crosshair className="w-5 h-5 text-neon-lime" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-ice-white tracking-tight">
-              INTERACTIVE TACTICAL FORMATION BOARD
+              INTERACTIVE 6v6 TACTICAL FORMATION BOARD
             </h1>
           </div>
           <p className="text-sm text-muted-gray mt-1">
-            Visual field matrix, tactical coordinates, and player positional analysis.
+            Visual field matrix, 6v6 tactical coordinates, and player positional analysis.
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export default function TacticalBoard() {
                 <span className="text-xs font-mono text-muted-gray">OFFICIAL FORMATION:</span>
                 <div className="flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-slate-800 text-neon-lime font-mono font-bold text-xs border border-neon-lime/30">
                   <Lock className="w-3 h-3 text-slate-400" />
-                  <span>{activeTeam?.formation || '4-3-3'}</span>
+                  <span>{activeTeam?.formation || '2-2-1'}</span>
                   <span className="text-[10px] text-slate-400 font-normal ml-1">(Admin Fixed)</span>
                 </div>
               </div>
@@ -243,8 +243,8 @@ export default function TacticalBoard() {
               </div>
             )}
 
-            {/* Player Nodes on the Pitch */}
-            {starting11.map((player) => {
+            {/* Player Nodes on the Pitch (Starting 6) */}
+            {starting6.map((player) => {
               const isSelected = selectedPlayer?.id === player.id
               const isGK = player.role.toLowerCase().includes('goalkeeper')
 
@@ -424,7 +424,7 @@ export default function TacticalBoard() {
                   <span className="text-muted-gray">Current Shape</span>
                   <span className="font-mono font-bold text-neon-lime text-xs flex items-center space-x-1">
                     <Lock className="w-3 h-3 text-slate-400" />
-                    <span>{activeTeam.formation || '4-3-3'} (Official)</span>
+                    <span>{activeTeam.formation || '2-2-1'} (Official)</span>
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-800">
@@ -437,7 +437,7 @@ export default function TacticalBoard() {
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-muted-gray">Starting Lineup</span>
-                  <span className="font-mono text-ice-white font-bold">{starting11.length} Players</span>
+                  <span className="font-mono text-ice-white font-bold">{starting6.length} / 6 Fielded</span>
                 </div>
               </div>
 
@@ -454,13 +454,14 @@ export default function TacticalBoard() {
           {/* Roster & Reserves */}
           <div className="bg-card border border-slate-800 rounded-2xl p-4 space-y-3">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="font-bold text-ice-white uppercase">LINEUP ROSTER</span>
-              <span className="text-muted-gray">{teamPlayers.length} Members</span>
+              <span className="font-bold text-ice-white uppercase">6v6 SQUAD ROSTER</span>
+              <span className="text-muted-gray">{teamPlayers.length} Members ({starting6.length} Fielded)</span>
             </div>
 
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-              {teamPlayers.map((p) => {
+              {teamPlayers.map((p, idx) => {
                 const isSelected = selectedPlayer?.id === p.id
+                const isStarter = idx < 6
                 return (
                   <button
                     key={p.id}
@@ -475,7 +476,18 @@ export default function TacticalBoard() {
                       <span className="text-slate-400 font-bold w-5">#{p.jersey_number}</span>
                       <span className="truncate">{p.name}</span>
                     </div>
-                    <span className="text-[10px] text-muted-gray uppercase shrink-0">{p.role}</span>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <span className="text-[10px] text-muted-gray uppercase">{p.role}</span>
+                      <span
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold ${
+                          isStarter
+                            ? 'bg-neon-lime/10 text-neon-lime border border-neon-lime/30'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {isStarter ? 'START 6' : 'BENCH'}
+                      </span>
+                    </div>
                   </button>
                 )
               })}

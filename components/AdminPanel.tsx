@@ -77,10 +77,10 @@ export default function AdminPanel() {
   const footballSport = sports.find((s) => s.name.toLowerCase() === 'football') || sports[0]
   const footballTeams = teams.filter((t) => t.sport_id === footballSport?.id)
   const [formationTeamId, setFormationTeamId] = useState<string>(footballTeams[0]?.id || '')
-  const [selectedFormationString, setSelectedFormationString] = useState<string>('4-3-3')
+  const [selectedFormationString, setSelectedFormationString] = useState<string>('2-2-1')
   const [defensiveLineHeight, setDefensiveLineHeight] = useState<'low' | 'mid' | 'high'>('mid')
   const [pitchWidthSetting, setPitchWidthSetting] = useState<'narrow' | 'standard' | 'wide'>('standard')
-  const [customFormationInput, setCustomFormationInput] = useState<string>('4-3-3')
+  const [customFormationInput, setCustomFormationInput] = useState<string>('2-2-1')
 
   // New Sport Form State
   const [newSportName, setNewSportName] = useState('')
@@ -92,7 +92,7 @@ export default function AdminPanel() {
   const [newTeamName, setNewTeamName] = useState('')
   const [newTeamDept, setNewTeamDept] = useState('')
   const [newTeamLogo, setNewTeamLogo] = useState('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop')
-  const [newTeamFormation, setNewTeamFormation] = useState('4-3-3')
+  const [newTeamFormation, setNewTeamFormation] = useState('2-2-1')
   const [teamFilterSportId, setTeamFilterSportId] = useState<string>('all')
   const [isSubmittingTeam, setIsSubmittingTeam] = useState(false)
 
@@ -189,8 +189,8 @@ export default function AdminPanel() {
     if (footballTeams.length > 0) {
       if (!formationTeamId || !footballTeams.some((t) => t.id === formationTeamId)) {
         setFormationTeamId(footballTeams[0].id)
-        setSelectedFormationString(footballTeams[0].formation || '4-3-3')
-        setCustomFormationInput(footballTeams[0].formation || '4-3-3')
+        setSelectedFormationString(footballTeams[0].formation || '2-2-1')
+        setCustomFormationInput(footballTeams[0].formation || '2-2-1')
       }
     } else {
       setFormationTeamId('')
@@ -1114,7 +1114,7 @@ END $$;`
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 4-3-3 or Duo"
+                  placeholder="e.g. 2-2-1 or Duo"
                   value={newTeamFormation}
                   onChange={(e) => setNewTeamFormation(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
@@ -1424,8 +1424,8 @@ END $$;`
                         key={team.id}
                         onClick={() => {
                           setFormationTeamId(team.id)
-                          setSelectedFormationString(team.formation || '4-3-3')
-                          setCustomFormationInput(team.formation || '4-3-3')
+                          setSelectedFormationString(team.formation || '2-2-1')
+                          setCustomFormationInput(team.formation || '2-2-1')
                         }}
                         className={`p-3 rounded-xl text-left border transition-all ${
                           isSelected
@@ -1435,7 +1435,7 @@ END $$;`
                       >
                         <div className="font-bold text-xs text-ice-white truncate">{team.name}</div>
                         <div className="text-[11px] font-mono text-neon-lime mt-1 flex items-center space-x-1">
-                          <span>Current: {team.formation || '4-3-3'}</span>
+                          <span>Current: {team.formation || '2-2-1'}</span>
                         </div>
                       </button>
                     )
@@ -1451,16 +1451,16 @@ END $$;`
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono uppercase text-muted-gray">
-                        2. Tactical Presets Library (10 Standard Shapes)
+                        2. 6v6 Tactical Presets Library (1 GK + 5 Outfielders)
                       </span>
                     </div>
 
                     <div className="space-y-2.5">
-                      {/* 4 at the back */}
+                      {/* 2 at the back */}
                       <div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">4 Defenders</span>
+                        <span className="text-[10px] font-mono text-slate-500 uppercase">2 Defenders</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
-                          {['4-3-3', '4-2-3-1', '4-4-2', '4-1-4-1', '4-1-2-1-2'].map((fmt) => (
+                          {['2-2-1', '2-1-2', '2-3-0'].map((fmt) => (
                             <button
                               key={fmt}
                               onClick={() => {
@@ -1483,7 +1483,7 @@ END $$;`
                       <div>
                         <span className="text-[10px] font-mono text-slate-500 uppercase">3 Defenders</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
-                          {['3-5-2', '3-4-3', '3-4-2-1'].map((fmt) => (
+                          {['3-1-1', '3-2-0'].map((fmt) => (
                             <button
                               key={fmt}
                               onClick={() => {
@@ -1502,11 +1502,11 @@ END $$;`
                         </div>
                       </div>
 
-                      {/* 5 at the back */}
+                      {/* 1 at the back */}
                       <div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">5 Defenders</span>
+                        <span className="text-[10px] font-mono text-slate-500 uppercase">1 Defender (Sweeper / Anchor)</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
-                          {['5-3-2', '5-4-1'].map((fmt) => (
+                          {['1-3-1', '1-2-2'].map((fmt) => (
                             <button
                               key={fmt}
                               onClick={() => {
@@ -1534,7 +1534,7 @@ END $$;`
                       <span>3. Custom Formation Builder (Any Shape)</span>
                     </span>
                     <p className="text-[11px] text-muted-gray">
-                      Type any custom tier breakdown (e.g. <code className="text-neon-lime">3-2-4-1</code>, <code className="text-neon-lime">4-1-3-2</code>, <code className="text-neon-lime">4-2-2-2</code>). Coordinates are dynamically generated!
+                      Type any custom tier breakdown (e.g. <code className="text-neon-lime">2-2-1</code>, <code className="text-neon-lime">2-1-2</code>, <code className="text-neon-lime">1-3-1</code>, <code className="text-neon-lime">3-1-1</code>). Coordinates are dynamically generated!
                     </p>
 
                     <div className="flex items-center space-x-3 pt-1">
@@ -1547,7 +1547,7 @@ END $$;`
                             setSelectedFormationString(e.target.value.trim())
                           }
                         }}
-                        placeholder="e.g. 3-2-4-1"
+                        placeholder="e.g. 2-2-1"
                         className="w-36 bg-slate-950 border border-slate-700 focus:border-cyber-cyan rounded-xl px-3 py-2 text-sm text-ice-white font-mono font-bold focus:outline-none"
                       />
 
