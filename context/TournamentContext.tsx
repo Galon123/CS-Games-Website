@@ -348,7 +348,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       // 2. Persist to Supabase
       if (isSupabaseConfigured() && supabase) {
-        const { error } = await supabase.from('leaderboards').update(updates).eq('id', leaderboardId)
+        const { team, rank, rankChange, goalDifference, ...cleanUpdates } = updates as any
+        const { error } = await supabase.from('leaderboards').update(cleanUpdates).eq('id', leaderboardId)
         if (error) {
           console.error('❌ Supabase updateLeaderboard failed:', error)
           setSupabaseError(`Failed updating leaderboard: ${error.message} (${error.code})`)
@@ -465,7 +466,9 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setPlayers((prev) => [...prev, newPlayer])
 
       if (isSupabaseConfigured() && supabase) {
-        const { data, error } = await supabase.from('players').insert([playerData]).select()
+        // Explicitly remove stats (and any non-table columns) from player payload during insert
+        const { stats, ...playerInsertData } = playerData as any
+        const { data, error } = await supabase.from('players').insert([playerInsertData]).select()
         if (error) {
           console.error('❌ Supabase addPlayer failed:', error)
           setSupabaseError(`Failed adding player: ${error.message} (${error.code})`)
@@ -509,7 +512,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setSports((prev) => [...prev, newSport])
 
       if (isSupabaseConfigured() && supabase) {
-        const { data, error } = await supabase.from('sports').insert([sportData]).select()
+        const { icon, ...sportInsertData } = sportData as any
+        const { data, error } = await supabase.from('sports').insert([sportInsertData]).select()
         if (error) {
           console.error('❌ Supabase addSport failed:', error)
           setSupabaseError(`Failed adding sport: ${error.message} (${error.code})`)
@@ -666,14 +670,29 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setMatches((prev) => [newMatch, ...prev])
 
       if (isSupabaseConfigured() && supabase) {
-        const { data, error } = await supabase.from('matches').insert([matchData]).select()
+        // Strip client-only or joined fields (minute, venue, team_a, team_b, sport) before Supabase insert
+        const { team_a, team_b, sport, minute, venue, ...matchInsertData } = matchData as any
+        const { data, error } = await supabase.from('matches').insert([matchInsertData]).select()
         if (error) {
           console.error('❌ Supabase addMatch failed:', error)
           setSupabaseError(`Failed adding match: ${error.message} (${error.code})`)
           return newMatch
         } else if (data && data[0]) {
           const inserted = data[0] as Match
-          setMatches((prev) => prev.map((m) => (m.id === tempId ? inserted : m)))
+          setMatches((prev) =>
+            prev.map((m) =>
+              m.id === tempId
+                ? {
+                    ...inserted,
+                    minute: matchData.minute,
+                    venue: matchData.venue,
+                    team_a: matchData.team_a,
+                    team_b: matchData.team_b,
+                    sport: matchData.sport,
+                  }
+                : m
+            )
+          )
           console.log('✅ Supabase addMatch succeeded with id:', inserted.id)
           setSupabaseError(null)
           return inserted

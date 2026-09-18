@@ -492,7 +492,6 @@ END $$;`
       jersey_number: Number(newPlayerNumber),
       position_x: 50.0,
       position_y: 50.0,
-      stats: { matchesPlayed: 0, goalsOrPoints: 0, rating: 8.5 },
     })
 
     setNewPlayerName('')
