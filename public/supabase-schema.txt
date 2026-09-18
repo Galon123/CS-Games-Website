@@ -18,6 +18,8 @@ CREATE TABLE sports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
     type TEXT NOT NULL CHECK (type IN ('team', 'solo', 'duo')),
+    venue TEXT,
+    image_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -29,6 +31,7 @@ CREATE TABLE teams (
     department TEXT NOT NULL DEFAULT 'Computer Science & Engineering',
     sport_id UUID NOT NULL REFERENCES sports(id) ON DELETE CASCADE,
     formation TEXT DEFAULT '2-2-1',
+    manager TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -42,6 +45,7 @@ CREATE TABLE players (
     jersey_number INTEGER NOT NULL,
     position_x FLOAT DEFAULT 50.0,
     position_y FLOAT DEFAULT 50.0,
+    is_icon BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -54,6 +58,7 @@ CREATE TABLE matches (
     team_a_score INTEGER DEFAULT 0,
     team_b_score INTEGER DEFAULT 0,
     status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'live', 'completed')),
+    venue TEXT,
     scheduled_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );

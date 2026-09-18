@@ -131,12 +131,12 @@ export default function TacticalBoard() {
         {/* Pitch Display (8 Cols) */}
         <div className="lg:col-span-8 space-y-4">
           {/* Pitch Control Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
             {/* Formation Display / Selectors */}
             {isAdmin ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono text-neon-lime font-bold">EDIT FORMATION (ADMIN):</span>
-                <div className="flex items-center space-x-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono text-neon-lime font-bold">FORMATION (ADMIN):</span>
+                <div className="flex flex-wrap items-center gap-1">
                   {availableFormations.map((fmt) => (
                     <button
                       key={fmt}
@@ -164,7 +164,7 @@ export default function TacticalBoard() {
             )}
 
             {/* Display Mode Switcher */}
-            <div className="flex items-center space-x-2 text-xs font-mono">
+            <div className="flex items-center space-x-2 text-xs font-mono self-end sm:self-auto">
               <span className="text-muted-gray">VIEW:</span>
               <button
                 onClick={() => setTacticalViewMode('roles')}
@@ -193,52 +193,52 @@ export default function TacticalBoard() {
             </div>
           </div>
 
-          {/* 2D Tactical Football Pitch Container */}
+          {/* 2D Tactical Football Pitch Container (Mobile-optimized aspect-[4/5] sm:aspect-[16/11]) */}
           <div
             onClick={handlePitchClick}
-            className={`relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden border-4 border-slate-800 shadow-2xl tactical-pitch select-none transition-all ${
+            className={`relative w-full aspect-[4/5] sm:aspect-[16/11] min-h-[440px] sm:min-h-0 rounded-2xl overflow-hidden border-4 border-slate-800 shadow-2xl tactical-pitch select-none transition-all ${
               isRepositioning ? 'cursor-crosshair ring-2 ring-cyber-cyan' : 'cursor-default'
             }`}
           >
             {/* Pitch Markings Overlay */}
-            <div className="absolute inset-4 border-2 border-emerald-400/30 rounded pointer-events-none">
+            <div className="absolute inset-3 sm:inset-4 border-2 border-emerald-400/30 rounded pointer-events-none">
               {/* Halfway Line */}
               <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-emerald-400/30 -translate-y-1/2" />
               {/* Center Circle */}
-              <div className="absolute top-1/2 left-1/2 w-28 h-28 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400/30 flex items-center justify-center">
+              <div className="absolute top-1/2 left-1/2 w-20 h-20 sm:w-28 sm:h-28 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400/30 flex items-center justify-center">
                 <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
               </div>
 
               {/* Top Penalty Area (Opponent) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 border-b-2 border-x-2 border-emerald-400/30">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-10 border-b-2 border-x-2 border-emerald-400/30" />
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-b-2 border-x-2 border-emerald-400/30">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-b-2 border-x-2 border-emerald-400/30" />
+                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
               </div>
 
               {/* Bottom Penalty Area (Our Goal) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-20 border-t-2 border-x-2 border-emerald-400/30">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-10 border-t-2 border-x-2 border-emerald-400/30" />
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-t-2 border-x-2 border-emerald-400/30">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-t-2 border-x-2 border-emerald-400/30" />
+                <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
               </div>
 
               {/* Corner Arcs */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-b-2 border-r-2 border-emerald-400/30 rounded-br-full" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-b-2 border-l-2 border-emerald-400/30 rounded-bl-full" />
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-t-2 border-r-2 border-emerald-400/30 rounded-tr-full" />
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-t-2 border-l-2 border-emerald-400/30 rounded-tl-full" />
+              <div className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-r-2 border-emerald-400/30 rounded-br-full" />
+              <div className="absolute top-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-l-2 border-emerald-400/30 rounded-bl-full" />
+              <div className="absolute bottom-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-r-2 border-emerald-400/30 rounded-tr-full" />
+              <div className="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-l-2 border-emerald-400/30 rounded-tl-full" />
             </div>
 
             {/* Pitch Orientation Labels */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-mono uppercase text-emerald-300/40 font-bold tracking-widest pointer-events-none">
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-mono uppercase text-emerald-300/50 font-bold tracking-widest pointer-events-none">
               OPPOSITION HALF (ATTACK)
             </div>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-mono uppercase text-emerald-300/40 font-bold tracking-widest pointer-events-none">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-mono uppercase text-emerald-300/50 font-bold tracking-widest pointer-events-none">
               DEFENSIVE HALF (GOAL)
             </div>
 
             {/* Repositioning Active Banner */}
             {isRepositioning && selectedPlayer && (
-              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-cyber-cyan text-slate-950 text-xs font-mono font-bold px-3 py-1 rounded-full shadow-lg z-30 animate-pulse">
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-cyber-cyan text-slate-950 text-xs font-mono font-bold px-3 py-1 rounded-full shadow-lg z-30 animate-pulse whitespace-nowrap">
                 Click anywhere on pitch to place {selectedPlayer.name}
               </div>
             )}
@@ -247,6 +247,7 @@ export default function TacticalBoard() {
             {starting6.map((player) => {
               const isSelected = selectedPlayer?.id === player.id
               const isGK = player.role.toLowerCase().includes('goalkeeper')
+              const isIcon = Boolean(player.is_icon)
 
               return (
                 <div
@@ -263,11 +264,20 @@ export default function TacticalBoard() {
                     isSelected ? 'scale-115 z-30' : 'hover:scale-105'
                   }`}
                 >
+                  {/* Icon Player Gold Star Badge */}
+                  {isIcon && (
+                    <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 text-[9px] font-black flex items-center justify-center shadow-md border border-amber-200 z-30">
+                      ★
+                    </div>
+                  )}
+
                   {/* Player Dot / Jersey */}
                   <div
                     className={`w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-full flex items-center justify-center font-mono font-bold text-xs shadow-md transition-all ${
                       isSelected
                         ? 'bg-neon-lime text-slate-950 ring-2 ring-white shadow-neon-lime'
+                        : isIcon
+                        ? 'bg-slate-900 text-amber-300 border-2 border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.7)]'
                         : isGK
                         ? 'bg-amber-500 text-slate-950 font-black'
                         : 'bg-slate-900 text-ice-white border border-cyber-cyan/60'
@@ -284,13 +294,16 @@ export default function TacticalBoard() {
 
                   {/* Clean First Name Pill */}
                   <div
-                    className={`mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono text-center whitespace-nowrap shadow transition-colors ${
+                    className={`mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono text-center whitespace-nowrap shadow transition-colors flex items-center justify-center space-x-0.5 ${
                       isSelected
                         ? 'bg-neon-lime text-slate-950 font-bold'
+                        : isIcon
+                        ? 'bg-slate-900/95 text-amber-300 border border-amber-400/40 font-bold'
                         : 'bg-slate-900/90 text-slate-200'
                     }`}
                   >
-                    {player.name.split(' ')[0]}
+                    <span>{player.name.split(' ')[0]}</span>
+                    {isIcon && <span className="text-amber-400 text-[9px]">★</span>}
                   </div>
                 </div>
               )
@@ -298,22 +311,26 @@ export default function TacticalBoard() {
           </div>
 
           {/* Pitch Legend & Instructions */}
-          <div className="flex flex-wrap items-center justify-between text-xs text-muted-gray font-mono px-2">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-between text-xs text-muted-gray font-mono px-2 gap-2">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="flex items-center space-x-1.5">
                 <span className="w-3 h-3 rounded-full bg-slate-900 border border-cyber-cyan" />
-                <span>Outfield Node</span>
+                <span>Outfield</span>
               </span>
               <span className="flex items-center space-x-1.5">
                 <span className="w-3 h-3 rounded-full bg-amber-500 border border-amber-300" />
                 <span>Goalkeeper</span>
               </span>
               <span className="flex items-center space-x-1.5">
+                <span className="w-3 h-3 rounded-full bg-slate-900 border-2 border-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
+                <span className="text-amber-300 font-bold">★ Icon</span>
+              </span>
+              <span className="flex items-center space-x-1.5">
                 <span className="w-3 h-3 rounded-full bg-neon-lime" />
                 <span>Selected</span>
               </span>
             </div>
-            <span>Click player to inspect or adjust tactics</span>
+            <span>Click player to inspect or reposition</span>
           </div>
         </div>
 
@@ -321,11 +338,15 @@ export default function TacticalBoard() {
         <div className="lg:col-span-4 space-y-4">
           {/* Selected Player Card or Default Overview */}
           {selectedPlayer ? (
-            <div className="bg-card border-2 border-cyber-cyan/50 rounded-2xl p-5 shadow-cyber-cyan space-y-4">
+            <div className={`bg-card rounded-2xl p-5 space-y-4 ${
+              selectedPlayer.is_icon
+                ? 'border-2 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.25)]'
+                : 'border-2 border-cyber-cyan/50 shadow-cyber-cyan'
+            }`}>
               <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-neon-lime" />
-                  <span className="text-xs font-mono font-bold text-neon-lime uppercase">
+                  <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-amber-400' : 'text-neon-lime'}`} />
+                  <span className={`text-xs font-mono font-bold uppercase ${selectedPlayer.is_icon ? 'text-amber-300' : 'text-neon-lime'}`}>
                     TACTICAL DOSSIER
                   </span>
                 </div>
@@ -337,9 +358,19 @@ export default function TacticalBoard() {
                 </button>
               </div>
 
+              {/* Icon Athlete Badge */}
+              {selectedPlayer.is_icon && (
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-500/20 border border-amber-400/50 text-amber-300 font-mono text-xs font-bold shadow-[0_0_12px_rgba(251,191,36,0.3)]">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>OFFICIAL TEAM ICON ATHLETE ⭐</span>
+                </div>
+              )}
+
               {/* Player Identity */}
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-xl bg-slate-800 border-2 border-neon-lime/40 overflow-hidden shrink-0">
+                <div className={`w-16 h-16 rounded-xl bg-slate-800 border-2 overflow-hidden shrink-0 ${
+                  selectedPlayer.is_icon ? 'border-amber-400 ring-2 ring-amber-400/40' : 'border-neon-lime/40'
+                }`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={selectedPlayer.photo_url}
@@ -348,8 +379,9 @@ export default function TacticalBoard() {
                   />
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-ice-white leading-tight">
-                    {selectedPlayer.name}
+                  <div className="text-lg font-bold text-ice-white leading-tight flex items-center space-x-1.5">
+                    <span>{selectedPlayer.name}</span>
+                    {selectedPlayer.is_icon && <span className="text-amber-400 text-sm">⭐</span>}
                   </div>
                   <div className="text-xs text-cyber-cyan font-mono font-semibold">
                     {selectedPlayer.role} • #{selectedPlayer.jersey_number}
@@ -428,6 +460,26 @@ export default function TacticalBoard() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-muted-gray">Team Manager</span>
+                  <span className="font-mono text-ice-white font-semibold flex items-center space-x-1">
+                    {activeTeam.manager ? (
+                      <span>👔 {activeTeam.manager}</span>
+                    ) : (
+                      <span className="text-slate-500 italic">Not Assigned</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-muted-gray">Icon Player</span>
+                  <span className="font-mono font-bold flex items-center space-x-1">
+                    {teamPlayers.find((p) => p.is_icon) ? (
+                      <span className="text-amber-400">⭐ {teamPlayers.find((p) => p.is_icon)?.name}</span>
+                    ) : (
+                      <span className="text-slate-500 italic font-normal">None Assigned</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
                   <span className="text-muted-gray">Department</span>
                   <span className="font-mono text-ice-white">{activeTeam.department}</span>
                 </div>
@@ -462,6 +514,7 @@ export default function TacticalBoard() {
               {teamPlayers.map((p, idx) => {
                 const isSelected = selectedPlayer?.id === p.id
                 const isStarter = idx < 6
+                const isIcon = Boolean(p.is_icon)
                 return (
                   <button
                     key={p.id}
@@ -469,15 +522,23 @@ export default function TacticalBoard() {
                     className={`w-full flex items-center justify-between p-2 rounded-lg text-xs font-mono transition-all text-left ${
                       isSelected
                         ? 'bg-neon-lime/20 text-neon-lime border border-neon-lime/40'
+                        : isIcon
+                        ? 'bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-400/30'
                         : 'bg-slate-900/60 hover:bg-slate-800 text-ice-white'
                     }`}
                   >
                     <div className="flex items-center space-x-2 truncate">
                       <span className="text-slate-400 font-bold w-5">#{p.jersey_number}</span>
                       <span className="truncate">{p.name}</span>
+                      {isIcon && <span className="text-amber-400 text-xs shrink-0">⭐</span>}
                     </div>
                     <div className="flex items-center space-x-2 shrink-0">
                       <span className="text-[10px] text-muted-gray uppercase">{p.role}</span>
+                      {isIcon && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                          ICON
+                        </span>
+                      )}
                       <span
                         className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold ${
                           isStarter

@@ -5,6 +5,8 @@ export interface Sport {
   name: string
   type: SportType
   icon?: string
+  image_url?: string
+  venue?: string
 }
 
 export interface Team {
@@ -14,6 +16,7 @@ export interface Team {
   department: string
   sport_id: string
   formation?: string
+  manager?: string
 }
 
 export interface Player {
@@ -25,6 +28,7 @@ export interface Player {
   jersey_number: number
   position_x: number
   position_y: number
+  is_icon?: boolean
   stats?: {
     matchesPlayed?: number
     goalsOrPoints?: number

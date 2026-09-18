@@ -140,7 +140,27 @@ export default function TeamRoster() {
                   <h3 className="font-bold text-lg text-ice-white group-hover:text-cyber-cyan transition-colors">
                     {team.name}
                   </h3>
-                  <p className="text-xs text-muted-gray mb-4">{team.department}</p>
+                  <p className="text-xs text-muted-gray mb-3">{team.department}</p>
+
+                  {/* Manager and Icon Player Badges */}
+                  {(team.manager || teamRoster.some((p) => p.is_icon)) && (
+                    <div className="flex flex-wrap gap-1.5 mb-3 text-[11px] font-mono">
+                      {team.manager && (
+                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-700/80 text-slate-300">
+                          <span>👔</span>
+                          <span className="text-muted-gray">Mgr:</span>
+                          <span className="text-ice-white font-semibold truncate max-w-[130px]">{team.manager}</span>
+                        </span>
+                      )}
+                      {teamRoster.find((p) => p.is_icon) && (
+                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-amber-400/15 border border-amber-400/30 text-amber-300">
+                          <span>⭐</span>
+                          <span className="text-amber-200/80">Icon:</span>
+                          <span className="font-bold truncate max-w-[130px]">{teamRoster.find((p) => p.is_icon)?.name}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <div className="bg-slate-900/80 rounded-xl p-3 border border-slate-800/80 mb-4">
                     <div className="flex items-center justify-between text-xs mb-2">
@@ -155,8 +175,10 @@ export default function TeamRoster() {
                       {teamRoster.slice(0, 5).map((player) => (
                         <div
                           key={player.id}
-                          className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 overflow-hidden shrink-0"
-                          title={`${player.name} (${player.role})`}
+                          className={`w-6 h-6 rounded-full bg-slate-800 border overflow-hidden shrink-0 ${
+                            player.is_icon ? 'border-amber-400 ring-1 ring-amber-400/50' : 'border-slate-700'
+                          }`}
+                          title={`${player.name} (${player.role})${player.is_icon ? ' ★ Icon' : ''}`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
@@ -240,11 +262,19 @@ export default function TeamRoster() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-gray mt-1">{activeModalTeam.department}</p>
-                  {activeModalTeam.formation && (
-                    <span className="inline-block mt-2 text-[11px] font-mono text-neon-lime">
-                      Tactical Formation: {activeModalTeam.formation}
-                    </span>
-                  )}
+                  <div className="flex flex-wrap items-center gap-3 mt-2">
+                    {activeModalTeam.formation && (
+                      <span className="text-[11px] font-mono text-neon-lime">
+                        Shape: {activeModalTeam.formation}
+                      </span>
+                    )}
+                    {activeModalTeam.manager && (
+                      <span className="text-[11px] font-mono text-ice-white flex items-center space-x-1">
+                        <span>👔 Mgr:</span>
+                        <span className="font-bold text-cyan-300">{activeModalTeam.manager}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -265,37 +295,56 @@ export default function TeamRoster() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {modalTeamPlayers.map((player) => (
-                  <div
-                    key={player.id}
-                    className="flex items-center space-x-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-neon-lime/40 transition-all"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={player.photo_url}
-                        alt={player.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-ice-white truncate">
-                          {player.name}
-                        </span>
-                        <span className="text-xs font-mono font-black text-neon-lime px-1.5 py-0.2 rounded bg-neon-lime/10">
-                          #{player.jersey_number}
-                        </span>
+                {modalTeamPlayers.map((player) => {
+                  const isIcon = Boolean(player.is_icon)
+                  return (
+                    <div
+                      key={player.id}
+                      className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
+                        isIcon
+                          ? 'bg-slate-900/90 border-2 border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.15)] ring-1 ring-amber-400/40'
+                          : 'bg-slate-900/80 border border-slate-800 hover:border-neon-lime/40'
+                      }`}
+                    >
+                      <div className={`w-12 h-12 rounded-xl bg-slate-800 border overflow-hidden shrink-0 ${
+                        isIcon ? 'border-amber-400' : 'border-slate-700'
+                      }`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={player.photo_url}
+                          alt={player.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <div className="text-xs text-cyber-cyan font-mono truncate">{player.role}</div>
-                      <div className="text-[10px] text-muted-gray font-mono mt-0.5 flex items-center space-x-2">
-                        <span>PTS/G: {player.stats?.goalsOrPoints ?? 0}</span>
-                        <span>•</span>
-                        <span>RTG: {player.stats?.rating ?? 8.5}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sm text-ice-white truncate flex items-center space-x-1">
+                            <span>{player.name}</span>
+                            {isIcon && <span className="text-amber-400 text-xs">⭐</span>}
+                          </span>
+                          <span className={`text-xs font-mono font-black px-1.5 py-0.2 rounded ${
+                            isIcon ? 'bg-amber-400/20 text-amber-300' : 'text-neon-lime bg-neon-lime/10'
+                          }`}>
+                            #{player.jersey_number}
+                          </span>
+                        </div>
+                        <div className="text-xs text-cyber-cyan font-mono truncate flex items-center justify-between mt-0.5">
+                          <span>{player.role}</span>
+                          {isIcon && (
+                            <span className="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[9px] font-bold font-mono">
+                              ⭐ ICON
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-muted-gray font-mono mt-0.5 flex items-center space-x-2">
+                          <span>PTS/G: {player.stats?.goalsOrPoints ?? 0}</span>
+                          <span>•</span>
+                          <span>RTG: {player.stats?.rating ?? 8.5}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 

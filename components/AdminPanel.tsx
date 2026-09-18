@@ -29,6 +29,9 @@ import {
   Check,
   Sparkles,
   Layers,
+  MapPin,
+  Edit2,
+  UserCheck,
 } from 'lucide-react'
 
 export default function AdminPanel() {
@@ -47,6 +50,10 @@ export default function AdminPanel() {
     updateMatchScore,
     updateLeaderboard,
     updateTeamFormation,
+    updateTeam,
+    updateSport,
+    updatePlayer,
+    setIconPlayer,
     addPlayer,
     removePlayer,
     addTeam,
@@ -85,12 +92,18 @@ export default function AdminPanel() {
   // New Sport Form State
   const [newSportName, setNewSportName] = useState('')
   const [newSportType, setNewSportType] = useState<SportType>('team')
+  const [newSportVenue, setNewSportVenue] = useState('')
+  const [editingVenueSportId, setEditingVenueSportId] = useState<string | null>(null)
+  const [tempVenueName, setTempVenueName] = useState('')
   const [isSubmittingSport, setIsSubmittingSport] = useState(false)
 
   // New Team Form State
   const [newTeamSportId, setNewTeamSportId] = useState<string>(sports[0]?.id || '')
   const [newTeamName, setNewTeamName] = useState('')
   const [newTeamDept, setNewTeamDept] = useState('')
+  const [newTeamManager, setNewTeamManager] = useState('')
+  const [editingManagerTeamId, setEditingManagerTeamId] = useState<string | null>(null)
+  const [tempManagerName, setTempManagerName] = useState('')
   const [newTeamLogo, setNewTeamLogo] = useState('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop')
   const [newTeamFormation, setNewTeamFormation] = useState('2-2-1')
   const [teamFilterSportId, setTeamFilterSportId] = useState<string>('all')
@@ -102,6 +115,7 @@ export default function AdminPanel() {
   const [newPlayerTeamId, setNewPlayerTeamId] = useState('')
   const [newPlayerRole, setNewPlayerRole] = useState('Forward')
   const [newPlayerNumber, setNewPlayerNumber] = useState(0)
+  const [newPlayerIsIcon, setNewPlayerIsIcon] = useState(false)
   const [newPlayerPhoto, setNewPlayerPhoto] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop')
   const [playerRosterSportFilter, setPlayerRosterSportFilter] = useState<string>('all')
   const [playerRosterTeamFilter, setPlayerRosterTeamFilter] = useState<string>('all')
@@ -111,6 +125,7 @@ export default function AdminPanel() {
   const [newMatchTeamAId, setNewMatchTeamAId] = useState('')
   const [newMatchTeamBId, setNewMatchTeamBId] = useState('')
   const [newMatchStatus, setNewMatchStatus] = useState<MatchStatus>('live')
+  const [newMatchVenue, setNewMatchVenue] = useState('')
   const [newMatchTeamAScore, setNewMatchTeamAScore] = useState(0)
   const [newMatchTeamBScore, setNewMatchTeamBScore] = useState(0)
   const [isSubmittingMatch, setIsSubmittingMatch] = useState(false)
@@ -197,6 +212,14 @@ export default function AdminPanel() {
     }
   }, [footballTeams, formationTeamId])
 
+  // Sync match venue with selected sport's venue
+  React.useEffect(() => {
+    const currentSport = sports.find((s) => s.id === newMatchSportId)
+    if (currentSport?.venue) {
+      setNewMatchVenue(currentSport.venue)
+    }
+  }, [newMatchSportId, sports])
+
   const notify = (msg: string) => {
     setStatusMessage(msg)
     setTimeout(() => setStatusMessage(null), 3500)
@@ -207,6 +230,7 @@ export default function AdminPanel() {
     e.preventDefault()
     const cleanName = newTeamName.trim()
     const cleanDept = newTeamDept.trim()
+    const cleanManager = newTeamManager.trim()
     if (!cleanName) {
       notify('Please enter a team name.')
       return
@@ -225,10 +249,12 @@ export default function AdminPanel() {
         logo_url: newTeamLogo || 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop',
         sport_id: targetSport.id,
         formation: targetSport.name.toLowerCase() === 'football' ? newTeamFormation : (targetSport.type === 'duo' ? 'Standard Duo' : 'Standard'),
+        manager: cleanManager || undefined,
       })
       notify(`Team "${cleanName}" enrolled in ${targetSport.name}!`)
       setNewTeamName('')
       setNewTeamDept('')
+      setNewTeamManager('')
     } catch (err: any) {
       notify(`Failed creating team: ${err?.message || 'Error'}`)
     } finally {
@@ -276,6 +302,7 @@ export default function AdminPanel() {
         status: newMatchStatus,
         scheduled_at: new Date().toISOString(),
         minute: newMatchStatus === 'live' ? 1 : undefined,
+        venue: newMatchVenue.trim() || targetSport.venue || undefined,
       })
       notify(`Match scheduled between teams in ${targetSport.name}!`)
       setNewMatchTeamAScore(0)
@@ -299,6 +326,7 @@ export default function AdminPanel() {
   const handleAddSport = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = newSportName.trim()
+    const trimmedVenue = newSportVenue.trim()
     if (!trimmed) {
       notify('Please enter a valid division/sport name.')
       return
@@ -315,9 +343,11 @@ export default function AdminPanel() {
       await addSport({
         name: trimmed,
         type: newSportType,
+        venue: trimmedVenue || undefined,
       })
-      notify(`Division "${trimmed}" successfully registered and synced!`)
+      notify(`Division "${trimmed}" successfully registered with venue and synced!`)
       setNewSportName('')
+      setNewSportVenue('')
     } catch (err: any) {
       notify(`Failed adding division: ${err?.message || 'Unknown error'}`)
     } finally {
@@ -404,6 +434,12 @@ ALTER TABLE IF EXISTS players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS leaderboards ENABLE ROW LEVEL SECURITY;
 
+-- Ensure latest columns exist for venue, manager, and icon athlete
+ALTER TABLE IF EXISTS sports ADD COLUMN IF NOT EXISTS venue TEXT;
+ALTER TABLE IF EXISTS sports ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE IF EXISTS teams ADD COLUMN IF NOT EXISTS manager TEXT;
+ALTER TABLE IF EXISTS players ADD COLUMN IF NOT EXISTS is_icon BOOLEAN DEFAULT FALSE;
+
 DROP POLICY IF EXISTS "Public Read Access on sports" ON sports;
 DROP POLICY IF EXISTS "Public Read Access on teams" ON teams;
 DROP POLICY IF EXISTS "Public Read Access on players" ON players;
@@ -475,7 +511,8 @@ END $$;`
   // Handle Add Player
   const handleAddPlayer = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newPlayerName.trim()) {
+    const cleanName = newPlayerName.trim()
+    if (!cleanName) {
       notify('Please enter an athlete name.')
       return
     }
@@ -486,16 +523,26 @@ END $$;`
 
     await addPlayer({
       team_id: newPlayerTeamId,
-      name: newPlayerName.trim(),
+      name: cleanName,
       photo_url: newPlayerPhoto,
       role: newPlayerRole,
       jersey_number: Number(newPlayerNumber),
       position_x: 50.0,
       position_y: 50.0,
+      is_icon: newPlayerIsIcon,
     })
 
+    if (newPlayerIsIcon) {
+      const targetTeamPlayers = players.filter((p) => p.team_id === newPlayerTeamId)
+      const matching = targetTeamPlayers.find((p) => p.name === cleanName)
+      if (matching) {
+        await setIconPlayer(newPlayerTeamId, matching.id)
+      }
+    }
+
     setNewPlayerName('')
-    notify(`Athlete ${newPlayerName} enrolled in squad!`)
+    setNewPlayerIsIcon(false)
+    notify(`Athlete ${cleanName} enrolled in squad!${newPlayerIsIcon ? ' (Designated Icon ⭐)' : ''}`)
   }
 
   // If Not Authenticated, show Login Screen
@@ -812,7 +859,7 @@ END $$;`
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleScheduleMatch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+              <form onSubmit={handleScheduleMatch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
                 <div>
                   <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
                     Event / Sport
@@ -864,6 +911,19 @@ END $$;`
                         </option>
                       ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                    Match Venue
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Main Turf Stadium"
+                    value={newMatchVenue}
+                    onChange={(e) => setNewMatchVenue(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                  />
                 </div>
 
                 <div>
@@ -1062,7 +1122,7 @@ END $$;`
               </span>
             </div>
 
-            <form onSubmit={handleAddTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+            <form onSubmit={handleAddTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
               <div>
                 <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
                   Event / Sport
@@ -1103,6 +1163,19 @@ END $$;`
                   placeholder="e.g. CS AI & Robotics Lab"
                   value={newTeamDept}
                   onChange={(e) => setNewTeamDept(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  Team Manager / Coach
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Prof. Alan Turing"
+                  value={newTeamManager}
+                  onChange={(e) => setNewTeamManager(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
                 />
               </div>
@@ -1203,24 +1276,72 @@ END $$;`
                     return (
                       <div
                         key={team.id}
-                        className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-all"
+                        className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start justify-between hover:border-slate-700 transition-all gap-2"
                       >
-                        <div className="flex items-center space-x-3 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0">
+                        <div className="flex items-start space-x-3 min-w-0 flex-1">
+                          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0 mt-0.5">
                             <img
                               src={team.logo_url}
                               alt={team.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <div className="font-bold text-xs text-ice-white truncate">
                               {team.name}
                             </div>
                             <div className="text-[10px] text-muted-gray truncate font-mono">
                               {team.department}
                             </div>
-                            <div className="flex items-center space-x-2 mt-1">
+
+                            {/* Manager Inline Management */}
+                            <div className="text-[10px] font-mono text-slate-300 mt-1">
+                              {editingManagerTeamId === team.id ? (
+                                <div className="flex items-center space-x-1 pt-0.5">
+                                  <input
+                                    type="text"
+                                    value={tempManagerName}
+                                    onChange={(e) => setTempManagerName(e.target.value)}
+                                    placeholder="Manager Name"
+                                    className="bg-slate-950 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-white focus:outline-none focus:border-neon-lime w-28"
+                                  />
+                                  <button
+                                    onClick={async () => {
+                                      await updateTeam(team.id, { manager: tempManagerName.trim() })
+                                      setEditingManagerTeamId(null)
+                                      notify(`Updated manager for ${team.name}`)
+                                    }}
+                                    className="px-1.5 py-0.5 rounded bg-neon-lime text-slate-950 font-bold text-[9px]"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingManagerTeamId(null)}
+                                    className="text-slate-400 hover:text-white text-[9px]"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="text-muted-gray">👔 Mgr:</span>
+                                  <span className="text-ice-white font-semibold truncate max-w-[110px]">
+                                    {team.manager || <span className="text-slate-500 italic">None</span>}
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      setEditingManagerTeamId(team.id)
+                                      setTempManagerName(team.manager || '')
+                                    }}
+                                    className="text-cyber-cyan hover:underline text-[9px] ml-1"
+                                  >
+                                    Edit
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex items-center space-x-2 mt-1.5">
                               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-neon-lime border border-slate-700">
                                 {sport?.name || 'Sport'}
                               </span>
@@ -1233,7 +1354,7 @@ END $$;`
 
                         <button
                           onClick={() => handleRemoveTeam(team.id, team.name)}
-                          className="p-2 rounded-lg text-rose-400 hover:bg-rose-950/60 transition-colors shrink-0 ml-2"
+                          className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 transition-colors shrink-0"
                           title="Remove Team"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1814,6 +1935,22 @@ END $$;`
                   />
                 </div>
 
+                <div className="flex items-center space-x-2 pt-1 sm:col-span-2">
+                  <input
+                    type="checkbox"
+                    id="adminNewPlayerIsIcon"
+                    checked={newPlayerIsIcon}
+                    onChange={(e) => setNewPlayerIsIcon(e.target.checked)}
+                    className="rounded border-slate-700 bg-slate-900 text-neon-lime focus:ring-neon-lime w-4 h-4 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="adminNewPlayerIsIcon"
+                    className="text-xs font-mono text-amber-300 flex items-center space-x-1.5 cursor-pointer select-none"
+                  >
+                    <span>⭐ Designate as Team Icon Athlete (1 Icon athlete per squad)</span>
+                  </label>
+                </div>
+
                 <div className="flex items-end">
                   <button
                     type="submit"
@@ -1906,19 +2043,28 @@ END $$;`
                   {filteredPlayers.map((p) => {
                     const team = teams.find((t) => t.id === p.team_id)
                     const sport = sports.find((s) => s.id === team?.sport_id)
+                    const isIcon = Boolean(p.is_icon)
                     return (
                       <div
                         key={p.id}
-                        className="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800"
+                        className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                          isIcon
+                            ? 'bg-slate-900/90 border border-amber-400/50 shadow-[0_0_10px_rgba(251,191,36,0.1)]'
+                            : 'bg-slate-900/80 border border-slate-800'
+                        }`}
                       >
                         <div className="flex items-center space-x-3 truncate">
-                          <div className="w-9 h-9 rounded-lg bg-slate-800 overflow-hidden shrink-0 border border-slate-700">
+                          <div className={`w-9 h-9 rounded-lg bg-slate-800 overflow-hidden shrink-0 border ${
+                            isIcon ? 'border-amber-400' : 'border-slate-700'
+                          }`}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={p.photo_url} alt={p.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="truncate">
-                            <div className="font-bold text-xs text-ice-white truncate">
-                              {p.name} <span className="text-neon-lime">#{p.jersey_number}</span>
+                            <div className="font-bold text-xs text-ice-white truncate flex items-center space-x-1">
+                              <span>{p.name}</span>
+                              {isIcon && <span className="text-amber-400 text-xs">⭐</span>}
+                              <span className="text-neon-lime ml-1">#{p.jersey_number}</span>
                             </div>
                             <div className="text-[10px] text-muted-gray truncate">
                               {p.role} • {team?.name || 'No Team'} ({sport?.name || 'Sport'})
@@ -1926,18 +2072,38 @@ END $$;`
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => {
-                            if (confirm(`Remove ${p.name} from squad?`)) {
-                              removePlayer(p.id)
-                              notify(`Removed ${p.name}`)
-                            }
-                          }}
-                          className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors shrink-0"
-                          title="Remove Player"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center space-x-2 shrink-0 ml-2">
+                          {isIcon ? (
+                            <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[9px] font-mono font-bold flex items-center space-x-1">
+                              <span>⭐</span>
+                              <span>ICON</span>
+                            </span>
+                          ) : (
+                            <button
+                              onClick={async () => {
+                                await setIconPlayer(p.team_id, p.id)
+                                notify(`⭐ ${p.name} designated as team icon athlete!`)
+                              }}
+                              className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-amber-400/20 text-slate-400 hover:text-amber-300 text-[10px] font-mono border border-slate-700 hover:border-amber-400/40 transition-all"
+                              title="Designate as Icon Player for this squad"
+                            >
+                              ⭐ Make Icon
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => {
+                              if (confirm(`Remove ${p.name} from squad?`)) {
+                                removePlayer(p.id)
+                                notify(`Removed ${p.name}`)
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors shrink-0"
+                            title="Remove Player"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     )
                   })}
@@ -1968,7 +2134,7 @@ END $$;`
               </span>
             </div>
 
-            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
               <div>
                 <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
                   Sport / Game Name
@@ -1996,6 +2162,19 @@ END $$;`
                   <option value="duo">Doubles / Pairs (2v2, e.g. Badminton, Carrom)</option>
                   <option value="solo">Solo (1v1 Single player, e.g. Chess, Table Tennis)</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  Official Venue / Arena
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Main Turf Stadium, Seminar Hall A"
+                  value={newSportVenue}
+                  onChange={(e) => setNewSportVenue(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                />
               </div>
 
               <div className="flex items-end">
@@ -2053,7 +2232,65 @@ END $$;`
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800/80 space-y-2">
+                    <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
+                      {/* Venue Management Slot */}
+                      <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] font-mono text-muted-gray">
+                          <span className="flex items-center space-x-1.5 text-slate-300 font-bold">
+                            <MapPin className="w-3.5 h-3.5 text-neon-lime" />
+                            <span>EVENT VENUE</span>
+                          </span>
+                          {editingVenueSportId !== sport.id ? (
+                            <button
+                              onClick={() => {
+                                setEditingVenueSportId(sport.id)
+                                setTempVenueName(sport.venue || '')
+                              }}
+                              className="text-cyber-cyan hover:text-cyan-300 hover:underline flex items-center space-x-1 text-[10px]"
+                            >
+                              <Edit2 className="w-2.5 h-2.5" />
+                              <span>Change Venue</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setEditingVenueSportId(null)}
+                              className="text-slate-400 hover:text-white text-[10px]"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                        </div>
+
+                        {editingVenueSportId === sport.id ? (
+                          <div className="flex items-center space-x-1.5 pt-0.5">
+                            <input
+                              type="text"
+                              value={tempVenueName}
+                              onChange={(e) => setTempVenueName(e.target.value)}
+                              placeholder="e.g. Student Activity Turf"
+                              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-ice-white font-mono focus:outline-none focus:border-neon-lime"
+                            />
+                            <button
+                              onClick={async () => {
+                                await updateSport(sport.id, { venue: tempVenueName.trim() })
+                                setEditingVenueSportId(null)
+                                notify(`✅ Updated venue for ${sport.name} to "${tempVenueName.trim()}"`)
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-neon-lime text-slate-950 font-mono font-bold text-xs shadow-neon-lime hover:bg-neon-lime-dark"
+                            >
+                              Save
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-xs font-mono text-ice-white truncate flex items-center space-x-1.5">
+                            <span className="text-muted-gray">Slot:</span>
+                            <span className="font-semibold text-neon-lime truncate">
+                              {sport.venue || <span className="text-slate-500 italic font-normal">No Venue Assigned</span>}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="grid grid-cols-2 gap-2 text-center text-xs font-mono">
                         <div className="bg-slate-800/60 p-1.5 rounded-lg">
                           <span className="text-muted-gray block text-[10px] uppercase">Teams</span>
@@ -2195,10 +2432,15 @@ END $$;`
           {/* Quick SQL Snippet Preview Box */}
           <div className="relative">
             <pre className="bg-[#0B1120] border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 overflow-x-auto max-h-56">
-{`-- Quick Fix Permissions & RLS (Copy button above for full script)
+{`-- Quick Fix Permissions, New Columns & RLS
 GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+
+ALTER TABLE IF EXISTS sports ADD COLUMN IF NOT EXISTS venue TEXT;
+ALTER TABLE IF EXISTS sports ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE IF EXISTS teams ADD COLUMN IF NOT EXISTS manager TEXT;
+ALTER TABLE IF EXISTS players ADD COLUMN IF NOT EXISTS is_icon BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE IF EXISTS sports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS teams ENABLE ROW LEVEL SECURITY;
@@ -2206,6 +2448,7 @@ ALTER TABLE IF EXISTS players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS leaderboards ENABLE ROW LEVEL SECURITY;
 
+CREATE POLICY "Allow All Access on sports" ON sports FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Allow All Access on matches" ON matches FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Allow All Access on leaderboards" ON leaderboards FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Allow All Access on teams" ON teams FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);

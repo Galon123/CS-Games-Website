@@ -23,6 +23,10 @@ interface TournamentContextType {
   updateLeaderboard: (leaderboardId: string, updates: Partial<LeaderboardEntry>) => Promise<void>
   updateTeamFormation: (teamId: string, formation: string, options?: TacticalOptions) => Promise<void>
   updatePlayerPosition: (playerId: string, position_x: number, position_y: number) => Promise<void>
+  updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>
+  updateSport: (sportId: string, updates: Partial<Sport>) => Promise<void>
+  updatePlayer: (playerId: string, updates: Partial<Player>) => Promise<void>
+  setIconPlayer: (teamId: string, playerId: string) => Promise<void>
   addPlayer: (playerData: Omit<Player, 'id'>) => Promise<void>
   removePlayer: (playerId: string) => Promise<void>
   addTeam: (teamData: Omit<Team, 'id'>) => Promise<Team | null>
@@ -87,9 +91,33 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       let loadedCount = 0
-      if (sportsRes.data && sportsRes.data.length > 0) { setSports(sportsRes.data); loadedCount++ }
-      if (teamsRes.data) { setTeams(teamsRes.data); loadedCount++ }
-      if (playersRes.data) { setPlayers(playersRes.data); loadedCount++ }
+      if (sportsRes.data && sportsRes.data.length > 0) {
+        setSports(
+          sportsRes.data.map((s: any) => ({
+            ...s,
+            venue: s.venue || s.location || '',
+          }))
+        )
+        loadedCount++
+      }
+      if (teamsRes.data) {
+        setTeams(
+          teamsRes.data.map((t: any) => ({
+            ...t,
+            manager: t.manager || t.manager_name || '',
+          }))
+        )
+        loadedCount++
+      }
+      if (playersRes.data) {
+        setPlayers(
+          playersRes.data.map((p: any) => ({
+            ...p,
+            is_icon: Boolean(p.is_icon),
+          }))
+        )
+        loadedCount++
+      }
       if (matchesRes.data) { setMatches(matchesRes.data); loadedCount++ }
       if (leaderboardsRes.data) { setLeaderboards(leaderboardsRes.data); loadedCount++ }
 
@@ -178,7 +206,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           { event: '*', schema: 'public', table: 'teams' },
           (payload) => {
             if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-              const updatedTeam = payload.new as Team
+              const rawTeam = payload.new as any
+              const updatedTeam: Team = {
+                ...rawTeam,
+                manager: rawTeam.manager || rawTeam.manager_name || '',
+              }
               setTeams((prev) => {
                 const idx = prev.findIndex((t) => t.id === updatedTeam.id)
                 if (idx >= 0) {
@@ -206,7 +238,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           { event: '*', schema: 'public', table: 'sports' },
           (payload) => {
             if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-              const updatedSport = payload.new as Sport
+              const rawSport = payload.new as any
+              const updatedSport: Sport = {
+                ...rawSport,
+                venue: rawSport.venue || rawSport.location || '',
+              }
               setSports((prev) => {
                 const idx = prev.findIndex((s) => s.id === updatedSport.id)
                 if (idx >= 0) {
@@ -234,7 +270,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           { event: '*', schema: 'public', table: 'players' },
           (payload) => {
             if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-              const updatedPlayer = payload.new as Player
+              const rawPlayer = payload.new as any
+              const updatedPlayer: Player = {
+                ...rawPlayer,
+                is_icon: Boolean(rawPlayer.is_icon),
+              }
               setPlayers((prev) => {
                 const idx = prev.findIndex((p) => p.id === updatedPlayer.id)
                 if (idx >= 0) {
@@ -455,6 +495,132 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     [isAdmin]
   )
 
+  const updateTeam = useCallback(
+    async (teamId: string, updates: Partial<Team>) => {
+      setTeams((prev) => prev.map((t) => (t.id === teamId ? { ...t, ...updates } : t)))
+
+      if (isSupabaseConfigured() && supabase) {
+        let { error } = await supabase.from('teams').update(updates).eq('id', teamId)
+        if (error && error.code === 'PGRST204' && (updates as any).manager !== undefined) {
+          console.warn('⚠️ Supabase missing manager column on teams update, retrying without manager')
+          const { manager, ...rest } = updates as any
+          if (Object.keys(rest).length > 0) {
+            const retry = await supabase.from('teams').update(rest).eq('id', teamId)
+            error = retry.error
+          } else {
+            error = null
+          }
+        }
+        if (error) {
+          console.error('❌ Supabase updateTeam failed:', error)
+          setSupabaseError(`Failed updating team: ${error.message} (${error.code})`)
+        } else {
+          console.log('✅ Supabase updateTeam succeeded for id:', teamId)
+          setSupabaseError(null)
+        }
+      }
+    },
+    []
+  )
+
+  const updateSport = useCallback(
+    async (sportId: string, updates: Partial<Sport>) => {
+      setSports((prev) => prev.map((s) => (s.id === sportId ? { ...s, ...updates } : s)))
+
+      if (isSupabaseConfigured() && supabase) {
+        const { icon, ...cleanUpdates } = updates as any
+        let { error } = await supabase.from('sports').update(cleanUpdates).eq('id', sportId)
+        if (error && error.code === 'PGRST204' && cleanUpdates.venue !== undefined) {
+          console.warn('⚠️ Supabase missing venue column on sports update, retrying without venue')
+          const { venue, ...rest } = cleanUpdates
+          if (Object.keys(rest).length > 0) {
+            const retry = await supabase.from('sports').update(rest).eq('id', sportId)
+            error = retry.error
+          } else {
+            error = null
+          }
+        }
+        if (error) {
+          console.error('❌ Supabase updateSport failed:', error)
+          setSupabaseError(`Failed updating sport: ${error.message} (${error.code})`)
+        } else {
+          console.log('✅ Supabase updateSport succeeded for id:', sportId)
+          setSupabaseError(null)
+        }
+      }
+    },
+    []
+  )
+
+  const updatePlayer = useCallback(
+    async (playerId: string, updates: Partial<Player>) => {
+      setPlayers((prev) => prev.map((p) => (p.id === playerId ? { ...p, ...updates } : p)))
+
+      if (isSupabaseConfigured() && supabase) {
+        const { stats, ...cleanUpdates } = updates as any
+        let { error } = await supabase.from('players').update(cleanUpdates).eq('id', playerId)
+        if (error && error.code === 'PGRST204' && cleanUpdates.is_icon !== undefined) {
+          console.warn('⚠️ Supabase missing is_icon column on players update, retrying without is_icon')
+          const { is_icon, ...rest } = cleanUpdates
+          if (Object.keys(rest).length > 0) {
+            const retry = await supabase.from('players').update(rest).eq('id', playerId)
+            error = retry.error
+          } else {
+            error = null
+          }
+        }
+        if (error) {
+          console.error('❌ Supabase updatePlayer failed:', error)
+          setSupabaseError(`Failed updating player: ${error.message} (${error.code})`)
+        } else {
+          console.log('✅ Supabase updatePlayer succeeded for id:', playerId)
+          setSupabaseError(null)
+        }
+      }
+    },
+    []
+  )
+
+  const setIconPlayer = useCallback(
+    async (teamId: string, playerId: string) => {
+      // Exactly ONE icon player per team
+      setPlayers((prev) =>
+        prev.map((p) => {
+          if (p.team_id === teamId) {
+            return {
+              ...p,
+              is_icon: p.id === playerId,
+            }
+          }
+          return p
+        })
+      )
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          // Unset any previous icon players in this team
+          const clearRes = await supabase.from('players').update({ is_icon: false }).eq('team_id', teamId)
+          if (clearRes.error && clearRes.error.code === 'PGRST204') {
+            console.warn('⚠️ is_icon column missing in Supabase schema cache, skipping Supabase persistence for is_icon')
+            return
+          }
+          // Set the designated icon player
+          const setRes = await supabase.from('players').update({ is_icon: true }).eq('id', playerId)
+          if (setRes.error && setRes.error.code !== 'PGRST204') {
+            console.error('❌ Supabase setIconPlayer failed:', setRes.error)
+            setSupabaseError(`Failed updating icon player: ${setRes.error.message}`)
+          } else {
+            console.log(`✅ Supabase setIconPlayer succeeded for player ${playerId} on team ${teamId}`)
+            setSupabaseError(null)
+          }
+        } catch (err: any) {
+          console.warn('setIconPlayer error:', err)
+        }
+      }
+    },
+    []
+  )
+
   const addPlayer = useCallback(
     async (playerData: Omit<Player, 'id'>) => {
       const tempId = 'p_' + Math.random().toString(36).substring(2, 9)
@@ -468,13 +634,21 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (isSupabaseConfigured() && supabase) {
         // Explicitly remove stats (and any non-table columns) from player payload during insert
         const { stats, ...playerInsertData } = playerData as any
-        const { data, error } = await supabase.from('players').insert([playerInsertData]).select()
+        let { data, error } = await supabase.from('players').insert([playerInsertData]).select()
+        if (error && error.code === 'PGRST204' && playerInsertData.is_icon !== undefined) {
+          console.warn('⚠️ Supabase schema missing is_icon column, retrying without is_icon')
+          const { is_icon, ...fallbackData } = playerInsertData
+          const retry = await supabase.from('players').insert([fallbackData]).select()
+          data = retry.data
+          error = retry.error
+        }
+
         if (error) {
           console.error('❌ Supabase addPlayer failed:', error)
           setSupabaseError(`Failed adding player: ${error.message} (${error.code})`)
         } else if (data && data[0]) {
           const inserted = data[0] as Player
-          setPlayers((prev) => prev.map((p) => (p.id === tempId ? inserted : p)))
+          setPlayers((prev) => prev.map((p) => (p.id === tempId ? { ...inserted, is_icon: Boolean(playerData.is_icon) } : p)))
           console.log('✅ Supabase addPlayer succeeded with id:', inserted.id)
           setSupabaseError(null)
         }
@@ -513,14 +687,22 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       if (isSupabaseConfigured() && supabase) {
         const { icon, ...sportInsertData } = sportData as any
-        const { data, error } = await supabase.from('sports').insert([sportInsertData]).select()
+        let { data, error } = await supabase.from('sports').insert([sportInsertData]).select()
+        if (error && error.code === 'PGRST204' && (sportInsertData.venue !== undefined || sportInsertData.image_url !== undefined)) {
+          console.warn('⚠️ Supabase schema missing venue/image_url, retrying insert')
+          const { venue, image_url, ...fallbackData } = sportInsertData
+          const retry = await supabase.from('sports').insert([fallbackData]).select()
+          data = retry.data
+          error = retry.error
+        }
+
         if (error) {
           console.error('❌ Supabase addSport failed:', error)
           setSupabaseError(`Failed adding sport: ${error.message} (${error.code})`)
           return newSport
         } else if (data && data[0]) {
           const inserted = data[0] as Sport
-          setSports((prev) => prev.map((s) => (s.id === tempId ? inserted : s)))
+          setSports((prev) => prev.map((s) => (s.id === tempId ? { ...inserted, venue: sportData.venue || '' } : s)))
           console.log('✅ Supabase addSport succeeded with id:', inserted.id)
           setSupabaseError(null)
           return inserted
@@ -579,10 +761,18 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setLeaderboards((prev) => [...prev, initialLbEntry])
 
       if (isSupabaseConfigured() && supabase) {
-        const { data: teamResData, error: teamErr } = await supabase
+        let { data: teamResData, error: teamErr } = await supabase
           .from('teams')
           .insert([teamData])
           .select()
+
+        if (teamErr && teamErr.code === 'PGRST204' && (teamData as any).manager !== undefined) {
+          console.warn('⚠️ Supabase schema missing manager column, retrying insert without manager')
+          const { manager, ...fallbackData } = teamData as any
+          const retry = await supabase.from('teams').insert([fallbackData]).select()
+          teamResData = retry.data
+          teamErr = retry.error
+        }
 
         if (teamErr) {
           console.error('❌ Supabase addTeam failed:', teamErr)
@@ -592,7 +782,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
         if (teamResData && teamResData[0]) {
           const insertedTeam = teamResData[0] as Team
-          setTeams((prev) => prev.map((t) => (t.id === tempTeamId ? insertedTeam : t)))
+          setTeams((prev) => prev.map((t) => (t.id === tempTeamId ? { ...insertedTeam, manager: teamData.manager || '' } : t)))
 
           // Create initial leaderboard entry for this team in Supabase
           const { data: lbData, error: lbErr } = await supabase
@@ -783,6 +973,10 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     updateLeaderboard,
     updateTeamFormation,
     updatePlayerPosition,
+    updateTeam,
+    updateSport,
+    updatePlayer,
+    setIconPlayer,
     addPlayer,
     removePlayer,
     addTeam,
