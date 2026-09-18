@@ -19,21 +19,24 @@ export default function Navbar() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800/80">
+    <header className="sticky top-0 z-50 bg-[#090D16]/95 backdrop-blur-md border-b border-slate-800/80">
       <nav aria-label="Main Navigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center group-hover:border-neon-lime transition-colors">
-              <Cpu className="w-5 h-5 text-neon-lime" />
+            <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center group-hover:border-blue-500/50 transition-colors">
+              <Trophy className="w-4 h-4 text-blue-500" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-base tracking-wide text-ice-white font-mono">
-                  CS NEXUS ARENA
+                <span className="font-semibold text-sm tracking-tight text-white">
+                  CS Sports League
+                </span>
+                <span className="hidden sm:inline-block text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                  Championship
                 </span>
               </div>
-              <p className="text-[10px] text-muted-gray">Computer Science Sports Championship</p>
+              <p className="text-[11px] text-slate-400 font-normal">Department of Computer Science</p>
             </div>
           </Link>
 
@@ -47,13 +50,13 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium font-mono uppercase tracking-wider transition-all ${
+                  className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
-                      ? 'text-neon-lime bg-slate-800/90 font-bold border-b-2 border-neon-lime'
-                      : 'text-muted-gray hover:text-ice-white hover:bg-slate-800/40'
+                      ? 'bg-slate-800 text-white font-semibold shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-neon-lime' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                 </Link>
               )
@@ -64,16 +67,16 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-3">
             <Link
               href="/admin"
-              className={`flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-lg border transition-all ${
+              className={`flex items-center space-x-2 text-xs font-medium px-3.5 py-1.5 rounded-lg border transition-all ${
                 pathname === '/admin'
-                  ? 'bg-neon-lime text-slate-950 font-bold border-neon-lime'
+                  ? 'bg-blue-600 text-white border-blue-500 font-semibold'
                   : isAdmin
-                  ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/40'
-                  : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                  : 'bg-slate-800/60 text-slate-300 border-slate-700/80 hover:bg-slate-800 hover:text-white'
               }`}
             >
-              <Shield className="w-3.5 h-3.5 text-neon-lime" />
-              <span>{isAdmin ? 'Admin (Active)' : 'Admin'}</span>
+              <Shield className={`w-3.5 h-3.5 ${isAdmin ? 'text-emerald-400' : 'text-slate-400'}`} />
+              <span>{isAdmin ? 'Admin Console (Active)' : 'Admin'}</span>
             </Link>
           </div>
 
@@ -92,7 +95,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-800 bg-[#0F172A] px-4 pt-2 pb-4 space-y-1">
+        <div className="md:hidden border-b border-slate-800 bg-[#090D16] px-4 pt-2 pb-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -101,24 +104,24 @@ export default function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-mono uppercase tracking-wider ${
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
                   isActive
-                    ? 'text-neon-lime bg-slate-800 font-bold'
-                    : 'text-muted-gray hover:text-ice-white hover:bg-slate-800/50'
+                    ? 'bg-slate-800 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4 text-slate-400" />
                 <span>{item.label}</span>
               </Link>
             )
           })}
-          <div className="pt-2 border-t border-slate-800 mt-2">
+          <div className="pt-2 border-t border-slate-800/80 mt-2">
             <Link
               href="/admin"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-mono text-slate-300 hover:text-white"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/50"
             >
-              <Shield className="w-4 h-4 text-neon-lime" />
+              <Shield className="w-4 h-4 text-blue-400" />
               <span>{isAdmin ? 'Admin Console (Active)' : 'Admin Login'}</span>
             </Link>
           </div>

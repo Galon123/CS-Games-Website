@@ -60,27 +60,27 @@ export default function TacticalBoard() {
     return (
       <div className="space-y-6">
         <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded-lg bg-neon-lime/10 border border-neon-lime/30">
-            <Crosshair className="w-5 h-5 text-neon-lime" />
+          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <Crosshair className="w-5 h-5 text-blue-500" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-ice-white tracking-tight">
-            INTERACTIVE 6v6 TACTICAL FORMATION BOARD
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Football Tactical Formation Board
           </h1>
         </div>
 
-        <div className="bg-card border border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xl max-w-2xl mx-auto my-12">
-          <div className="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400">
-            <Shield className="w-8 h-8 text-neon-lime" />
+        <div className="bg-card border border-slate-800 rounded-2xl p-10 text-center flex flex-col items-center justify-center space-y-4 shadow-sm max-w-xl mx-auto my-10">
+          <div className="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400">
+            <Shield className="w-7 h-7 text-blue-500" />
           </div>
-          <h2 className="text-xl font-bold font-mono text-ice-white">NO 6v6 FOOTBALL TEAMS REGISTERED</h2>
-          <p className="text-sm text-muted-gray max-w-md">
-            There are currently no squads enrolled under 6v6 Football. Enroll new teams and assign their tactical formations in the Administration Console.
+          <h2 className="text-lg font-semibold text-white">No 6v6 Football Teams Registered</h2>
+          <p className="text-xs sm:text-sm text-slate-400 max-w-sm">
+            There are currently no squads enrolled under 6v6 Football. Enroll teams and set their official formations in the Admin Console.
           </p>
           <Link
             href="/admin"
-            className="mt-4 px-6 py-2.5 rounded-xl bg-neon-lime text-slate-950 font-mono font-bold text-xs shadow-neon-lime hover:bg-neon-lime-dark transition-all"
+            className="mt-3 px-5 py-2 rounded-lg bg-blue-600 text-white font-medium text-xs hover:bg-blue-500 transition-all shadow-sm"
           >
-            GO TO ADMIN CONSOLE
+            Go to Admin Console
           </Link>
         </div>
       </div>
@@ -93,15 +93,15 @@ export default function TacticalBoard() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <div className="p-1.5 rounded-lg bg-neon-lime/10 border border-neon-lime/30">
-              <Crosshair className="w-5 h-5 text-neon-lime" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <Crosshair className="w-5 h-5 text-blue-500" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-ice-white tracking-tight">
-              INTERACTIVE 6v6 TACTICAL FORMATION BOARD
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Football Tactical Formation Board
             </h1>
           </div>
-          <p className="text-sm text-muted-gray mt-1">
-            Visual field matrix, 6v6 tactical coordinates, and player positional analysis.
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            6v6 pitch layout, tactical coordinates, and team positioning.
           </p>
         </div>
 
@@ -114,10 +114,10 @@ export default function TacticalBoard() {
                 setSelectedTeamId(team.id)
                 setSelectedPlayer(null)
               }}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                 team.id === activeTeam?.id
-                  ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-                  : 'bg-slate-800 text-ice-white hover:bg-slate-700 border border-slate-700'
+                  ? 'bg-blue-600 text-white font-semibold shadow-sm'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/80'
               }`}
             >
               <span>{team.name}</span>
@@ -131,19 +131,19 @@ export default function TacticalBoard() {
         {/* Pitch Display (8 Cols) */}
         <div className="lg:col-span-8 space-y-4">
           {/* Pitch Control Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
             {/* Formation Display / Selectors */}
             {isAdmin ? (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-mono text-neon-lime font-bold">FORMATION (ADMIN):</span>
+                <span className="text-xs font-semibold text-blue-400">Formation (Admin):</span>
                 <div className="flex flex-wrap items-center gap-1">
                   {availableFormations.map((fmt) => (
                     <button
                       key={fmt}
                       onClick={() => handleFormationChange(fmt)}
-                      className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all ${
+                      className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all ${
                         activeTeam?.formation === fmt
-                          ? 'bg-neon-lime text-slate-950 font-black shadow-neon-lime'
+                          ? 'bg-blue-600 text-white font-bold shadow-sm'
                           : 'bg-slate-800 text-slate-300 hover:text-white'
                       }`}
                     >
@@ -154,41 +154,41 @@ export default function TacticalBoard() {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono text-muted-gray">OFFICIAL FORMATION:</span>
-                <div className="flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-slate-800 text-neon-lime font-mono font-bold text-xs border border-neon-lime/30">
+                <span className="text-xs text-slate-400">Official Formation:</span>
+                <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-200 font-mono text-xs border border-slate-700">
                   <Lock className="w-3 h-3 text-slate-400" />
                   <span>{activeTeam?.formation || '2-2-1'}</span>
-                  <span className="text-[10px] text-slate-400 font-normal ml-1">(Admin Fixed)</span>
+                  <span className="text-[10px] text-slate-400 ml-1">(Admin Fixed)</span>
                 </div>
               </div>
             )}
 
             {/* Display Mode Switcher */}
-            <div className="flex items-center space-x-2 text-xs font-mono self-end sm:self-auto">
-              <span className="text-muted-gray">VIEW:</span>
+            <div className="flex items-center space-x-2 text-xs self-end sm:self-auto">
+              <span className="text-slate-400">View:</span>
               <button
                 onClick={() => setTacticalViewMode('roles')}
-                className={`px-2 py-1 rounded ${
-                  tacticalViewMode === 'roles' ? 'bg-cyber-cyan text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md text-xs font-medium ${
+                  tacticalViewMode === 'roles' ? 'bg-slate-800 text-white font-semibold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Roles
               </button>
               <button
                 onClick={() => setTacticalViewMode('numbers')}
-                className={`px-2 py-1 rounded ${
-                  tacticalViewMode === 'numbers' ? 'bg-cyber-cyan text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md text-xs font-medium ${
+                  tacticalViewMode === 'numbers' ? 'bg-slate-800 text-white font-semibold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Jerseys
               </button>
               <button
                 onClick={() => setTacticalViewMode('positions')}
-                className={`px-2 py-1 rounded ${
-                  tacticalViewMode === 'positions' ? 'bg-cyber-cyan text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md text-xs font-medium ${
+                  tacticalViewMode === 'positions' ? 'bg-slate-800 text-white font-semibold' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Coordinates
+                Coords
               </button>
             </div>
           </div>
@@ -196,49 +196,49 @@ export default function TacticalBoard() {
           {/* 2D Tactical Football Pitch Container (Mobile-optimized aspect-[4/5] sm:aspect-[16/11]) */}
           <div
             onClick={handlePitchClick}
-            className={`relative w-full aspect-[4/5] sm:aspect-[16/11] min-h-[440px] sm:min-h-0 rounded-2xl overflow-hidden border-4 border-slate-800 shadow-2xl tactical-pitch select-none transition-all ${
-              isRepositioning ? 'cursor-crosshair ring-2 ring-cyber-cyan' : 'cursor-default'
+            className={`relative w-full aspect-[4/5] sm:aspect-[16/11] min-h-[440px] sm:min-h-0 rounded-2xl overflow-hidden border border-slate-800 shadow-md tactical-pitch select-none transition-all ${
+              isRepositioning ? 'cursor-crosshair ring-2 ring-blue-500' : 'cursor-default'
             }`}
           >
             {/* Pitch Markings Overlay */}
-            <div className="absolute inset-3 sm:inset-4 border-2 border-emerald-400/30 rounded pointer-events-none">
+            <div className="absolute inset-3 sm:inset-4 border border-white/20 rounded pointer-events-none">
               {/* Halfway Line */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-emerald-400/30 -translate-y-1/2" />
+              <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20 -translate-y-1/2" />
               {/* Center Circle */}
-              <div className="absolute top-1/2 left-1/2 w-20 h-20 sm:w-28 sm:h-28 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400/30 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
+              <div className="absolute top-1/2 left-1/2 w-20 h-20 sm:w-28 sm:h-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Top Penalty Area (Opponent) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-b-2 border-x-2 border-emerald-400/30">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-b-2 border-x-2 border-emerald-400/30" />
-                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-b border-x border-white/20">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-b border-x border-white/20" />
+                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Bottom Penalty Area (Our Goal) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-t-2 border-x-2 border-emerald-400/30">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-t-2 border-x-2 border-emerald-400/30" />
-                <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400/40" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-t border-x border-white/20">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-t border-x border-white/20" />
+                <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Corner Arcs */}
-              <div className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-r-2 border-emerald-400/30 rounded-br-full" />
-              <div className="absolute top-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-l-2 border-emerald-400/30 rounded-bl-full" />
-              <div className="absolute bottom-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-r-2 border-emerald-400/30 rounded-tr-full" />
-              <div className="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-l-2 border-emerald-400/30 rounded-tl-full" />
+              <div className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-b border-r border-white/20 rounded-br-full" />
+              <div className="absolute top-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-b border-l border-white/20 rounded-bl-full" />
+              <div className="absolute bottom-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t border-r border-white/20 rounded-tr-full" />
+              <div className="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-t border-l border-white/20 rounded-tl-full" />
             </div>
 
             {/* Pitch Orientation Labels */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-mono uppercase text-emerald-300/50 font-bold tracking-widest pointer-events-none">
-              OPPOSITION HALF (ATTACK)
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-medium tracking-widest pointer-events-none">
+              Opposition Half (Attack)
             </div>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-mono uppercase text-emerald-300/50 font-bold tracking-widest pointer-events-none">
-              DEFENSIVE HALF (GOAL)
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-medium tracking-widest pointer-events-none">
+              Defensive Half (Goal)
             </div>
 
             {/* Repositioning Active Banner */}
             {isRepositioning && selectedPlayer && (
-              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-cyber-cyan text-slate-950 text-xs font-mono font-bold px-3 py-1 rounded-full shadow-lg z-30 animate-pulse whitespace-nowrap">
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md z-30 animate-pulse whitespace-nowrap">
                 Click anywhere on pitch to place {selectedPlayer.name}
               </div>
             )}
@@ -266,21 +266,21 @@ export default function TacticalBoard() {
                 >
                   {/* Icon Player Gold Star Badge */}
                   {isIcon && (
-                    <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 text-[9px] font-black flex items-center justify-center shadow-md border border-amber-200 z-30">
+                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 text-slate-950 text-[9px] font-black flex items-center justify-center shadow-md border border-amber-200 z-30">
                       ★
                     </div>
                   )}
 
                   {/* Player Dot / Jersey */}
                   <div
-                    className={`w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-full flex items-center justify-center font-mono font-bold text-xs shadow-md transition-all ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-full flex items-center justify-center font-mono font-bold text-xs shadow-sm transition-all ${
                       isSelected
-                        ? 'bg-neon-lime text-slate-950 ring-2 ring-white shadow-neon-lime'
+                        ? 'bg-blue-600 text-white ring-2 ring-white shadow-md'
                         : isIcon
-                        ? 'bg-slate-900 text-amber-300 border-2 border-amber-400 ring-2 ring-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.7)]'
+                        ? 'bg-slate-950 text-amber-300 border-2 border-amber-400 ring-2 ring-amber-400/30'
                         : isGK
-                        ? 'bg-amber-500 text-slate-950 font-black'
-                        : 'bg-slate-900 text-ice-white border border-cyber-cyan/60'
+                        ? 'bg-amber-600 text-white font-bold border border-amber-400/80'
+                        : 'bg-slate-900 text-white border border-slate-700'
                     }`}
                   >
                     {tacticalViewMode === 'numbers' ? (
@@ -294,12 +294,12 @@ export default function TacticalBoard() {
 
                   {/* Clean First Name Pill */}
                   <div
-                    className={`mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono text-center whitespace-nowrap shadow transition-colors flex items-center justify-center space-x-0.5 ${
+                    className={`mt-0.5 px-1.5 py-0.2 rounded text-[10px] text-center whitespace-nowrap shadow transition-colors flex items-center justify-center space-x-0.5 ${
                       isSelected
-                        ? 'bg-neon-lime text-slate-950 font-bold'
+                        ? 'bg-blue-600 text-white font-medium'
                         : isIcon
-                        ? 'bg-slate-900/95 text-amber-300 border border-amber-400/40 font-bold'
-                        : 'bg-slate-900/90 text-slate-200'
+                        ? 'bg-slate-950/95 text-amber-300 border border-amber-400/40 font-medium'
+                        : 'bg-slate-900/90 text-slate-200 border border-slate-800'
                     }`}
                   >
                     <span>{player.name.split(' ')[0]}</span>
@@ -311,26 +311,26 @@ export default function TacticalBoard() {
           </div>
 
           {/* Pitch Legend & Instructions */}
-          <div className="flex flex-wrap items-center justify-between text-xs text-muted-gray font-mono px-2 gap-2">
+          <div className="flex flex-wrap items-center justify-between text-xs text-slate-400 px-1 gap-2">
             <div className="flex flex-wrap items-center gap-3">
               <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-slate-900 border border-cyber-cyan" />
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700" />
                 <span>Outfield</span>
               </span>
               <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-amber-500 border border-amber-300" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-600 border border-amber-400" />
                 <span>Goalkeeper</span>
               </span>
               <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-slate-900 border-2 border-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
-                <span className="text-amber-300 font-bold">★ Icon</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-950 border-2 border-amber-400" />
+                <span className="text-amber-300 font-medium">★ Icon</span>
               </span>
               <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-neon-lime" />
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                 <span>Selected</span>
               </span>
             </div>
-            <span>Click player to inspect or reposition</span>
+            <span>Click player to inspect details</span>
           </div>
         </div>
 
@@ -338,21 +338,21 @@ export default function TacticalBoard() {
         <div className="lg:col-span-4 space-y-4">
           {/* Selected Player Card or Default Overview */}
           {selectedPlayer ? (
-            <div className={`bg-card rounded-2xl p-5 space-y-4 ${
+            <div className={`bg-card rounded-xl p-5 space-y-4 border shadow-sm ${
               selectedPlayer.is_icon
-                ? 'border-2 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.25)]'
-                : 'border-2 border-cyber-cyan/50 shadow-cyber-cyan'
+                ? 'border-amber-500/40 bg-gradient-to-b from-amber-500/5 to-transparent'
+                : 'border-slate-800'
             }`}>
-              <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-amber-400' : 'text-neon-lime'}`} />
-                  <span className={`text-xs font-mono font-bold uppercase ${selectedPlayer.is_icon ? 'text-amber-300' : 'text-neon-lime'}`}>
-                    TACTICAL DOSSIER
+                  <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-amber-400' : 'text-blue-400'}`} />
+                  <span className={`text-xs font-semibold uppercase tracking-wide ${selectedPlayer.is_icon ? 'text-amber-400' : 'text-slate-200'}`}>
+                    Player Dossier
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedPlayer(null)}
-                  className="text-xs text-muted-gray hover:text-white"
+                  className="text-xs text-slate-400 hover:text-white"
                 >
                   Close
                 </button>
@@ -360,16 +360,16 @@ export default function TacticalBoard() {
 
               {/* Icon Athlete Badge */}
               {selectedPlayer.is_icon && (
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-500/20 border border-amber-400/50 text-amber-300 font-mono text-xs font-bold shadow-[0_0_12px_rgba(251,191,36,0.3)]">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>OFFICIAL TEAM ICON ATHLETE ⭐</span>
+                  <span>Team Icon Athlete ⭐</span>
                 </div>
               )}
 
               {/* Player Identity */}
               <div className="flex items-center space-x-4">
-                <div className={`w-16 h-16 rounded-xl bg-slate-800 border-2 overflow-hidden shrink-0 ${
-                  selectedPlayer.is_icon ? 'border-amber-400 ring-2 ring-amber-400/40' : 'border-neon-lime/40'
+                <div className={`w-14 h-14 rounded-xl bg-slate-800 border overflow-hidden shrink-0 ${
+                  selectedPlayer.is_icon ? 'border-amber-400' : 'border-slate-700'
                 }`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -379,42 +379,42 @@ export default function TacticalBoard() {
                   />
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-ice-white leading-tight flex items-center space-x-1.5">
+                  <div className="text-base font-bold text-white leading-tight flex items-center space-x-1.5">
                     <span>{selectedPlayer.name}</span>
                     {selectedPlayer.is_icon && <span className="text-amber-400 text-sm">⭐</span>}
                   </div>
-                  <div className="text-xs text-cyber-cyan font-mono font-semibold">
+                  <div className="text-xs text-blue-400 font-medium mt-0.5">
                     {selectedPlayer.role} • #{selectedPlayer.jersey_number}
                   </div>
-                  <div className="text-xs text-muted-gray mt-0.5">
+                  <div className="text-xs text-slate-400 mt-0.5">
                     {activeTeam.name}
                   </div>
                 </div>
               </div>
 
               {/* Player Stats */}
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-2">
-                <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                  <div className="text-muted-gray text-[10px]">GOALS / PTS</div>
-                  <div className="text-lg font-bold text-neon-lime">
+              <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                  <div className="text-slate-400 text-[10px] uppercase font-medium">Goals / Points</div>
+                  <div className="text-lg font-bold font-mono text-white">
                     {selectedPlayer.stats?.goalsOrPoints ?? 0}
                   </div>
                 </div>
-                <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                  <div className="text-muted-gray text-[10px]">ASSISTS / RATING</div>
-                  <div className="text-lg font-bold text-cyber-cyan">
+                <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                  <div className="text-slate-400 text-[10px] uppercase font-medium">Rating</div>
+                  <div className="text-lg font-bold font-mono text-white">
                     {selectedPlayer.stats?.rating ?? 8.5} / 10
                   </div>
                 </div>
-                <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                  <div className="text-muted-gray text-[10px]">POS X (WIDTH)</div>
-                  <div className="text-sm font-bold text-ice-white">
+                <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                  <div className="text-slate-400 text-[10px] uppercase font-medium">Pitch X (Width)</div>
+                  <div className="text-sm font-semibold font-mono text-slate-200">
                     {Math.round(selectedPlayer.position_x)}%
                   </div>
                 </div>
-                <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                  <div className="text-muted-gray text-[10px]">POS Y (DEPTH)</div>
-                  <div className="text-sm font-bold text-ice-white">
+                <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                  <div className="text-slate-400 text-[10px] uppercase font-medium">Pitch Y (Depth)</div>
+                  <div className="text-sm font-semibold font-mono text-slate-200">
                     {Math.round(selectedPlayer.position_y)}%
                   </div>
                 </div>
@@ -425,43 +425,43 @@ export default function TacticalBoard() {
                 {isAdmin ? (
                   <button
                     onClick={() => setIsRepositioning(!isRepositioning)}
-                    className={`w-full py-2.5 px-3 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+                    className={`w-full py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center space-x-2 ${
                       isRepositioning
-                        ? 'bg-cyber-cyan text-slate-950 shadow-cyber-cyan'
-                        : 'bg-slate-800 hover:bg-slate-700 text-ice-white border border-slate-700'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
                     }`}
                   >
                     <Crosshair className="w-4 h-4" />
-                    <span>{isRepositioning ? 'CANCEL REPOSITIONING' : 'REPOSITION ON PITCH (ADMIN)'}</span>
+                    <span>{isRepositioning ? 'Cancel Repositioning' : 'Reposition on Pitch (Admin)'}</span>
                   </button>
                 ) : (
-                  <div className="text-center text-[11px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 flex items-center justify-center space-x-1.5">
+                  <div className="text-center text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800 flex items-center justify-center space-x-1.5">
                     <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span>Position coordinates set by Admin</span>
+                    <span>Position set by Administrator</span>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            <div className="bg-card border border-slate-800 rounded-2xl p-5 space-y-4">
-              <div className="flex items-center space-x-2 text-ice-white">
-                <Shield className="w-5 h-5 text-neon-lime" />
-                <h3 className="font-bold text-sm tracking-wide uppercase font-mono">
-                  {activeTeam.name} MATRIX
+            <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+              <div className="flex items-center space-x-2 text-white">
+                <Shield className="w-4 h-4 text-blue-500" />
+                <h3 className="font-semibold text-sm tracking-tight">
+                  {activeTeam.name} Overview
                 </h3>
               </div>
 
-              <div className="space-y-3 text-xs">
-                <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                  <span className="text-muted-gray">Current Shape</span>
-                  <span className="font-mono font-bold text-neon-lime text-xs flex items-center space-x-1">
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span className="text-slate-400">Current Shape</span>
+                  <span className="font-mono font-semibold text-slate-200 text-xs flex items-center space-x-1">
                     <Lock className="w-3 h-3 text-slate-400" />
-                    <span>{activeTeam.formation || '2-2-1'} (Official)</span>
+                    <span>{activeTeam.formation || '2-2-1'}</span>
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                  <span className="text-muted-gray">Team Manager</span>
-                  <span className="font-mono text-ice-white font-semibold flex items-center space-x-1">
+                <div className="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span className="text-slate-400">Team Manager</span>
+                  <span className="text-slate-200 font-medium">
                     {activeTeam.manager ? (
                       <span>👔 {activeTeam.manager}</span>
                     ) : (
@@ -469,45 +469,41 @@ export default function TacticalBoard() {
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                  <span className="text-muted-gray">Icon Player</span>
-                  <span className="font-mono font-bold flex items-center space-x-1">
+                <div className="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span className="text-slate-400">Icon Player</span>
+                  <span>
                     {teamPlayers.find((p) => p.is_icon) ? (
-                      <span className="text-amber-400">⭐ {teamPlayers.find((p) => p.is_icon)?.name}</span>
+                      <span className="text-amber-400 font-medium">⭐ {teamPlayers.find((p) => p.is_icon)?.name}</span>
                     ) : (
-                      <span className="text-slate-500 italic font-normal">None Assigned</span>
+                      <span className="text-slate-500 italic">None Assigned</span>
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                  <span className="text-muted-gray">Department</span>
-                  <span className="font-mono text-ice-white">{activeTeam.department}</span>
+                <div className="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span className="text-slate-400">Department</span>
+                  <span className="text-slate-200">{activeTeam.department}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                  <span className="text-muted-gray">Tactical Width</span>
-                  <span className="font-mono text-cyber-cyan">Aggressive / High Line</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-muted-gray">Starting Lineup</span>
-                  <span className="font-mono text-ice-white font-bold">{starting6.length} / 6 Fielded</span>
+                <div className="flex justify-between items-center py-1.5">
+                  <span className="text-slate-400">Starting Lineup</span>
+                  <span className="font-medium text-white">{starting6.length} / 6 Fielded</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-muted-gray space-y-1">
-                <p className="font-semibold text-ice-white flex items-center space-x-1">
-                  <Info className="w-3.5 h-3.5 text-cyber-cyan" />
-                  <span>Interactive Pitch Tip</span>
+              <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-xs text-slate-400 space-y-1">
+                <p className="font-medium text-slate-300 flex items-center space-x-1.5">
+                  <Info className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Interactive Tip</span>
                 </p>
-                <p>Click on any jersey node on the turf to view detailed stats or adjust their tactical spot.</p>
+                <p>Click on any athlete node on the pitch to view detailed metrics.</p>
               </div>
             </div>
           )}
 
           {/* Roster & Reserves */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="font-bold text-ice-white uppercase">6v6 SQUAD ROSTER</span>
-              <span className="text-muted-gray">{teamPlayers.length} Members ({starting6.length} Fielded)</span>
+          <div className="bg-card border border-slate-800 rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-slate-200 uppercase tracking-wide">6v6 Squad Roster</span>
+              <span className="text-slate-400">{teamPlayers.length} Members ({starting6.length} Fielded)</span>
             </div>
 
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
@@ -519,30 +515,30 @@ export default function TacticalBoard() {
                   <button
                     key={p.id}
                     onClick={() => setSelectedPlayer(p)}
-                    className={`w-full flex items-center justify-between p-2 rounded-lg text-xs font-mono transition-all text-left ${
+                    className={`w-full flex items-center justify-between p-2 rounded-lg text-xs transition-all text-left ${
                       isSelected
-                        ? 'bg-neon-lime/20 text-neon-lime border border-neon-lime/40'
+                        ? 'bg-blue-600/10 text-white border border-blue-500/40'
                         : isIcon
-                        ? 'bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-400/30'
-                        : 'bg-slate-900/60 hover:bg-slate-800 text-ice-white'
+                        ? 'bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-500/30'
+                        : 'bg-slate-900/40 hover:bg-slate-800/80 text-slate-200 border border-slate-800/60'
                     }`}
                   >
                     <div className="flex items-center space-x-2 truncate">
-                      <span className="text-slate-400 font-bold w-5">#{p.jersey_number}</span>
-                      <span className="truncate">{p.name}</span>
+                      <span className="text-slate-400 font-mono text-xs w-5">#{p.jersey_number}</span>
+                      <span className="truncate font-medium">{p.name}</span>
                       {isIcon && <span className="text-amber-400 text-xs shrink-0">⭐</span>}
                     </div>
                     <div className="flex items-center space-x-2 shrink-0">
-                      <span className="text-[10px] text-muted-gray uppercase">{p.role}</span>
+                      <span className="text-[10px] text-slate-400">{p.role}</span>
                       {isIcon && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
                           ICON
                         </span>
                       )}
                       <span
-                        className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold ${
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
                           isStarter
-                            ? 'bg-neon-lime/10 text-neon-lime border border-neon-lime/30'
+                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                             : 'bg-slate-800 text-slate-400'
                         }`}
                       >

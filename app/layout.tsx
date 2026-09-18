@@ -5,8 +5,8 @@ import Navbar from '@/components/Navbar'
 import LiveTicker from '@/components/LiveTicker'
 
 export const metadata: Metadata = {
-  title: 'CS Nexus Arena | Sports & Gaming Championship',
-  description: 'Annual Computer Science Department Sports & Gaming Event featuring Football, Badminton, Chess, and Carroms with live tactical board and realtime scores.',
+  title: 'CS Sports League | Department Championship',
+  description: 'Annual Computer Science Department Sports & Gaming Championship featuring 6v6 Football, Badminton, Chess, Table Tennis, and Esports with live scores and tactical formations.',
 }
 
 export default function RootLayout({
@@ -16,27 +16,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-background text-ice-white min-h-screen flex flex-col antialiased selection:bg-neon-lime selection:text-black">
+      <body className="bg-background text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
         <TournamentProvider>
           <LiveTicker />
           <Navbar />
           <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {children}
           </main>
-          <footer className="border-t border-slate-800 bg-[#0B1120] py-8 text-center text-sm text-muted-gray">
+          <footer className="border-t border-slate-800/80 bg-[#060911] py-8 text-center text-sm text-slate-400">
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center space-x-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-neon-lime animate-pulse"></span>
-                <span className="font-semibold text-ice-white tracking-wider">CS NEXUS ARENA 2026</span>
-                <span className="text-xs px-2 py-0.5 rounded bg-cyan-950/80 text-cyber-cyan border border-cyber-cyan/30">
-                  CYBER ATHLETIC
+              <div className="flex items-center space-x-2.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span className="font-medium text-slate-200">CS Sports Championship 2026</span>
+                <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                  Annual Tournament
                 </span>
               </div>
-              <p className="text-xs text-muted-gray">
-                Department of Computer Science & Engineering • Powered by Next.js, Tailwind CSS & Supabase
+              <p className="text-xs text-slate-500">
+                Department of Computer Science & Engineering • Next.js & Supabase
               </p>
-              <div className="flex items-center space-x-4 text-xs">
-                <span className="text-neon-lime font-mono">SYS.STATUS: OPERATIONAL</span>
+              <div className="flex items-center space-x-2 text-xs text-slate-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>System Operational</span>
               </div>
             </div>
           </footer>

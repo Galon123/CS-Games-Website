@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Hero from '@/components/Hero'
 import Link from 'next/link'
-import { Trophy, ArrowRight, Star, ShieldAlert } from 'lucide-react'
+import { Trophy, ArrowRight, Star } from 'lucide-react'
 import { useTournament } from '@/context/TournamentContext'
 import { getSportMeta } from '@/lib/sports-theme'
 
@@ -27,17 +27,17 @@ export default function HomePage() {
       <Hero />
 
       {/* Clean Standings Snapshot Section */}
-      <section className="bg-card border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+      <section className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-neon-lime/10 border border-neon-lime/30 flex items-center justify-center shrink-0">
-              <Trophy className="w-5 h-5 text-neon-lime" />
+            <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+              <Trophy className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-ice-white font-mono uppercase tracking-tight">
+              <h2 className="text-base font-semibold text-white tracking-tight">
                 Live Standings Snapshot
               </h2>
-              <p className="text-xs text-muted-gray">
+              <p className="text-xs text-slate-400">
                 Top ranked contenders in the {activeSport?.name || 'Tournament'} division
               </p>
             </div>
@@ -45,7 +45,7 @@ export default function HomePage() {
 
           <Link
             href="/leaderboards"
-            className="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-neon-lime hover:text-white transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
           >
             <span>View All {sports.length} Sports Standings</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -63,13 +63,13 @@ export default function HomePage() {
               <button
                 key={sport.id}
                 onClick={() => setSelectedSportId(sport.id)}
-                className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+                className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                   isSelected
-                    ? 'bg-slate-800 text-neon-lime border border-neon-lime/40 shadow-sm'
-                    : 'bg-slate-900/60 text-muted-gray hover:text-white border border-slate-800'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-neon-lime' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
                 <span>{sport.name}</span>
               </button>
             )
@@ -84,33 +84,33 @@ export default function HomePage() {
               return (
                 <div
                   key={entry.id}
-                  className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between hover:border-slate-700 transition-all"
+                  className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-slate-700 transition-all"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
                     <span
-                      className={`w-7 h-7 rounded-lg text-xs font-mono font-bold flex items-center justify-center shrink-0 ${
+                      className={`w-7 h-7 rounded-lg text-xs font-mono font-medium flex items-center justify-center shrink-0 ${
                         rank === 1
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                          : 'bg-slate-900 text-slate-400 border border-slate-800'
                       }`}
                     >
-                      {rank === 1 ? <Star className="w-3.5 h-3.5 fill-amber-400" /> : rank}
+                      {rank === 1 ? <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" /> : rank}
                     </span>
                     <div className="min-w-0">
-                      <div className="font-bold text-xs text-ice-white truncate">
+                      <div className="font-medium text-xs text-slate-200 truncate">
                         {entry.team?.name || 'Team'}
                       </div>
-                      <div className="text-[10px] text-muted-gray font-mono truncate">
+                      <div className="text-[11px] text-slate-400 truncate">
                         {entry.team?.department || 'CS Lab'}
                       </div>
                     </div>
                   </div>
 
                   <div className="text-right shrink-0 pl-2">
-                    <div className="text-base font-black font-mono text-neon-lime">
+                    <div className="text-base font-bold font-mono text-blue-400">
                       {entry.points} <span className="text-[10px] font-normal text-slate-500">PTS</span>
                     </div>
-                    <div className="text-[10px] text-muted-gray font-mono">
+                    <div className="text-[10px] text-slate-400 font-mono">
                       {entry.won}W - {entry.lost}L
                     </div>
                   </div>
@@ -119,13 +119,13 @@ export default function HomePage() {
             })}
           </div>
         ) : (
-          <div className="py-8 px-4 text-center rounded-2xl bg-slate-900/40 border border-dashed border-slate-800">
-            <p className="text-xs text-muted-gray font-mono">
+          <div className="py-8 px-4 text-center rounded-xl bg-slate-950/40 border border-dashed border-slate-800">
+            <p className="text-xs text-slate-400">
               No standings recorded yet for {activeSport?.name || 'this'} division.
             </p>
             <Link
               href="/leaderboards"
-              className="mt-2 inline-flex items-center space-x-1 text-xs font-mono text-cyber-cyan hover:underline"
+              className="mt-2 inline-flex items-center space-x-1 text-xs text-blue-400 hover:underline"
             >
               <span>Explore full leaderboard schedule &rarr;</span>
             </Link>

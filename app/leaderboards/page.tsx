@@ -8,7 +8,7 @@ export default function LeaderboardsPage({
 }) {
   return (
     <div className="py-2">
-      <Suspense fallback={<div className="text-muted-gray font-mono p-8 text-center">Loading Leaderboards...</div>}>
+      <Suspense fallback={<div className="text-slate-400 text-xs p-8 text-center">Loading Leaderboards...</div>}>
         <LeaderboardTable initialSportName={searchParams?.sport} />
       </Suspense>
     </div>

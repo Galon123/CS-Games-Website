@@ -43,23 +43,23 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
       {/* Header & Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-ice-white font-mono tracking-tight">
-            LEADERBOARDS & RANKINGS
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Tournament Standings
           </h1>
-          <p className="text-xs text-muted-gray mt-1">
-            Realtime tournament division standings synced across all {sports.length} events.
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Realtime standings and division points across all {sports.length} events.
           </p>
         </div>
 
         {/* Search Input */}
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-gray" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
             type="text"
             placeholder="Search teams or labs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 focus:border-cyber-cyan rounded-xl pl-9 pr-3 py-1.5 text-xs text-ice-white placeholder-slate-500 focus:outline-none"
+            className="w-full bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none transition-colors"
           />
         </div>
       </div>
@@ -75,13 +75,13 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
             <button
               key={sport.id}
               onClick={() => setSelectedSportId(sport.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-mono text-xs font-bold uppercase transition-all shrink-0 ${
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                 isSelected
-                  ? 'bg-slate-800 text-neon-lime border border-neon-lime/40 shadow-sm'
-                  : 'bg-slate-900/60 text-muted-gray hover:text-white border border-slate-800/80'
+                  ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+                  : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isSelected ? meta.colorClass : 'text-slate-400'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-400' : 'text-slate-400'}`} />
               <span>{sport.name}</span>
             </button>
           )
@@ -89,12 +89,12 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
       </div>
 
       {/* Table Card */}
-      <div className="bg-card border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-        <div className="px-6 py-3 border-b border-slate-800 flex items-center justify-between bg-slate-900/40 text-xs font-mono">
-          <span className="font-bold text-ice-white uppercase">
-            {activeSport?.name} DIVISION
+      <div className="bg-card border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between bg-slate-900/40 text-xs">
+          <span className="font-semibold text-slate-200 uppercase tracking-wide">
+            {activeSport?.name} Division Standings
           </span>
-          <span className="text-muted-gray">
+          <span className="text-slate-400">
             3 PTS Win • 1 PT Draw
           </span>
         </div>
@@ -102,19 +102,19 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-800/80 bg-slate-900/60 text-muted-gray font-mono uppercase">
-                <th className="py-3 px-4 w-12 text-center">#</th>
+              <tr className="border-b border-slate-800 bg-slate-900/60 text-slate-400 font-medium uppercase text-[11px]">
+                <th className="py-3 px-4 w-12 text-center">Rank</th>
                 <th className="py-3 px-2 w-8 text-center">Δ</th>
-                <th className="py-3 px-4">Squad / Laboratory</th>
+                <th className="py-3 px-4">Team / Laboratory</th>
                 <th className="py-3 px-3 text-center">Played</th>
                 <th className="py-3 px-3 text-center text-emerald-400">Won</th>
                 <th className="py-3 px-3 text-center text-slate-400">Drawn</th>
                 <th className="py-3 px-3 text-center text-rose-400">Lost</th>
-                <th className="py-3 px-4 text-center font-bold text-neon-lime">Points</th>
-                <th className="py-3 px-4 text-right">Action</th>
+                <th className="py-3 px-4 text-center font-semibold text-white">Points</th>
+                <th className="py-3 px-4 text-right">Roster</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className="divide-y divide-slate-800/60">
               {filteredEntries.length > 0 ? (
                 filteredEntries.map((entry, index) => {
                   const rank = index + 1
@@ -123,17 +123,17 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                   return (
                     <tr
                       key={entry.id}
-                      className="hover:bg-slate-800/40 transition-colors group"
+                      className="hover:bg-slate-800/30 transition-colors group"
                     >
                       {/* Rank */}
-                      <td className="py-3.5 px-4 text-center font-mono font-bold">
+                      <td className="py-3.5 px-4 text-center font-medium">
                         <span
-                          className={`inline-flex items-center justify-center w-6 h-6 rounded-md ${
+                          className={`inline-flex items-center justify-center w-6 h-6 rounded-md text-xs ${
                             rank === 1
-                              ? 'text-amber-400 bg-amber-950/40 border border-amber-500/40'
+                              ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30 font-bold'
                               : rank === 2
-                              ? 'text-slate-300 bg-slate-700/40'
-                              : 'text-slate-500'
+                              ? 'text-slate-300 bg-slate-800 font-semibold'
+                              : 'text-slate-400'
                           }`}
                         >
                           {rank === 1 ? <Star className="w-3 h-3 fill-amber-400" /> : rank}
@@ -143,11 +143,11 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                       {/* Rank Movement */}
                       <td className="py-3.5 px-2 text-center">
                         {entry.rankChange === 'up' ? (
-                          <span className="inline-flex text-neon-lime font-bold">
+                          <span className="inline-flex text-emerald-400 font-bold">
                             <ArrowUp className="w-3 h-3" />
                           </span>
                         ) : entry.rankChange === 'down' ? (
-                          <span className="inline-flex text-rose-500 font-bold">
+                          <span className="inline-flex text-rose-400 font-bold">
                             <ArrowDown className="w-3 h-3" />
                           </span>
                         ) : (
@@ -169,23 +169,23 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                             />
                           </div>
                           <div>
-                            <div className="font-bold text-ice-white group-hover:text-neon-lime transition-colors">
+                            <div className="font-semibold text-slate-100 group-hover:text-blue-400 transition-colors">
                               {team?.name || 'Team'}
                             </div>
-                            <div className="text-[11px] text-muted-gray">{team?.department}</div>
+                            <div className="text-[11px] text-slate-400">{team?.department}</div>
                           </div>
                         </div>
                       </td>
 
                       {/* Stats */}
                       <td className="py-3.5 px-3 text-center font-mono text-slate-300">{entry.played}</td>
-                      <td className="py-3.5 px-3 text-center font-mono font-semibold text-emerald-400">{entry.won}</td>
+                      <td className="py-3.5 px-3 text-center font-mono font-medium text-emerald-400">{entry.won}</td>
                       <td className="py-3.5 px-3 text-center font-mono text-slate-400">{entry.drawn}</td>
                       <td className="py-3.5 px-3 text-center font-mono text-rose-400">{entry.lost}</td>
 
                       {/* Points */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="font-mono font-black text-sm text-neon-lime px-2 py-0.5 rounded bg-neon-lime/10">
+                        <span className="font-mono font-bold text-sm text-white px-2.5 py-0.5 rounded bg-slate-800 border border-slate-700/60">
                           {entry.points}
                         </span>
                       </td>
@@ -194,7 +194,7 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                       <td className="py-3.5 px-4 text-right">
                         <Link
                           href={`/roster?team=${team?.id}`}
-                          className="inline-flex items-center space-x-1 text-[11px] text-muted-gray hover:text-white font-mono py-1 px-2 rounded bg-slate-800/80 hover:bg-slate-700 transition-colors"
+                          className="inline-flex items-center space-x-1.5 text-[11px] text-slate-300 hover:text-white font-medium py-1 px-2.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700/80"
                         >
                           <Users className="w-3 h-3" />
                           <span>Roster</span>
@@ -205,14 +205,14 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-muted-gray font-mono">
+                  <td colSpan={9} className="py-12 text-center text-slate-400">
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <Trophy className="w-8 h-8 text-slate-700" />
-                      <span className="text-slate-400 font-bold">
+                      <Trophy className="w-8 h-8 text-slate-600" />
+                      <span className="text-slate-300 font-medium">
                         No standings recorded yet for {activeSport?.name || 'this'} division.
                       </span>
                       <span className="text-[11px] text-slate-500">
-                        Matches or team registrations will populate rank metrics automatically.
+                        Matches or team enrollments will update standings automatically.
                       </span>
                     </div>
                   </td>

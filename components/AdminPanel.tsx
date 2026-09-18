@@ -549,21 +549,21 @@ END $$;`
   if (!isAdmin) {
     return (
       <div className="max-w-md mx-auto my-12">
-        <div className="bg-card border-2 border-slate-800 hover:border-neon-lime/40 rounded-3xl p-8 shadow-2xl space-y-6">
+        <div className="bg-card border border-slate-800 rounded-2xl p-8 shadow-md space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-neon-lime/10 border border-neon-lime/40 flex items-center justify-center shadow-neon-lime">
-              <Lock className="w-7 h-7 text-neon-lime" />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+              <Lock className="w-6 h-6 text-blue-500" />
             </div>
-            <h1 className="text-2xl font-black text-ice-white font-mono tracking-tight">
-              ADMIN CONTROL ACCESS
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              Admin Console Access
             </h1>
-            <p className="text-xs text-muted-gray">
-              Authorize to update live scores, adjust points, edit formations, and manage players.
+            <p className="text-xs text-slate-400">
+              Sign in to manage live fixtures, standings, team formations, and rosters.
             </p>
           </div>
 
           {authError && (
-            <div className="p-3 rounded-xl bg-red-950/70 border border-red-500/40 text-red-400 text-xs flex items-center space-x-2 font-mono">
+            <div className="p-3 rounded-lg bg-red-950/40 border border-red-500/30 text-red-300 text-xs flex items-center space-x-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{authError}</span>
             </div>
@@ -571,7 +571,7 @@ END $$;`
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-mono text-muted-gray uppercase mb-1">
+              <label className="block text-xs font-medium text-slate-300 mb-1">
                 Admin Email
               </label>
               <input
@@ -580,12 +580,12 @@ END $$;`
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@yourdomain.edu"
                 required
-                className="w-full bg-slate-900 border border-slate-700 focus:border-neon-lime rounded-xl px-4 py-2.5 text-sm text-ice-white font-mono focus:outline-none placeholder:text-slate-600"
+                className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none placeholder:text-slate-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-muted-gray uppercase mb-1">
+              <label className="block text-xs font-medium text-slate-300 mb-1">
                 Password
               </label>
               <input
@@ -594,28 +594,28 @@ END $$;`
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
                 required
-                className="w-full bg-slate-900 border border-slate-700 focus:border-neon-lime rounded-xl px-4 py-2.5 text-sm text-ice-white font-mono focus:outline-none placeholder:text-slate-600"
+                className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none placeholder:text-slate-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full py-3 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-bold font-mono text-sm tracking-wide shadow-neon-lime transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs tracking-wide shadow-sm transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               <Unlock className="w-4 h-4" />
-              <span>{isAuthenticating ? 'AUTHENTICATING...' : 'ENTER ADMIN CONSOLE'}</span>
+              <span>{isAuthenticating ? 'Authenticating...' : 'Sign In to Admin Console'}</span>
             </button>
           </form>
 
-          {/* Secure Admin Access Notice */}
-          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-1">
-            <span className="text-cyber-cyan font-mono font-bold flex items-center space-x-1.5">
-              <Shield className="w-3.5 h-3.5 text-cyber-cyan" />
+          {/* Admin Access Notice */}
+          <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-xs space-y-1">
+            <span className="text-slate-300 font-medium flex items-center space-x-1.5">
+              <Shield className="w-3.5 h-3.5 text-blue-400" />
               <span>Protected Tournament Administration</span>
             </span>
-            <p className="text-muted-gray text-[11px]">
-              Sign in with your administrator credentials to modify live match scorelines, calibrate division standings, assign formations, and enroll squad athletes.
+            <p className="text-slate-400 text-[11px] leading-relaxed">
+              Authorized credentials allow updating live scores, calibrated points, official 6v6 squad formations, and athlete enrollments.
             </p>
           </div>
         </div>
@@ -627,28 +627,27 @@ END $$;`
   return (
     <div className="space-y-6">
       {/* Admin Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-neon-lime text-slate-950 flex items-center justify-center shadow-neon-lime">
-            <Shield className="w-6 h-6" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-slate-800 p-5 rounded-2xl shadow-sm">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-blue-600/10 text-blue-500 border border-blue-500/20 flex items-center justify-center">
+            <Shield className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-2xl font-black text-ice-white font-mono tracking-tight">
-                ADMINISTRATION CONSOLE
+              <h1 className="text-xl font-bold text-white tracking-tight">
+                Administration Console
               </h1>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-neon-lime/20 text-neon-lime border border-neon-lime/40">
-                ACTIVE
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                Active Session
               </span>
             </div>
-            <p className="text-xs text-muted-gray mt-0.5">
-              Live tournament orchestration hub • Mode:{' '}
-              {isSupabaseLive ? 'Supabase Realtime Cloud' : 'Reactive Local State'}
+            <p className="text-xs text-slate-400 mt-0.5">
+              Tournament orchestration • {isSupabaseLive ? 'Supabase Realtime Sync' : 'Local State Mode'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           <button
             onClick={() => {
               if (confirm('Clean temporary cache and reset tournament data?')) {
@@ -656,16 +655,16 @@ END $$;`
                 notify('Temporary data cleaned and state refreshed.')
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700 flex items-center space-x-1.5 transition-all"
+            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-slate-700/80 flex items-center space-x-1.5 transition-all"
             title="Clean temporary cache and reset to fresh data"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Clean Data</span>
+            <span>Reset Cache</span>
           </button>
 
           <button
             onClick={() => setIsAdmin(false)}
-            className="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-xs font-mono font-bold text-rose-400 border border-rose-800/50 flex items-center space-x-1.5 transition-all"
+            className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-400 border border-rose-500/30 flex items-center space-x-1.5 transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Log Out</span>
@@ -675,96 +674,96 @@ END $$;`
 
       {/* Realtime Notification Banner */}
       {statusMessage && (
-        <div className="p-3.5 rounded-xl bg-neon-lime/20 border border-neon-lime/50 text-neon-lime text-xs font-mono font-bold flex items-center space-x-2 animate-in fade-in">
-          <CheckCircle className="w-4 h-4 shrink-0" />
+        <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center space-x-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
           <span>{statusMessage}</span>
         </div>
       )}
 
       {/* Admin Tab Navigation */}
-      <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar border-b border-slate-800 pb-2">
+      <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar border-b border-slate-800 pb-2">
         <button
           onClick={() => setActiveTab('teams')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'teams'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Shield className="w-4 h-4" />
+          <Shield className={`w-3.5 h-3.5 ${activeTab === 'teams' ? 'text-blue-400' : 'text-slate-400'}`} />
           <span>Teams & Squads ({teams.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('players')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'players'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Users className="w-4 h-4" />
+          <Users className={`w-3.5 h-3.5 ${activeTab === 'players' ? 'text-blue-400' : 'text-slate-400'}`} />
           <span>Player Roster ({players.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('matches')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'matches'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Radio className="w-4 h-4" />
-          <span>Live Matches & Scores ({matches.length})</span>
+          <Radio className={`w-3.5 h-3.5 ${activeTab === 'matches' ? 'text-blue-400' : 'text-slate-400'}`} />
+          <span>Matches & Scores ({matches.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('leaderboards')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'leaderboards'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Trophy className="w-4 h-4" />
+          <Trophy className={`w-3.5 h-3.5 ${activeTab === 'leaderboards' ? 'text-blue-400' : 'text-slate-400'}`} />
           <span>Leaderboard Points</span>
         </button>
 
         <button
           onClick={() => setActiveTab('tactics')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'tactics'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Crosshair className="w-4 h-4" />
-          <span>Team Formations</span>
+          <Crosshair className={`w-3.5 h-3.5 ${activeTab === 'tactics' ? 'text-blue-400' : 'text-slate-400'}`} />
+          <span>Formation Studio</span>
         </button>
 
         <button
           onClick={() => setActiveTab('sports')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'sports'
-              ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Sparkles className="w-4 h-4" />
-          <span>Divisions & Games ({sports.length})</span>
+          <Sparkles className={`w-3.5 h-3.5 ${activeTab === 'sports' ? 'text-blue-400' : 'text-slate-400'}`} />
+          <span>Divisions & Venues ({sports.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('supabase')}
-          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all shrink-0 ${
             activeTab === 'supabase'
-              ? 'bg-cyber-cyan text-slate-950 shadow-cyber-cyan'
-              : 'bg-slate-900 text-muted-gray hover:text-white border border-slate-800'
+              ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800/40'
           }`}
         >
-          <Database className="w-4 h-4" />
-          <span>Supabase SQL & Config</span>
+          <Database className={`w-3.5 h-3.5 ${activeTab === 'supabase' ? 'text-blue-400' : 'text-slate-400'}`} />
+          <span>Database & Migrations</span>
         </button>
       </div>
 
@@ -780,7 +779,7 @@ END $$;`
               <p className="mt-1 text-slate-300">{supabaseError}</p>
               <button
                 onClick={() => setActiveTab('supabase')}
-                className="mt-2 inline-flex items-center space-x-1.5 text-cyber-cyan hover:text-white font-bold underline cursor-pointer"
+                className="mt-2 inline-flex items-center space-x-1.5 text-blue-400 hover:text-blue-300 font-medium underline cursor-pointer"
               >
                 <span>View & Copy 1-Click Permissions Fix in Supabase Tab &rarr;</span>
               </button>
@@ -797,9 +796,9 @@ END $$;`
       ) : supabaseConnected ? (
         <div className="px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-neon-lime animate-pulse" />
-            <span className="font-bold">SUPABASE REALTIME SYNC ACTIVE</span>
-            <span className="text-slate-400">• Changes immediately persist to database & broadcast live</span>
+            <span className="w-2 rounded-full h-2 bg-emerald-400 animate-pulse" />
+            <span className="font-semibold text-slate-200">Supabase Realtime Sync Active</span>
+            <span className="text-slate-400">• Changes persist directly to database</span>
           </div>
           <button
             onClick={() => refreshSupabaseData()}
@@ -815,34 +814,34 @@ END $$;`
       {activeTab === 'matches' && (
         <div className="space-y-6">
           {/* Schedule Match Card */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-ice-white font-mono text-sm uppercase flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-neon-lime" />
-                <span>SCHEDULE NEW TOURNAMENT MATCH</span>
+              <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
+                <Plus className="w-4 h-4 text-blue-400" />
+                <span>Schedule New Tournament Match</span>
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 font-bold uppercase">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase">
                 Match Scheduler
               </span>
             </div>
 
             {teamsInMatchSport.length < 2 ? (
-              <div className="p-4 rounded-xl bg-slate-900/90 border border-amber-500/30 text-xs font-mono space-y-2">
-                <div className="flex items-center space-x-2 text-amber-400 font-bold">
+              <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 text-xs space-y-2">
+                <div className="flex items-center space-x-2 text-amber-400 font-medium">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>
                     Need at least 2 teams in{' '}
                     {sports.find((s) => s.id === newMatchSportId)?.name || 'this event'} to schedule a match.
                   </span>
                 </div>
-                <p className="text-muted-gray text-[11px]">
+                <p className="text-slate-400 text-[11px]">
                   There are currently {teamsInMatchSport.length} team(s) enrolled in this division.
                 </p>
                 <div className="flex items-center space-x-3 pt-1">
                   <select
                     value={newMatchSportId}
                     onChange={(e) => setNewMatchSportId(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     {sports.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -852,7 +851,7 @@ END $$;`
                   </select>
                   <button
                     onClick={() => setActiveTab('teams')}
-                    className="px-3 py-1.5 rounded-lg bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-bold text-xs transition-all"
+                    className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-all shadow-sm"
                   >
                     Go to Teams & Squads Tab →
                   </button>
@@ -861,13 +860,13 @@ END $$;`
             ) : (
               <form onSubmit={handleScheduleMatch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                     Event / Sport
                   </label>
                   <select
                     value={newMatchSportId}
                     onChange={(e) => setNewMatchSportId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     {sports.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -878,13 +877,13 @@ END $$;`
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                     Team A (Home)
                   </label>
                   <select
                     value={newMatchTeamAId}
                     onChange={(e) => setNewMatchTeamAId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     {teamsInMatchSport.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -895,26 +894,24 @@ END $$;`
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                     Team B (Away)
                   </label>
                   <select
                     value={newMatchTeamBId}
                     onChange={(e) => setNewMatchTeamBId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
-                    {teamsInMatchSport
-                      .filter((t) => t.id !== newMatchTeamAId)
-                      .map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.name}
-                        </option>
-                      ))}
+                    {teamsInMatchSport.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                     Match Venue
                   </label>
                   <input
@@ -922,18 +919,18 @@ END $$;`
                     placeholder="e.g. Main Turf Stadium"
                     value={newMatchVenue}
                     onChange={(e) => setNewMatchVenue(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                     Match Status
                   </label>
                   <select
                     value={newMatchStatus}
                     onChange={(e) => setNewMatchStatus(e.target.value as MatchStatus)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="upcoming">Upcoming</option>
                     <option value="live">Live</option>
@@ -945,9 +942,9 @@ END $$;`
                   <button
                     type="submit"
                     disabled={isSubmittingMatch}
-                    className="w-full py-2 px-4 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 text-xs font-mono font-bold tracking-wider shadow-neon-lime transition-all disabled:opacity-50"
+                    className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
                   >
-                    {isSubmittingMatch ? 'SCHEDULING...' : '+ SCHEDULE MATCH'}
+                    {isSubmittingMatch ? 'Scheduling...' : '+ Schedule Match'}
                   </button>
                 </div>
               </form>
@@ -956,18 +953,18 @@ END $$;`
 
           {/* Matches List */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-muted-gray font-mono">
-              <span>SCHEDULED FIXTURES & LIVE CLASHES ({matches.length})</span>
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-semibold uppercase tracking-wide text-slate-300">Scheduled Fixtures & Live Matches ({matches.length})</span>
               <span>Changes sync instantly across all clients</span>
             </div>
 
             {matches.length === 0 ? (
-              <div className="py-12 text-center rounded-2xl bg-card border border-dashed border-slate-800 space-y-2">
+              <div className="py-12 text-center rounded-xl bg-card border border-dashed border-slate-800 space-y-2">
                 <Radio className="w-8 h-8 text-slate-600 mx-auto" />
-                <div className="font-mono text-xs font-bold text-slate-300">
+                <div className="text-xs font-medium text-slate-300">
                   No matches currently scheduled.
                 </div>
-                <p className="text-[11px] text-muted-gray font-mono">
+                <p className="text-[11px] text-slate-400">
                   Use the scheduler above to create matches between enrolled teams.
                 </p>
               </div>
@@ -976,12 +973,12 @@ END $$;`
                 {matches.map((match) => (
                   <div
                     key={match.id}
-                    className="bg-card border border-slate-800 rounded-2xl p-5 space-y-4 shadow-lg"
+                    className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm"
                   >
                     {/* Match Header */}
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-neon-lime uppercase px-2 py-0.5 rounded bg-neon-lime/10">
-                        {match.sport?.name || 'SPORT'}
+                      <span className="text-xs font-semibold text-blue-400 uppercase px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                        {match.sport?.name || 'Sport'}
                       </span>
                       <div className="flex items-center space-x-2">
                         {/* Status Dropdown */}
@@ -992,17 +989,17 @@ END $$;`
                             updateMatchScore(match.id, match.team_a_score, match.team_b_score, newStatus)
                             notify(`Match status changed to ${newStatus.toUpperCase()}`)
                           }}
-                          className={`text-xs font-mono font-bold px-2 py-1 rounded border focus:outline-none ${
+                          className={`text-xs font-medium px-2 py-1 rounded border focus:outline-none ${
                             match.status === 'live'
-                              ? 'bg-red-950/80 border-red-500/50 text-red-400'
+                              ? 'bg-red-500/10 border-red-500/30 text-red-400'
                               : match.status === 'completed'
                               ? 'bg-slate-800 border-slate-700 text-slate-300'
-                              : 'bg-cyan-950/80 border-cyber-cyan/40 text-cyber-cyan'
+                              : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
                           }`}
                         >
-                          <option value="upcoming">UPCOMING</option>
-                          <option value="live">LIVE</option>
-                          <option value="completed">COMPLETED</option>
+                          <option value="upcoming">Upcoming</option>
+                          <option value="live">Live</option>
+                          <option value="completed">Completed</option>
                         </select>
 
                         <button
@@ -1016,10 +1013,10 @@ END $$;`
                     </div>
 
                     {/* Score Controls */}
-                    <div className="grid grid-cols-7 items-center gap-2 bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+                    <div className="grid grid-cols-7 items-center gap-2 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
                       {/* Team A */}
                       <div className="col-span-3 text-center">
-                        <div className="font-bold text-sm text-ice-white truncate">
+                        <div className="font-semibold text-sm text-white truncate">
                           {match.team_a?.name || 'Team A'}
                         </div>
                         <div className="flex items-center justify-center space-x-2 mt-2">
@@ -1031,11 +1028,11 @@ END $$;`
                                 match.team_b_score
                               )
                             }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-ice-white font-bold"
+                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
                           >
                             -
                           </button>
-                          <span className="text-2xl font-black font-mono text-neon-lime min-w-[32px]">
+                          <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
                             {match.team_a_score}
                           </span>
                           <button
@@ -1046,7 +1043,7 @@ END $$;`
                                 match.team_b_score
                               )
                             }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-neon-lime font-bold"
+                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
                           >
                             +
                           </button>
@@ -1054,13 +1051,13 @@ END $$;`
                       </div>
 
                       {/* VS Divider */}
-                      <div className="col-span-1 text-center font-mono text-xs text-muted-gray">
+                      <div className="col-span-1 text-center text-xs text-slate-500 font-medium">
                         VS
                       </div>
 
                       {/* Team B */}
                       <div className="col-span-3 text-center">
-                        <div className="font-bold text-sm text-ice-white truncate">
+                        <div className="font-semibold text-sm text-white truncate">
                           {match.team_b?.name || 'Team B'}
                         </div>
                         <div className="flex items-center justify-center space-x-2 mt-2">
@@ -1072,11 +1069,11 @@ END $$;`
                                 Math.max(0, match.team_b_score - 1)
                               )
                             }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-ice-white font-bold"
+                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
                           >
                             -
                           </button>
-                          <span className="text-2xl font-black font-mono text-cyber-cyan min-w-[32px]">
+                          <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
                             {match.team_b_score}
                           </span>
                           <button
@@ -1087,7 +1084,7 @@ END $$;`
                                 match.team_b_score + 1
                               )
                             }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyber-cyan font-bold"
+                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
                           >
                             +
                           </button>
@@ -1095,9 +1092,9 @@ END $$;`
                       </div>
                     </div>
 
-                    <div className="text-[11px] text-muted-gray font-mono flex items-center justify-between">
+                    <div className="text-[11px] text-slate-400 flex items-center justify-between">
                       <span>Venue: {match.venue || 'Arena Court'}</span>
-                      <span className="text-neon-lime">Auto-persisted</span>
+                      <span className="text-emerald-400 text-[10px]">Synced</span>
                     </div>
                   </div>
                 ))}
@@ -1111,26 +1108,26 @@ END $$;`
       {activeTab === 'teams' && (
         <div className="space-y-6">
           {/* Enroll Team Form Card */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-ice-white font-mono text-sm uppercase flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-neon-lime" />
-                <span>ENROLL NEW TEAM IN AN EVENT</span>
+              <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
+                <Plus className="w-4 h-4 text-blue-400" />
+                <span>Enroll New Team in an Event</span>
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 font-bold uppercase">
-                Self-Service Team Enrollment
+              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase">
+                Team Enrollment
               </span>
             </div>
 
             <form onSubmit={handleAddTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                   Event / Sport
                 </label>
                 <select
                   value={newTeamSportId}
                   onChange={(e) => setNewTeamSportId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 >
                   {sports.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -1141,7 +1138,7 @@ END $$;`
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                   Team / Squad Name
                 </label>
                 <input
@@ -1150,12 +1147,12 @@ END $$;`
                   value={newTeamName}
                   onChange={(e) => setNewTeamName(e.target.value)}
                   required
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                   Department / Lab
                 </label>
                 <input
@@ -1163,12 +1160,12 @@ END $$;`
                   placeholder="e.g. CS AI & Robotics Lab"
                   value={newTeamDept}
                   onChange={(e) => setNewTeamDept(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                   Team Manager / Coach
                 </label>
                 <input
@@ -1176,12 +1173,12 @@ END $$;`
                   placeholder="e.g. Prof. Alan Turing"
                   value={newTeamManager}
                   onChange={(e) => setNewTeamManager(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
                   Initial Formation
                 </label>
                 <input
@@ -1189,7 +1186,7 @@ END $$;`
                   placeholder="e.g. 2-2-1 or Duo"
                   value={newTeamFormation}
                   onChange={(e) => setNewTeamFormation(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
 
@@ -1197,22 +1194,22 @@ END $$;`
                 <button
                   type="submit"
                   disabled={isSubmittingTeam}
-                  className="w-full py-2 px-4 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 text-xs font-mono font-bold tracking-wider shadow-neon-lime transition-all disabled:opacity-50"
+                  className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
                 >
-                  {isSubmittingTeam ? 'ENROLLING...' : '+ ENROLL TEAM'}
+                  {isSubmittingTeam ? 'Enrolling...' : '+ Enroll Team'}
                 </button>
               </div>
             </form>
           </div>
 
           {/* Registered Teams List with Event Filtering */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-bold text-ice-white font-mono text-sm uppercase">
-                  REGISTERED TEAMS & LABS ({teams.length})
+                <h3 className="font-semibold text-white text-sm uppercase tracking-wide">
+                  Registered Teams & Labs ({teams.length})
                 </h3>
-                <p className="text-xs text-muted-gray font-mono">
+                <p className="text-xs text-slate-400">
                   Manage active squads and their associated rosters across all tournament divisions.
                 </p>
               </div>
@@ -1221,10 +1218,10 @@ END $$;`
               <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar">
                 <button
                   onClick={() => setTeamFilterSportId('all')}
-                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase transition-all ${
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                     teamFilterSportId === 'all'
-                      ? 'bg-slate-800 text-neon-lime border border-neon-lime/40'
-                      : 'bg-slate-900/80 text-muted-gray hover:text-white border border-slate-800'
+                      ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+                      : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800/80'
                   }`}
                 >
                   All ({teams.length})
@@ -1235,10 +1232,10 @@ END $$;`
                     <button
                       key={sport.id}
                       onClick={() => setTeamFilterSportId(sport.id)}
-                      className={`px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase transition-all shrink-0 ${
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-all shrink-0 ${
                         teamFilterSportId === sport.id
-                          ? 'bg-slate-800 text-neon-lime border border-neon-lime/40'
-                          : 'bg-slate-900/80 text-muted-gray hover:text-white border border-slate-800'
+                          ? 'bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm'
+                          : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800/80'
                       }`}
                     >
                       {sport.name} ({count})
@@ -1256,12 +1253,12 @@ END $$;`
 
               if (displayTeams.length === 0) {
                 return (
-                  <div className="py-12 text-center rounded-2xl bg-slate-900/50 border border-dashed border-slate-800 space-y-2">
+                  <div className="py-12 text-center rounded-xl bg-slate-900/50 border border-dashed border-slate-800 space-y-2">
                     <Shield className="w-8 h-8 text-slate-600 mx-auto" />
-                    <div className="font-mono text-xs font-bold text-slate-300">
+                    <div className="text-xs font-medium text-slate-300">
                       No teams registered in this division yet.
                     </div>
-                    <p className="text-[11px] text-muted-gray font-mono">
+                    <p className="text-[11px] text-slate-400">
                       Use the form above to enroll a squad into {sports.find((s) => s.id === teamFilterSportId)?.name || 'the tournament'}.
                     </p>
                   </div>
@@ -1276,7 +1273,7 @@ END $$;`
                     return (
                       <div
                         key={team.id}
-                        className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start justify-between hover:border-slate-700 transition-all gap-2"
+                        className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start justify-between hover:border-slate-700 transition-all gap-2"
                       >
                         <div className="flex items-start space-x-3 min-w-0 flex-1">
                           <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0 mt-0.5">
@@ -1287,15 +1284,15 @@ END $$;`
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="font-bold text-xs text-ice-white truncate">
+                            <div className="font-semibold text-xs text-white truncate">
                               {team.name}
                             </div>
-                            <div className="text-[10px] text-muted-gray truncate font-mono">
+                            <div className="text-[10px] text-slate-400 truncate">
                               {team.department}
                             </div>
 
                             {/* Manager Inline Management */}
-                            <div className="text-[10px] font-mono text-slate-300 mt-1">
+                            <div className="text-[10px] text-slate-300 mt-1">
                               {editingManagerTeamId === team.id ? (
                                 <div className="flex items-center space-x-1 pt-0.5">
                                   <input
@@ -1303,7 +1300,7 @@ END $$;`
                                     value={tempManagerName}
                                     onChange={(e) => setTempManagerName(e.target.value)}
                                     placeholder="Manager Name"
-                                    className="bg-slate-950 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-white focus:outline-none focus:border-neon-lime w-28"
+                                    className="bg-slate-950 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-white focus:outline-none focus:border-blue-500 w-28"
                                   />
                                   <button
                                     onClick={async () => {
@@ -1311,7 +1308,7 @@ END $$;`
                                       setEditingManagerTeamId(null)
                                       notify(`Updated manager for ${team.name}`)
                                     }}
-                                    className="px-1.5 py-0.5 rounded bg-neon-lime text-slate-950 font-bold text-[9px]"
+                                    className="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-[9px]"
                                   >
                                     Save
                                   </button>
@@ -1324,8 +1321,8 @@ END $$;`
                                 </div>
                               ) : (
                                 <div className="flex items-center space-x-1.5">
-                                  <span className="text-muted-gray">👔 Mgr:</span>
-                                  <span className="text-ice-white font-semibold truncate max-w-[110px]">
+                                  <span className="text-slate-400">👔 Mgr:</span>
+                                  <span className="text-white font-medium truncate max-w-[110px]">
                                     {team.manager || <span className="text-slate-500 italic">None</span>}
                                   </span>
                                   <button
@@ -1333,7 +1330,7 @@ END $$;`
                                       setEditingManagerTeamId(team.id)
                                       setTempManagerName(team.manager || '')
                                     }}
-                                    className="text-cyber-cyan hover:underline text-[9px] ml-1"
+                                    className="text-blue-400 hover:underline text-[9px] ml-1"
                                   >
                                     Edit
                                   </button>
@@ -1342,10 +1339,10 @@ END $$;`
                             </div>
 
                             <div className="flex items-center space-x-2 mt-1.5">
-                              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-neon-lime border border-slate-700">
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-400 border border-slate-700">
                                 {sport?.name || 'Sport'}
                               </span>
-                              <span className="text-[9px] font-mono text-muted-gray">
+                              <span className="text-[9px] text-slate-400">
                                 {roster.length} Athletes
                               </span>
                             </div>
@@ -1370,35 +1367,41 @@ END $$;`
       )}
 
       {/* TAB 2: LEADERBOARDS ADJUSTER */}
+      {/* TAB 2: LEADERBOARDS ADJUSTER */}
       {activeTab === 'leaderboards' && (
-        <div className="bg-card border border-slate-800 rounded-2xl overflow-hidden p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-ice-white font-mono text-sm uppercase">
-              STANDINGS POINTS & STATS CONTROLLER
-            </h3>
-            <span className="text-xs text-muted-gray font-mono">
-              Direct modifications apply instantly to the public standings page.
+        <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h3 className="font-semibold text-white text-sm">
+                Standings Points & Stats Controller
+              </h3>
+              <p className="text-xs text-slate-400">
+                Direct modifications apply instantly to the public standings page.
+              </p>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">
+              {leaderboards.length} entries recorded
             </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs font-mono">
+            <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/60 text-muted-gray uppercase">
+                <tr className="border-b border-slate-800 bg-slate-900/80 text-slate-400 uppercase text-[11px] font-semibold">
                   <th className="py-3 px-3">Team / Lab</th>
                   <th className="py-3 px-2 text-center">Played</th>
                   <th className="py-3 px-2 text-center">Won</th>
                   <th className="py-3 px-2 text-center">Drawn</th>
                   <th className="py-3 px-2 text-center">Lost</th>
-                  <th className="py-3 px-2 text-center text-neon-lime">Points</th>
+                  <th className="py-3 px-2 text-center text-blue-400">Points</th>
                   <th className="py-3 px-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {leaderboards.length > 0 ? (
                   leaderboards.map((entry) => (
-                    <tr key={entry.id} className="hover:bg-slate-900/40">
-                      <td className="py-3 px-3 font-bold text-ice-white">
+                    <tr key={entry.id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3 px-3 font-medium text-slate-200">
                         {entry.team?.name || 'Team'}
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -1409,7 +1412,7 @@ END $$;`
                           onChange={(e) =>
                             updateLeaderboard(entry.id, { played: Number(e.target.value) })
                           }
-                          className="w-12 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center text-ice-white"
+                          className="w-12 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-center text-slate-200 font-mono focus:outline-none focus:border-blue-500"
                         />
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -1420,7 +1423,7 @@ END $$;`
                           onChange={(e) =>
                             updateLeaderboard(entry.id, { won: Number(e.target.value) })
                           }
-                          className="w-12 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center text-emerald-400 font-bold"
+                          className="w-12 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-center text-emerald-400 font-medium font-mono focus:outline-none focus:border-blue-500"
                         />
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -1431,7 +1434,7 @@ END $$;`
                           onChange={(e) =>
                             updateLeaderboard(entry.id, { drawn: Number(e.target.value) })
                           }
-                          className="w-12 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center text-slate-300"
+                          className="w-12 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-center text-slate-300 font-mono focus:outline-none focus:border-blue-500"
                         />
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -1442,7 +1445,7 @@ END $$;`
                           onChange={(e) =>
                             updateLeaderboard(entry.id, { lost: Number(e.target.value) })
                           }
-                          className="w-12 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center text-rose-400 font-bold"
+                          className="w-12 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-center text-rose-400 font-medium font-mono focus:outline-none focus:border-blue-500"
                         />
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -1453,34 +1456,34 @@ END $$;`
                           onChange={(e) =>
                             updateLeaderboard(entry.id, { points: Number(e.target.value) })
                           }
-                          className="w-14 bg-slate-900 border border-neon-lime/40 rounded px-1.5 py-1 text-center text-neon-lime font-black text-sm"
+                          className="w-14 bg-slate-950 border border-blue-500/40 rounded-md px-1.5 py-1 text-center text-blue-400 font-bold font-mono text-sm focus:outline-none focus:border-blue-500"
                         />
                       </td>
                       <td className="py-3 px-3 text-right">
                         <button
                           onClick={() => notify(`Updated stats for ${entry.team?.name}`)}
-                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-neon-lime hover:text-slate-950 text-slate-300 text-[11px] font-bold transition-all"
+                          className="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 text-xs font-medium transition-colors"
                         >
-                          Saved
+                          Save
                         </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-muted-gray font-mono">
+                    <td colSpan={7} className="py-12 text-center text-slate-400">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <Trophy className="w-8 h-8 text-slate-700 mx-auto" />
-                        <span className="text-slate-400 font-bold">
+                        <Trophy className="w-8 h-8 text-slate-600 mx-auto" />
+                        <span className="text-slate-300 font-medium text-sm">
                           No standings recorded yet across tournament divisions.
                         </span>
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-xs text-slate-500">
                           Enrolling teams under &apos;Teams &amp; Squads&apos; automatically initializes them on the leaderboard.
                         </span>
                         <button
                           type="button"
                           onClick={() => setActiveTab('teams')}
-                          className="mt-2 px-3.5 py-1.5 rounded-lg bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-bold text-xs"
+                          className="mt-2 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
                         >
                           Enroll a Team Now →
                         </button>
@@ -1496,35 +1499,35 @@ END $$;`
 
       {/* TAB 3: SCALABLE TACTICAL FORMATION STUDIO */}
       {activeTab === 'tactics' && (
-        <div className="bg-card border border-slate-800 rounded-3xl p-6 space-y-6">
+        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
             <div>
-              <h3 className="font-bold text-ice-white font-mono text-base uppercase flex items-center space-x-2">
-                <Crosshair className="w-5 h-5 text-neon-lime" />
-                <span>SCALABLE TACTICAL FORMATION STUDIO</span>
+              <h3 className="font-semibold text-white text-base flex items-center space-x-2">
+                <Crosshair className="w-5 h-5 text-blue-500" />
+                <span>Tactical Formation Studio</span>
               </h3>
-              <p className="text-xs text-muted-gray mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Design, preview, and publish dynamic formations. Supports standard presets, custom line tiers, and tactical modifiers.
               </p>
             </div>
-            <span className="text-xs font-mono text-neon-lime bg-neon-lime/10 px-3 py-1 rounded-full border border-neon-lime/30 font-bold self-start">
-              AUTHORITATIVE ADMIN ENGINE
+            <span className="text-xs font-mono text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 font-medium self-start">
+              Admin Engine
             </span>
           </div>
 
           {footballTeams.length === 0 ? (
-            <div className="py-16 text-center rounded-2xl bg-slate-900/40 border border-dashed border-slate-800 space-y-3">
+            <div className="py-16 text-center rounded-xl bg-slate-900/40 border border-dashed border-slate-800 space-y-3">
               <Crosshair className="w-10 h-10 text-slate-600 mx-auto" />
-              <div className="font-mono text-sm font-bold text-slate-200">
-                NO FOOTBALL TEAMS REGISTERED YET
+              <div className="text-sm font-semibold text-slate-200">
+                No football teams registered yet
               </div>
-              <p className="text-xs text-muted-gray max-w-sm mx-auto font-mono">
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 Enroll a team under the Football division in the Teams &amp; Squads tab to calibrate tactical coordinates, formations, and pitch depth.
               </p>
               <button
                 type="button"
                 onClick={() => setActiveTab('teams')}
-                className="px-4 py-2 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-bold text-xs font-mono transition-all"
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
               >
                 Go to Teams &amp; Squads Tab →
               </button>
@@ -1533,7 +1536,7 @@ END $$;`
             <>
               {/* 1. Target Team Selector */}
               <div className="space-y-2">
-                <label className="block text-xs font-mono uppercase text-muted-gray">
+                <label className="block text-xs uppercase text-slate-400 font-medium">
                   1. Select Team to Configure
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1549,13 +1552,13 @@ END $$;`
                         }}
                         className={`p-3 rounded-xl text-left border transition-all ${
                           isSelected
-                            ? 'bg-slate-800 border-neon-lime shadow-neon-lime'
-                            : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                            ? 'bg-blue-600/10 border-blue-500 shadow-sm'
+                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
                         }`}
                       >
-                        <div className="font-bold text-xs text-ice-white truncate">{team.name}</div>
-                        <div className="text-[11px] font-mono text-neon-lime mt-1 flex items-center space-x-1">
-                          <span>Current: {team.formation || '2-2-1'}</span>
+                        <div className="font-semibold text-xs text-white truncate">{team.name}</div>
+                        <div className="text-[11px] font-mono text-blue-400 mt-1 flex items-center space-x-1">
+                          <span>Shape: {team.formation || '2-2-1'}</span>
                         </div>
                       </button>
                     )
@@ -1570,7 +1573,7 @@ END $$;`
                   {/* Preset Formation Library */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono uppercase text-muted-gray">
+                      <span className="text-xs uppercase text-slate-400 font-medium">
                         2. 6v6 Tactical Presets Library (1 GK + 5 Outfielders)
                       </span>
                     </div>
@@ -1578,7 +1581,7 @@ END $$;`
                     <div className="space-y-2.5">
                       {/* 2 at the back */}
                       <div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">2 Defenders</span>
+                        <span className="text-[11px] text-slate-400 font-medium uppercase">2 Defenders</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {['2-2-1', '2-1-2', '2-3-0'].map((fmt) => (
                             <button
@@ -1587,10 +1590,10 @@ END $$;`
                                 setSelectedFormationString(fmt)
                                 setCustomFormationInput(fmt)
                               }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors ${
                                 selectedFormationString === fmt
-                                  ? 'bg-neon-lime text-slate-950 shadow-neon-lime font-black'
-                                  : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
                               }`}
                             >
                               {fmt}
@@ -1601,7 +1604,7 @@ END $$;`
 
                       {/* 3 at the back */}
                       <div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">3 Defenders</span>
+                        <span className="text-[11px] text-slate-400 font-medium uppercase">3 Defenders</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {['3-1-1', '3-2-0'].map((fmt) => (
                             <button
@@ -1610,10 +1613,10 @@ END $$;`
                                 setSelectedFormationString(fmt)
                                 setCustomFormationInput(fmt)
                               }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors ${
                                 selectedFormationString === fmt
-                                  ? 'bg-neon-lime text-slate-950 shadow-neon-lime font-black'
-                                  : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
                               }`}
                             >
                               {fmt}
@@ -1624,7 +1627,7 @@ END $$;`
 
                       {/* 1 at the back */}
                       <div>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">1 Defender (Sweeper / Anchor)</span>
+                        <span className="text-[11px] text-slate-400 font-medium uppercase">1 Defender (Sweeper / Anchor)</span>
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {['1-3-1', '1-2-2'].map((fmt) => (
                             <button
@@ -1633,10 +1636,10 @@ END $$;`
                                 setSelectedFormationString(fmt)
                                 setCustomFormationInput(fmt)
                               }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors ${
                                 selectedFormationString === fmt
-                                  ? 'bg-neon-lime text-slate-950 shadow-neon-lime font-black'
-                                  : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
                               }`}
                             >
                               {fmt}
@@ -1648,13 +1651,13 @@ END $$;`
                   </div>
 
                   {/* Custom Arbitrary Formation Input */}
-                  <div className="space-y-2 p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
-                    <span className="text-xs font-mono uppercase text-cyber-cyan font-bold flex items-center space-x-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-cyber-cyan" />
+                  <div className="space-y-2 p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <span className="text-xs uppercase text-blue-400 font-semibold flex items-center space-x-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                       <span>3. Custom Formation Builder (Any Shape)</span>
                     </span>
-                    <p className="text-[11px] text-muted-gray">
-                      Type any custom tier breakdown (e.g. <code className="text-neon-lime">2-2-1</code>, <code className="text-neon-lime">2-1-2</code>, <code className="text-neon-lime">1-3-1</code>, <code className="text-neon-lime">3-1-1</code>). Coordinates are dynamically generated!
+                    <p className="text-xs text-slate-400">
+                      Type any custom tier breakdown (e.g. <code className="text-blue-400 font-mono">2-2-1</code>, <code className="text-blue-400 font-mono">2-1-2</code>, <code className="text-blue-400 font-mono">1-3-1</code>, <code className="text-blue-400 font-mono">3-1-1</code>). Coordinates are dynamically generated!
                     </p>
 
                     <div className="flex items-center space-x-3 pt-1">
@@ -1668,7 +1671,7 @@ END $$;`
                           }
                         }}
                         placeholder="e.g. 2-2-1"
-                        className="w-36 bg-slate-950 border border-slate-700 focus:border-cyber-cyan rounded-xl px-3 py-2 text-sm text-ice-white font-mono font-bold focus:outline-none"
+                        className="w-36 bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white font-mono font-semibold focus:outline-none"
                       />
 
                       <button
@@ -1678,7 +1681,7 @@ END $$;`
                             notify(`Tactical shape updated to ${customFormationInput.trim()}`)
                           }
                         }}
-                        className="px-4 py-2 rounded-xl bg-cyber-cyan hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold"
+                        className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors"
                       >
                         Apply Shape
                       </button>
@@ -1686,20 +1689,20 @@ END $$;`
                   </div>
 
                   {/* Tactical Sliders / Modifiers */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950/60 border border-slate-800">
                     {/* Defensive Line Height */}
                     <div className="space-y-2">
-                      <span className="text-xs font-mono text-muted-gray uppercase block">
+                      <span className="text-xs text-slate-400 font-medium uppercase block">
                         Defensive Line Depth
                       </span>
-                      <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                      <div className="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
                         {(['low', 'mid', 'high'] as const).map((level) => (
                           <button
                             key={level}
                             onClick={() => setDefensiveLineHeight(level)}
-                            className={`py-1.5 rounded-lg text-xs font-mono uppercase font-bold transition-all ${
+                            className={`py-1.5 rounded-md text-xs uppercase font-medium transition-all ${
                               defensiveLineHeight === level
-                                ? 'bg-slate-800 text-neon-lime border border-neon-lime/40'
+                                ? 'bg-blue-600 text-white shadow-sm'
                                 : 'text-slate-400 hover:text-white'
                             }`}
                           >
@@ -1711,17 +1714,17 @@ END $$;`
 
                     {/* Pitch Width */}
                     <div className="space-y-2">
-                      <span className="text-xs font-mono text-muted-gray uppercase block">
+                      <span className="text-xs text-slate-400 font-medium uppercase block">
                         Team Width Stance
                       </span>
-                      <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                      <div className="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
                         {(['narrow', 'standard', 'wide'] as const).map((width) => (
                           <button
                             key={width}
                             onClick={() => setPitchWidthSetting(width)}
-                            className={`py-1.5 rounded-lg text-xs font-mono uppercase font-bold transition-all ${
+                            className={`py-1.5 rounded-md text-xs uppercase font-medium transition-all ${
                               pitchWidthSetting === width
-                                ? 'bg-slate-800 text-cyber-cyan border border-cyber-cyan/40'
+                                ? 'bg-blue-600 text-white shadow-sm'
                                 : 'text-slate-400 hover:text-white'
                             }`}
                           >
@@ -1746,31 +1749,31 @@ END $$;`
                       const team = footballTeams.find((t) => t.id === formationTeamId)
                       notify(`✅ Updated ${team?.name} formation to ${selectedFormationString} & recalculated pitch matrix!`)
                     }}
-                    className="w-full py-3.5 rounded-2xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-mono font-black text-sm tracking-wider shadow-neon-lime transition-all flex items-center justify-center space-x-2"
+                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors flex items-center justify-center space-x-2"
                   >
                     <Save className="w-4 h-4" />
-                    <span>PUBLISH FORMATION & SYNC MATRIX</span>
+                    <span>Publish Formation &amp; Sync Matrix</span>
                   </button>
                 </div>
 
                 {/* Right Pitch Preview (5 cols) */}
                 <div className="lg:col-span-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono uppercase text-muted-gray">
+                    <span className="text-xs uppercase text-slate-400 font-medium">
                       Live Field Matrix Preview
                     </span>
-                    <span className="text-[11px] font-mono text-neon-lime font-bold">
+                    <span className="text-xs font-mono text-blue-400 font-semibold">
                       {selectedFormationString} ({outfieldCount + 1} players)
                     </span>
                   </div>
 
-                  <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl tactical-pitch">
-                    {/* Tactical Markings */}
-                    <div className="absolute inset-3 border border-emerald-400/30 rounded pointer-events-none">
-                      <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-emerald-400/30 -translate-y-1/2" />
-                      <div className="absolute top-1/2 left-1/2 w-20 h-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/30" />
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-12 border-b border-x border-emerald-400/30 rounded-b" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-12 border-t border-x border-emerald-400/30 rounded-t" />
+                  <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-slate-800 shadow-lg tactical-pitch">
+                    {/* Tactical Regulation Markings */}
+                    <div className="absolute inset-3 border border-white/20 rounded pointer-events-none">
+                      <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20 -translate-y-1/2" />
+                      <div className="absolute top-1/2 left-1/2 w-16 h-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20" />
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-10 border-b border-x border-white/20 rounded-b" />
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-10 border-t border-x border-white/20 rounded-t" />
                     </div>
 
                     {/* Dynamic Players on Preview Pitch */}
@@ -1783,15 +1786,15 @@ END $$;`
                           className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none transition-all duration-500 ease-out"
                         >
                           <div
-                            className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shadow-md border ${
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-md border ${
                               isGK
-                                ? 'bg-amber-500 text-slate-950 border-amber-300'
-                                : 'bg-slate-900 text-neon-lime border-neon-lime/70'
+                                ? 'bg-amber-600 text-white border-amber-400'
+                                : 'bg-blue-600 text-white border-blue-400'
                             }`}
                           >
                             {isGK ? 'GK' : idx}
                           </div>
-                          <span className="text-[8px] font-mono text-slate-200 mt-0.5 truncate max-w-[60px] text-center leading-none">
+                          <span className="text-[9px] text-slate-200 mt-0.5 truncate max-w-[60px] text-center leading-none font-medium">
                             {node.role.split(' ')[0]}
                           </span>
                         </div>
@@ -1799,8 +1802,8 @@ END $$;`
                     })}
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-muted-gray font-mono">
-                    <span className="text-ice-white font-bold block mb-1">Scalable Dynamic Coordinates:</span>
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400">
+                    <span className="text-slate-200 font-semibold block mb-0.5">Scalable Dynamic Coordinates:</span>
                     Preview updates instantly as you switch presets, customize line tiers, or toggle defensive depth. Hitting publish updates public team formations immediately.
                   </div>
                 </div>
@@ -1814,22 +1817,27 @@ END $$;`
       {activeTab === 'players' && (
         <div className="space-y-6">
           {/* Add New Player Form with Cascading Event -> Team Selector */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-ice-white font-mono text-sm uppercase flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-neon-lime" />
-                <span>ENROLL NEW ATHLETE TO SQUAD</span>
-              </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 font-bold uppercase">
-                Cascading Team Assignment
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="font-semibold text-white text-sm flex items-center space-x-2">
+                  <Plus className="w-4 h-4 text-blue-500" />
+                  <span>Enroll New Athlete to Squad</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Assign athletes to registered teams within tournament divisions.
+                </p>
+              </div>
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium self-start">
+                Squad Enrollment
               </span>
             </div>
 
             {/* Step 1: Event Selector */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-              <span className="text-xs font-mono font-bold text-ice-white shrink-0 uppercase flex items-center space-x-1.5">
-                <Layers className="w-3.5 h-3.5 text-cyber-cyan" />
-                <span>Select Event / Division:</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+              <span className="text-xs font-medium text-slate-300 shrink-0 uppercase flex items-center space-x-1.5">
+                <Layers className="w-3.5 h-3.5 text-blue-400" />
+                <span>Division:</span>
               </span>
               <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
                 {sports.map((sport) => {
@@ -1840,10 +1848,10 @@ END $$;`
                       type="button"
                       key={sport.id}
                       onClick={() => setPlayerEnrollSportId(sport.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase transition-all shrink-0 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                         isSelected
-                          ? 'bg-neon-lime text-slate-950 shadow-neon-lime'
-                          : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                       }`}
                     >
                       {sport.name} ({teamCount} teams)
@@ -1854,35 +1862,35 @@ END $$;`
             </div>
 
             {teamsInEnrollSport.length === 0 ? (
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 text-xs font-mono space-y-2">
-                <div className="flex items-center space-x-2 text-amber-400 font-bold">
+              <div className="p-4 rounded-xl bg-slate-950/60 border border-amber-500/30 text-xs space-y-2">
+                <div className="flex items-center space-x-2 text-amber-400 font-semibold">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>
                     No teams currently registered under{' '}
                     {sports.find((s) => s.id === playerEnrollSportId)?.name || 'this event'}.
                   </span>
                 </div>
-                <p className="text-muted-gray text-[11px]">
+                <p className="text-slate-400 text-xs">
                   Athletes must be assigned to an enrolled squad. Please enroll a team first in the Teams & Squads tab.
                 </p>
                 <button
                   type="button"
                   onClick={() => setActiveTab('teams')}
-                  className="px-3.5 py-1.5 rounded-lg bg-neon-lime hover:bg-neon-lime-dark text-slate-950 font-bold text-xs font-mono transition-all"
+                  className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
                 >
-                  Go to Teams & Squads Tab →
+                  Go to Teams &amp; Squads Tab →
                 </button>
               </div>
             ) : (
               <form onSubmit={handleAddPlayer} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                     Assign to Team
                   </label>
                   <select
                     value={newPlayerTeamId}
                     onChange={(e) => setNewPlayerTeamId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                   >
                     {teamsInEnrollSport.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -1893,35 +1901,35 @@ END $$;`
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                     Athlete Name
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Ada Lovelace"
+                    placeholder="e.g. Alex Morgan"
                     value={newPlayerName}
                     onChange={(e) => setNewPlayerName(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                     Role / Position
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Centre Forward / Anchor"
+                    placeholder="e.g. Centre Forward / Sweeper"
                     value={newPlayerRole}
                     onChange={(e) => setNewPlayerRole(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                  <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                     Jersey Number
                   </label>
                   <input
@@ -1931,7 +1939,7 @@ END $$;`
                     value={newPlayerNumber}
                     onChange={(e) => setNewPlayerNumber(Number(e.target.value))}
                     required
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                   />
                 </div>
 
@@ -1941,11 +1949,11 @@ END $$;`
                     id="adminNewPlayerIsIcon"
                     checked={newPlayerIsIcon}
                     onChange={(e) => setNewPlayerIsIcon(e.target.checked)}
-                    className="rounded border-slate-700 bg-slate-900 text-neon-lime focus:ring-neon-lime w-4 h-4 cursor-pointer"
+                    className="rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                   />
                   <label
                     htmlFor="adminNewPlayerIsIcon"
-                    className="text-xs font-mono text-amber-300 flex items-center space-x-1.5 cursor-pointer select-none"
+                    className="text-xs text-amber-300 font-medium flex items-center space-x-1.5 cursor-pointer select-none"
                   >
                     <span>⭐ Designate as Team Icon Athlete (1 Icon athlete per squad)</span>
                   </label>
@@ -1954,9 +1962,9 @@ END $$;`
                 <div className="flex items-end">
                   <button
                     type="submit"
-                    className="w-full py-2 px-4 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 text-xs font-mono font-bold tracking-wider shadow-neon-lime transition-all"
+                    className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors shadow-sm"
                   >
-                    + ENROLL ATHLETE
+                    + Enroll Athlete
                   </button>
                 </div>
               </form>
@@ -1964,13 +1972,13 @@ END $$;`
           </div>
 
           {/* Registered Players List with Filter Bar */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-bold text-ice-white font-mono text-sm uppercase">
-                  REGISTERED SQUAD MEMBERS ({players.length})
+                <h3 className="font-semibold text-white text-sm">
+                  Registered Squad Members ({players.length})
                 </h3>
-                <p className="text-xs text-muted-gray font-mono">
+                <p className="text-xs text-slate-400">
                   Athletes registered across departmental squads and divisions.
                 </p>
               </div>
@@ -1983,7 +1991,7 @@ END $$;`
                     setPlayerRosterSportFilter(e.target.value)
                     setPlayerRosterTeamFilter('all')
                   }}
-                  className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-300 font-mono focus:outline-none focus:border-neon-lime"
+                  className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Events</option>
                   {sports.map((s) => (
@@ -1996,7 +2004,7 @@ END $$;`
                 <select
                   value={playerRosterTeamFilter}
                   onChange={(e) => setPlayerRosterTeamFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-300 font-mono focus:outline-none focus:border-neon-lime"
+                  className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Teams</option>
                   {teams
@@ -2026,12 +2034,12 @@ END $$;`
 
               if (filteredPlayers.length === 0) {
                 return (
-                  <div className="py-12 text-center rounded-2xl bg-slate-900/50 border border-dashed border-slate-800 space-y-2">
+                  <div className="py-12 text-center rounded-xl bg-slate-950/40 border border-dashed border-slate-800 space-y-2">
                     <Users className="w-8 h-8 text-slate-600 mx-auto" />
-                    <div className="font-mono text-xs font-bold text-slate-300">
+                    <div className="text-xs font-semibold text-slate-300">
                       No athletes match the current filter selection.
                     </div>
-                    <p className="text-[11px] text-muted-gray font-mono">
+                    <p className="text-xs text-slate-500">
                       Enroll athletes using the form above.
                     </p>
                   </div>
@@ -2047,10 +2055,10 @@ END $$;`
                     return (
                       <div
                         key={p.id}
-                        className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                        className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                           isIcon
-                            ? 'bg-slate-900/90 border border-amber-400/50 shadow-[0_0_10px_rgba(251,191,36,0.1)]'
-                            : 'bg-slate-900/80 border border-slate-800'
+                            ? 'bg-amber-500/5 border border-amber-500/30'
+                            : 'bg-slate-950/60 border border-slate-800 hover:border-slate-700'
                         }`}
                       >
                         <div className="flex items-center space-x-3 truncate">
@@ -2061,12 +2069,12 @@ END $$;`
                             <img src={p.photo_url} alt={p.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="truncate">
-                            <div className="font-bold text-xs text-ice-white truncate flex items-center space-x-1">
+                            <div className="font-medium text-xs text-slate-200 truncate flex items-center space-x-1">
                               <span>{p.name}</span>
                               {isIcon && <span className="text-amber-400 text-xs">⭐</span>}
-                              <span className="text-neon-lime ml-1">#{p.jersey_number}</span>
+                              <span className="text-blue-400 ml-1 font-mono">#{p.jersey_number}</span>
                             </div>
-                            <div className="text-[10px] text-muted-gray truncate">
+                            <div className="text-[11px] text-slate-400 truncate">
                               {p.role} • {team?.name || 'No Team'} ({sport?.name || 'Sport'})
                             </div>
                           </div>
@@ -2074,7 +2082,7 @@ END $$;`
 
                         <div className="flex items-center space-x-2 shrink-0 ml-2">
                           {isIcon ? (
-                            <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[9px] font-mono font-bold flex items-center space-x-1">
+                            <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-medium flex items-center space-x-1">
                               <span>⭐</span>
                               <span>ICON</span>
                             </span>
@@ -2084,7 +2092,7 @@ END $$;`
                                 await setIconPlayer(p.team_id, p.id)
                                 notify(`⭐ ${p.name} designated as team icon athlete!`)
                               }}
-                              className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-amber-400/20 text-slate-400 hover:text-amber-300 text-[10px] font-mono border border-slate-700 hover:border-amber-400/40 transition-all"
+                              className="px-2 py-1 rounded-md bg-slate-800 hover:bg-amber-500/20 text-slate-400 hover:text-amber-300 text-xs border border-slate-700 hover:border-amber-400/30 transition-colors"
                               title="Designate as Icon Player for this squad"
                             >
                               ⭐ Make Icon
@@ -2098,7 +2106,7 @@ END $$;`
                                 notify(`Removed ${p.name}`)
                               }
                             }}
-                            className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors shrink-0"
+                            className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors shrink-0"
                             title="Remove Player"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -2118,25 +2126,25 @@ END $$;`
       {activeTab === 'sports' && (
         <div className="space-y-6">
           {/* Create Sport Card */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
-            <div className="flex items-center justify-between">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h3 className="font-bold text-ice-white font-mono text-sm uppercase flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-neon-lime" />
-                  <span>ENROLL NEW TOURNAMENT DIVISION</span>
+                <h3 className="font-semibold text-white text-sm flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-blue-500" />
+                  <span>Enroll New Tournament Division</span>
                 </h3>
-                <p className="text-xs text-muted-gray mt-0.5 font-mono">
-                  Instantly scales the tournament. New sports immediately appear across hero highlights, leaderboards, and rosters.
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Scales the tournament instantly. New sports immediately appear across hero highlights, leaderboards, and rosters.
                 </p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 font-bold uppercase">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium self-start">
                 Dynamic Scaling
               </span>
             </div>
 
-            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                   Sport / Game Name
                 </label>
                 <input
@@ -2145,18 +2153,18 @@ END $$;`
                   value={newSportName}
                   onChange={(e) => setNewSportName(e.target.value)}
                   required
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                   Division Format
                 </label>
                 <select
                   value={newSportType}
                   onChange={(e) => setNewSportType(e.target.value as SportType)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                 >
                   <option value="team">Team Squad (Multi-player, e.g. Football, Basketball)</option>
                   <option value="duo">Doubles / Pairs (2v2, e.g. Badminton, Carrom)</option>
@@ -2165,7 +2173,7 @@ END $$;`
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-muted-gray uppercase mb-1">
+                <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                   Official Venue / Arena
                 </label>
                 <input
@@ -2173,7 +2181,7 @@ END $$;`
                   placeholder="e.g. Main Turf Stadium, Seminar Hall A"
                   value={newSportVenue}
                   onChange={(e) => setNewSportVenue(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-lime"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -2181,24 +2189,29 @@ END $$;`
                 <button
                   type="submit"
                   disabled={isSubmittingSport}
-                  className="w-full py-2 px-4 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 text-xs font-mono font-bold tracking-wider shadow-neon-lime transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50"
+                  className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors shadow-sm flex items-center justify-center space-x-1.5 disabled:opacity-50"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>{isSubmittingSport ? 'REGISTERING...' : '+ REGISTER DIVISION'}</span>
+                  <span>{isSubmittingSport ? 'Registering...' : '+ Register Division'}</span>
                 </button>
               </div>
             </form>
           </div>
 
           {/* Active Sports & Divisions Grid */}
-          <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-ice-white font-mono text-sm uppercase flex items-center space-x-2">
-                <Trophy className="w-4 h-4 text-cyber-cyan" />
-                <span>ACTIVE REGISTERED DIVISIONS ({sports.length})</span>
-              </h3>
-              <span className="text-xs text-muted-gray font-mono">
-                Realtime database-backed divisions
+              <div>
+                <h3 className="font-semibold text-white text-sm flex items-center space-x-2">
+                  <Trophy className="w-4 h-4 text-blue-500" />
+                  <span>Active Registered Divisions ({sports.length})</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Realtime database-backed tournament categories.
+                </p>
+              </div>
+              <span className="text-xs text-slate-500 font-mono">
+                {sports.length} Active
               </span>
             </div>
 
@@ -2212,32 +2225,32 @@ END $$;`
                 return (
                   <div
                     key={sport.id}
-                    className={`bg-slate-900/90 border border-slate-800 ${meta.borderHoverClass} rounded-2xl p-4 transition-all flex flex-col justify-between space-y-3 group`}
+                    className="bg-slate-950/60 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all flex flex-col justify-between space-y-3"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span
-                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-800 bg-slate-900 text-slate-400"
                         >
                           {meta.badgeText}
                         </span>
                         <Icon className={`w-4 h-4 ${meta.colorClass}`} />
                       </div>
 
-                      <h4 className="font-bold text-base text-ice-white font-mono flex items-center space-x-2">
+                      <h4 className="font-semibold text-base text-white flex items-center space-x-2">
                         <span>{sport.name}</span>
                       </h4>
-                      <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                         {meta.description}
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
                       {/* Venue Management Slot */}
-                      <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] font-mono text-muted-gray">
-                          <span className="flex items-center space-x-1.5 text-slate-300 font-bold">
-                            <MapPin className="w-3.5 h-3.5 text-neon-lime" />
+                      <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="flex items-center space-x-1.5 text-slate-300 font-medium">
+                            <MapPin className="w-3.5 h-3.5 text-blue-400" />
                             <span>EVENT VENUE</span>
                           </span>
                           {editingVenueSportId !== sport.id ? (
@@ -2246,7 +2259,7 @@ END $$;`
                                 setEditingVenueSportId(sport.id)
                                 setTempVenueName(sport.venue || '')
                               }}
-                              className="text-cyber-cyan hover:text-cyan-300 hover:underline flex items-center space-x-1 text-[10px]"
+                              className="text-blue-400 hover:text-blue-300 hover:underline flex items-center space-x-1 text-xs"
                             >
                               <Edit2 className="w-2.5 h-2.5" />
                               <span>Change Venue</span>
@@ -2254,7 +2267,7 @@ END $$;`
                           ) : (
                             <button
                               onClick={() => setEditingVenueSportId(null)}
-                              className="text-slate-400 hover:text-white text-[10px]"
+                              className="text-slate-400 hover:text-white text-xs"
                             >
                               Cancel
                             </button>
@@ -2268,7 +2281,7 @@ END $$;`
                               value={tempVenueName}
                               onChange={(e) => setTempVenueName(e.target.value)}
                               placeholder="e.g. Student Activity Turf"
-                              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-ice-white font-mono focus:outline-none focus:border-neon-lime"
+                              className="flex-1 bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                             />
                             <button
                               onClick={async () => {
@@ -2276,36 +2289,36 @@ END $$;`
                                 setEditingVenueSportId(null)
                                 notify(`✅ Updated venue for ${sport.name} to "${tempVenueName.trim()}"`)
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-neon-lime text-slate-950 font-mono font-bold text-xs shadow-neon-lime hover:bg-neon-lime-dark"
+                              className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
                             >
                               Save
                             </button>
                           </div>
                         ) : (
-                          <div className="text-xs font-mono text-ice-white truncate flex items-center space-x-1.5">
-                            <span className="text-muted-gray">Slot:</span>
-                            <span className="font-semibold text-neon-lime truncate">
+                          <div className="text-xs text-slate-200 truncate flex items-center space-x-1.5">
+                            <span className="text-slate-500">Slot:</span>
+                            <span className="font-medium text-blue-400 truncate">
                               {sport.venue || <span className="text-slate-500 italic font-normal">No Venue Assigned</span>}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-center text-xs font-mono">
-                        <div className="bg-slate-800/60 p-1.5 rounded-lg">
-                          <span className="text-muted-gray block text-[10px] uppercase">Teams</span>
-                          <span className="font-bold text-neon-lime">{sportTeams.length}</span>
+                      <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                        <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-medium">Teams</span>
+                          <span className="font-semibold text-slate-200 font-mono">{sportTeams.length}</span>
                         </div>
-                        <div className="bg-slate-800/60 p-1.5 rounded-lg">
-                          <span className="text-muted-gray block text-[10px] uppercase">Matches</span>
-                          <span className="font-bold text-cyber-cyan">{sportMatches.length}</span>
+                        <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-medium">Matches</span>
+                          <span className="font-semibold text-slate-200 font-mono">{sportMatches.length}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center space-x-2 pt-1">
                         <Link
                           href={`/leaderboards?sport=${encodeURIComponent(sport.name)}`}
-                          className="flex-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono text-center transition-colors flex items-center justify-center space-x-1"
+                          className="flex-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs text-center transition-colors flex items-center justify-center space-x-1 font-medium"
                         >
                           <span>Standings</span>
                           <ExternalLink className="w-3 h-3" />
@@ -2313,7 +2326,7 @@ END $$;`
 
                         <button
                           onClick={() => handleRemoveSport(sport.id, sport.name)}
-                          className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors shrink-0"
+                          className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors shrink-0"
                           title={`Delete ${sport.name}`}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -2330,32 +2343,32 @@ END $$;`
 
       {/* TAB 6: SUPABASE SQL & CONFIGURATION */}
       {activeTab === 'supabase' && (
-        <div className="bg-card border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6">
           <div>
-            <h3 className="font-bold text-ice-white font-mono text-base uppercase flex items-center space-x-2">
-              <Database className="w-5 h-5 text-cyber-cyan" />
-              <span>SUPABASE BACKEND INTEGRATION & PERMISSIONS SETUP</span>
+            <h3 className="font-semibold text-white text-base flex items-center space-x-2">
+              <Database className="w-5 h-5 text-blue-500" />
+              <span>Supabase Backend Integration &amp; Permissions</span>
             </h3>
-            <p className="text-xs text-muted-gray mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Configure your Supabase database. If you already created tables, run the 1-Click Permissions Fix below to enable write access.
             </p>
           </div>
 
           {/* Connection Telemetry Card */}
-          <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <span className="text-xs font-mono text-muted-gray uppercase">Connection & Sync Status</span>
-              <div className="mt-1 flex items-center space-x-2">
+              <span className="text-xs uppercase text-slate-400 font-medium">Connection &amp; Sync Status</span>
+              <div className="mt-1.5 flex items-center space-x-2">
                 <span
-                  className={`w-3 h-3 rounded-full ${
+                  className={`w-2.5 h-2.5 rounded-full ${
                     supabaseConnected
-                      ? 'bg-neon-lime animate-pulse'
+                      ? 'bg-emerald-400 animate-pulse'
                       : isSupabaseLive
                       ? 'bg-amber-400'
-                      : 'bg-red-400'
+                      : 'bg-rose-400'
                   }`}
                 />
-                <span className="font-bold font-mono text-sm text-ice-white">
+                <span className="font-semibold text-xs text-slate-200">
                   {supabaseConnected
                     ? 'SUPABASE SYNC LIVE & WRITABLE'
                     : isSupabaseLive
@@ -2366,11 +2379,11 @@ END $$;`
             </div>
 
             <div>
-              <span className="text-xs font-mono text-muted-gray uppercase">Actions</span>
+              <span className="text-xs uppercase text-slate-400 font-medium">Actions</span>
               <div className="mt-1 flex items-center space-x-3">
                 <button
                   onClick={() => refreshSupabaseData()}
-                  className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-mono rounded text-slate-200 flex items-center space-x-1.5 transition-all"
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs rounded-md text-slate-200 flex items-center space-x-1.5 transition-colors font-medium"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Test Connection</span>
@@ -2379,9 +2392,9 @@ END $$;`
                   href="https://supabase.com/dashboard"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-mono text-cyber-cyan hover:underline flex items-center space-x-1"
+                  className="text-xs text-blue-400 hover:underline flex items-center space-x-1 font-medium"
                 >
-                  <span>Open Supabase Dashboard</span>
+                  <span>Open Dashboard</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -2389,23 +2402,23 @@ END $$;`
           </div>
 
           {/* 1-CLICK PERMISSIONS FIX CARD */}
-          <div className="p-5 rounded-xl bg-gradient-to-r from-neon-lime/10 via-slate-900 to-slate-900 border border-neon-lime/30 space-y-3">
+          <div className="p-5 rounded-xl bg-blue-950/20 border border-blue-500/30 space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-neon-lime" />
-                <span className="text-sm font-mono font-bold text-ice-white">
-                  RECOMMENDED: 1-Click Permissions & RLS Write Access Fix
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-semibold text-white">
+                  Recommended: 1-Click Permissions &amp; RLS Write Access Fix
                 </span>
               </div>
               <button
                 onClick={handleCopyFixSql}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-neon-lime hover:bg-neon-lime-dark text-slate-950 text-xs font-mono font-bold shadow-neon-lime transition-all"
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium shadow-sm transition-colors"
               >
                 <Copy className="w-4 h-4" />
-                <span>{fixSqlCopied ? 'COPIED TO CLIPBOARD!' : 'COPY 1-CLICK FIX SQL'}</span>
+                <span>{fixSqlCopied ? 'Copied to Clipboard!' : 'Copy 1-Click Fix SQL'}</span>
               </button>
             </div>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-300 leading-relaxed">
               Paste and run this script in your <strong>Supabase SQL Editor</strong>. It grants table access to PostgreSQL roles and enables full read/write capabilities so your score modifications, formations, and player updates persist directly to Supabase without wiping your existing tables.
             </p>
           </div>
@@ -2413,25 +2426,25 @@ END $$;`
           {/* FULL SCHEMA SCRIPT */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-ice-white font-bold">
-                Complete Clean Schema Script (`supabase/schema.sql`)
+              <span className="text-xs text-white font-medium">
+                Complete Clean Schema Script (<code className="text-blue-400 font-mono">supabase/schema.sql</code>)
               </span>
               <button
                 onClick={handleCopySql}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-cyber-cyan hover:bg-cyber-cyan-dark text-slate-950 text-xs font-mono font-bold shadow-cyber-cyan transition-all"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
               >
-                <Copy className="w-4 h-4" />
-                <span>{sqlCopied ? 'COPIED FULL SCHEMA!' : 'COPY FULL SCHEMA SQL'}</span>
+                <Copy className="w-3.5 h-3.5" />
+                <span>{sqlCopied ? 'Copied Full Schema!' : 'Copy Full Schema SQL'}</span>
               </button>
             </div>
-            <p className="text-xs text-muted-gray">
-              Use this if you want to reset and recreate all 5 tables (`sports`, `teams`, `players`, `matches`, `leaderboards`) with default CS department seed data.
+            <p className="text-xs text-slate-400">
+              Use this if you want to reset and recreate all 5 tables (<code className="text-slate-300 font-mono">sports</code>, <code className="text-slate-300 font-mono">teams</code>, <code className="text-slate-300 font-mono">players</code>, <code className="text-slate-300 font-mono">matches</code>, <code className="text-slate-300 font-mono">leaderboards</code>) with default CS department seed data.
             </p>
           </div>
 
           {/* Quick SQL Snippet Preview Box */}
           <div className="relative">
-            <pre className="bg-[#0B1120] border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 overflow-x-auto max-h-56">
+            <pre className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 overflow-x-auto max-h-56">
 {`-- Quick Fix Permissions, New Columns & RLS
 GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
@@ -2457,15 +2470,15 @@ CREATE POLICY "Allow All Access on players" ON players FOR ALL TO anon, authenti
           </div>
 
           {/* Environment Variables Guide */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-2">
-            <span className="font-bold text-ice-white font-mono">
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-xs space-y-2">
+            <span className="font-semibold text-slate-200">
               3-Step Supabase Activation Guide:
             </span>
-            <ol className="list-decimal list-inside text-muted-gray space-y-1">
-              <li>Create a free project at <span className="text-cyber-cyan">supabase.com</span>.</li>
-              <li>Open the <span className="text-neon-lime">SQL Editor</span> in your Supabase dashboard and run the copied script above.</li>
-              <li>Add your project URL & anon public key into <code className="bg-black/50 px-1 py-0.5 rounded text-neon-lime">.env.local</code>:
-                <div className="mt-1 font-mono text-[11px] text-slate-300 bg-black/60 p-2 rounded">
+            <ol className="list-decimal list-inside text-slate-400 space-y-1">
+              <li>Create a free project at <span className="text-blue-400">supabase.com</span>.</li>
+              <li>Open the <span className="text-blue-400">SQL Editor</span> in your Supabase dashboard and run the copied script above.</li>
+              <li>Add your project URL &amp; anon public key into <code className="bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-blue-400 font-mono">.env.local</code>:
+                <div className="mt-1.5 font-mono text-[11px] text-slate-300 bg-slate-950 p-2.5 rounded-lg border border-slate-800">
                   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co<br />
                   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
                 </div>
