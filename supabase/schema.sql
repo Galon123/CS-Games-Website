@@ -42,7 +42,7 @@ CREATE TABLE players (
     name TEXT NOT NULL,
     photo_url TEXT,
     role TEXT NOT NULL,
-    jersey_number INTEGER NOT NULL,
+    jersey_number INTEGER,
     position_x FLOAT DEFAULT 50.0,
     position_y FLOAT DEFAULT 50.0,
     is_icon BOOLEAN DEFAULT FALSE,
@@ -150,3 +150,39 @@ INSERT INTO sports (id, name, type) VALUES
 
 -- Clean slate: No preset teams, players, matches, or leaderboards.
 -- Add them via the Admin Console or your application.
+
+-- ==============================================================================
+-- 10. MIGRATION PATCH (Run this if updating an existing Supabase instance)
+-- ==============================================================================
+-- Make jersey_number optional (nullable) so solo/duo athletes do not require numbers
+ALTER TABLE IF EXISTS players ALTER COLUMN jersey_number DROP NOT NULL;
+
+-- Remove icon player tag from all solo and duo events
+UPDATE players
+SET is_icon = FALSE
+WHERE team_id IN (
+  SELECT t.id FROM teams t
+  JOIN sports s ON t.sport_id = s.id
+  WHERE s.type IN ('solo', 'duo') OR LOWER(s.name) = 'chess'
+);
+
+-- ==============================================================================
+-- 11. SUPABASE STORAGE SETUP ('player-photos' bucket)
+-- ==============================================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('player-photos', 'player-photos', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Allow Public Photo Read" ON storage.objects;
+CREATE POLICY "Allow Public Photo Read" ON storage.objects
+FOR SELECT TO public USING (bucket_id = 'player-photos');
+
+DROP POLICY IF EXISTS "Allow Photo Uploads" ON storage.objects;
+CREATE POLICY "Allow Photo Uploads" ON storage.objects
+FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'player-photos');
+
+DROP POLICY IF EXISTS "Allow Photo Updates" ON storage.objects;
+CREATE POLICY "Allow Photo Updates" ON storage.objects
+FOR UPDATE TO anon, authenticated USING (bucket_id = 'player-photos');
+
+

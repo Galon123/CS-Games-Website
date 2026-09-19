@@ -20,6 +20,7 @@ interface TournamentContextType {
   supabaseError: string | null
   refreshSupabaseData: () => Promise<void>
   updateMatchScore: (matchId: string, teamAScore: number, teamBScore: number, status?: MatchStatus) => Promise<void>
+  updateMatchSchedule: (matchId: string, scheduled_at: string, venue?: string) => Promise<void>
   updateLeaderboard: (leaderboardId: string, updates: Partial<LeaderboardEntry>) => Promise<void>
   updateTeamFormation: (teamId: string, formation: string, options?: TacticalOptions) => Promise<void>
   updatePlayerPosition: (playerId: string, position_x: number, position_y: number) => Promise<void>
@@ -367,6 +368,46 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setSupabaseError(`Failed updating match: ${error.message} (${error.code})`)
         } else {
           console.log('✅ Supabase updateMatchScore succeeded for match:', matchId)
+          setSupabaseError(null)
+        }
+      }
+    },
+    []
+  )
+
+  const updateMatchSchedule = useCallback(
+    async (matchId: string, scheduled_at: string, venue?: string) => {
+      // 1. Optimistic local state update
+      setMatches((prev) =>
+        prev.map((m) => {
+          if (m.id === matchId) {
+            return {
+              ...m,
+              scheduled_at,
+              venue: venue !== undefined ? venue : m.venue,
+            }
+          }
+          return m
+        })
+      )
+
+      // 2. Persist to Supabase
+      if (isSupabaseConfigured() && supabase) {
+        const payload: Record<string, unknown> = { scheduled_at }
+        if (venue !== undefined) payload.venue = venue
+
+        let { error } = await supabase.from('matches').update(payload).eq('id', matchId)
+        if (error && error.code === 'PGRST204' && payload.venue !== undefined) {
+          const { venue: _v, ...rest } = payload
+          const retry = await supabase.from('matches').update(rest).eq('id', matchId)
+          error = retry.error
+        }
+
+        if (error) {
+          console.error('❌ Supabase updateMatchSchedule failed:', error)
+          setSupabaseError(`Failed updating match schedule: ${error.message} (${error.code})`)
+        } else {
+          console.log('✅ Supabase updateMatchSchedule succeeded for match:', matchId)
           setSupabaseError(null)
         }
       }
@@ -860,9 +901,16 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setMatches((prev) => [newMatch, ...prev])
 
       if (isSupabaseConfigured() && supabase) {
-        // Strip client-only or joined fields (minute, venue, team_a, team_b, sport) before Supabase insert
-        const { team_a, team_b, sport, minute, venue, ...matchInsertData } = matchData as any
-        const { data, error } = await supabase.from('matches').insert([matchInsertData]).select()
+        // Strip client-only or joined fields (minute, team_a, team_b, sport) before Supabase insert
+        const { team_a, team_b, sport, minute, ...matchInsertData } = matchData as any
+        let { data, error } = await supabase.from('matches').insert([matchInsertData]).select()
+        if (error && error.code === 'PGRST204' && matchInsertData.venue !== undefined) {
+          console.warn('⚠️ Supabase missing venue column on matches, retrying without venue')
+          const { venue: _v, ...rest } = matchInsertData
+          const retry = await supabase.from('matches').insert([rest]).select()
+          data = retry.data
+          error = retry.error
+        }
         if (error) {
           console.error('❌ Supabase addMatch failed:', error)
           setSupabaseError(`Failed adding match: ${error.message} (${error.code})`)
@@ -970,6 +1018,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     supabaseError,
     refreshSupabaseData: fetchSupabaseData,
     updateMatchScore,
+    updateMatchSchedule,
     updateLeaderboard,
     updateTeamFormation,
     updatePlayerPosition,

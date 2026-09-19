@@ -40,19 +40,57 @@ export const SPORT_SPECIFIC_IMAGES: Record<string, string> = {
 }
 
 /**
+ * Checks if a sport is the real-world Football tournament (The CS Cup).
+ * Strictly excludes virtual E-Football / gaming events.
+ */
+export function isCsCupFootball(sportOrName?: Sport | string | null): boolean {
+  if (!sportOrName) return false
+  const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
+  if (!name) return false
+  const norm = name.trim().toLowerCase()
+
+  // STRICTLY EXCLUDE E-FOOTBALL / ESPORTS / VIRTUAL GAMES
+  if (
+    norm.includes('e-football') ||
+    norm.includes('efootball') ||
+    norm.includes('e football') ||
+    norm.includes('esports') ||
+    norm.includes('gaming') ||
+    norm.includes('fifa') ||
+    norm.includes('pes')
+  ) {
+    return false
+  }
+
+  // Matches genuine physical Football / CS Cup
+  return (
+    norm === 'football' ||
+    norm === 'soccer' ||
+    norm === 'cs cup' ||
+    norm === 'the cs cup' ||
+    norm.includes('cs cup') ||
+    (norm.includes('football') && !norm.startsWith('e'))
+  )
+}
+
+/**
  * Checks if a sport is one of the 4 designated sports that have images:
  * Football, Badminton, Chess, or Carrom / Carroms.
  */
 export function isSportWithImage(sportOrName: Sport | string): boolean {
   const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
   const normalized = name.trim().toLowerCase()
-  if (normalized.includes('e-football') || normalized.includes('efootball')) {
+
+  if (isCsCupFootball(name)) {
+    return true
+  }
+
+  // Virtual sports never get real pitch imagery
+  if (normalized.includes('e-football') || normalized.includes('efootball') || normalized.includes('e football')) {
     return false
   }
+
   return (
-    normalized === 'football' ||
-    normalized === 'soccer' ||
-    normalized.includes('football') ||
     normalized === 'badminton' ||
     normalized.includes('badminton') ||
     normalized === 'chess' ||
@@ -72,13 +110,14 @@ export function getSportDisplayImage(sportOrName: Sport | string, sportType?: Sp
   const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
   const normalized = name.trim().toLowerCase()
 
-  if (normalized.includes('e-football') || normalized.includes('efootball')) {
+  if (isCsCupFootball(name)) {
+    return SPORT_SPECIFIC_IMAGES.football
+  }
+
+  if (normalized.includes('e-football') || normalized.includes('efootball') || normalized.includes('e football')) {
     return undefined
   }
 
-  if (normalized === 'football' || normalized === 'soccer' || normalized.includes('football')) {
-    return SPORT_SPECIFIC_IMAGES.football
-  }
   if (normalized === 'badminton' || normalized.includes('badminton')) {
     return SPORT_SPECIFIC_IMAGES.badminton
   }
@@ -96,45 +135,45 @@ export function getSportDisplayImage(sportOrName: Sport | string, sportType?: Sp
 // Professional subtle palette cycle for dynamic/custom sports
 const DYNAMIC_PALETTES = [
   {
-    colorClass: 'text-blue-400',
-    bgBadgeClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    borderHoverClass: 'hover:border-blue-500/40',
+    colorClass: 'text-blue-700',
+    bgBadgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
+    borderHoverClass: 'hover:border-blue-300',
     icon: Trophy,
   },
   {
-    colorClass: 'text-sky-400',
-    bgBadgeClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-    borderHoverClass: 'hover:border-sky-500/40',
+    colorClass: 'text-sky-700',
+    bgBadgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
+    borderHoverClass: 'hover:border-sky-300',
     icon: Activity,
   },
   {
-    colorClass: 'text-amber-400',
-    bgBadgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    borderHoverClass: 'hover:border-amber-500/40',
+    colorClass: 'text-amber-800',
+    bgBadgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
+    borderHoverClass: 'hover:border-amber-300',
     icon: Target,
   },
   {
-    colorClass: 'text-violet-400',
-    bgBadgeClass: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-    borderHoverClass: 'hover:border-violet-500/40',
+    colorClass: 'text-violet-700',
+    bgBadgeClass: 'bg-violet-50 text-violet-700 border-violet-200',
+    borderHoverClass: 'hover:border-violet-300',
     icon: Zap,
   },
   {
-    colorClass: 'text-rose-400',
-    bgBadgeClass: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-    borderHoverClass: 'hover:border-rose-500/40',
+    colorClass: 'text-rose-700',
+    bgBadgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
+    borderHoverClass: 'hover:border-rose-300',
     icon: CircleDot,
   },
   {
-    colorClass: 'text-emerald-400',
-    bgBadgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    borderHoverClass: 'hover:border-emerald-500/40',
+    colorClass: 'text-emerald-700',
+    bgBadgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    borderHoverClass: 'hover:border-emerald-300',
     icon: Dices,
   },
   {
-    colorClass: 'text-indigo-400',
-    bgBadgeClass: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-    borderHoverClass: 'hover:border-indigo-500/40',
+    colorClass: 'text-indigo-700',
+    bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    borderHoverClass: 'hover:border-indigo-300',
     icon: Gamepad2,
   },
 ]
@@ -157,20 +196,43 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
   // Format badge based on sport or type
   let badgeText = type === 'duo' ? 'DOUBLES' : type === 'solo' ? 'SOLO 1v1' : 'TEAM'
 
-  // Pre-configured flagship sports
-  if (normalized === 'football' || normalized === 'soccer') {
+  // Pre-configured flagship sports: The CS Cup (Strictly physical 6v6 Football)
+  if (isCsCupFootball(name)) {
     return {
-      name,
+      name: name.toLowerCase().includes('cs cup') ? name : 'CS Cup (Football)',
       type,
       icon: Flame,
       imageUrl,
-      badgeText: '6 v 6',
-      colorClass: 'text-emerald-400',
-      bgBadgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-      borderHoverClass: 'hover:border-emerald-500/40',
-      description: '6v6 football championship with interactive squad formation board.',
+      badgeText: 'CS CUP',
+      colorClass: 'text-blue-600',
+      bgBadgeClass: 'bg-[#1F3A2B] text-white font-mono font-bold',
+      borderHoverClass: 'hover:border-blue-600',
+      description: 'The marquee 6v6 football championship of CS Games 2026 with interactive tactical pitch tracking.',
       link: '/tactics',
-      actionLabel: 'Tactical Board',
+      actionLabel: 'CS Cup Tactical Pitch',
+    }
+  }
+
+  // Pre-configured E-Football / Virtual Gaming (Strictly separate from real CS Cup Football)
+  if (
+    normalized.includes('e-football') ||
+    normalized.includes('efootball') ||
+    normalized.includes('e football') ||
+    normalized.includes('fifa') ||
+    normalized.includes('pes')
+  ) {
+    return {
+      name,
+      type: type || 'solo',
+      icon: Gamepad2,
+      imageUrl: undefined, // Virtual gaming never displays turf photo
+      badgeText: type === 'duo' ? 'ESPORTS 2v2' : 'ESPORTS 1v1',
+      colorClass: 'text-indigo-600',
+      bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      borderHoverClass: 'hover:border-indigo-400',
+      description: 'Department esports console tournament. Virtual stadium 1v1 and 2v2 showdowns.',
+      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
+      actionLabel: 'View Esports Standings',
     }
   }
 
@@ -181,9 +243,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       icon: Swords,
       imageUrl,
       badgeText: 'DOUBLES',
-      colorClass: 'text-sky-400',
-      bgBadgeClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-      borderHoverClass: 'hover:border-sky-500/40',
+      colorClass: 'text-sky-700',
+      bgBadgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
+      borderHoverClass: 'hover:border-sky-300',
       description: 'Indoor doubles rally. 21-point knockout tournament.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
@@ -197,9 +259,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       icon: ShieldCheck,
       imageUrl,
       badgeText: 'SOLO 1v1',
-      colorClass: 'text-amber-400',
-      bgBadgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      borderHoverClass: 'hover:border-amber-500/40',
+      colorClass: 'text-amber-800',
+      bgBadgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
+      borderHoverClass: 'hover:border-amber-300',
       description: 'Departmental strategic chess championship.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
@@ -213,9 +275,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       icon: Layers,
       imageUrl,
       badgeText: 'DOUBLES',
-      colorClass: 'text-violet-400',
-      bgBadgeClass: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-      borderHoverClass: 'hover:border-violet-500/40',
+      colorClass: 'text-violet-700',
+      bgBadgeClass: 'bg-violet-50 text-violet-700 border-violet-200',
+      borderHoverClass: 'hover:border-violet-300',
       description: 'Doubles tournament board play and points standings.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
@@ -228,9 +290,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       type,
       icon: CircleDot,
       badgeText: type === 'duo' ? 'DOUBLES' : 'SOLO 1v1',
-      colorClass: 'text-rose-400',
-      bgBadgeClass: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      borderHoverClass: 'hover:border-rose-500/40',
+      colorClass: 'text-rose-700',
+      bgBadgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
+      borderHoverClass: 'hover:border-rose-300',
       description: 'Paddle table tennis tournament fixtures and standings.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
@@ -250,9 +312,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       type,
       icon: Gamepad2,
       badgeText: type === 'team' ? '5 v 5 SQUAD' : badgeText,
-      colorClass: 'text-indigo-400',
-      bgBadgeClass: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-      borderHoverClass: 'hover:border-indigo-500/40',
+      colorClass: 'text-indigo-700',
+      bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      borderHoverClass: 'hover:border-indigo-300',
       description: 'Competitive esports division featuring departmental gaming squads.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
@@ -265,9 +327,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       type,
       icon: Target,
       badgeText: 'TEAM SQUAD',
-      colorClass: 'text-teal-400',
-      bgBadgeClass: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
-      borderHoverClass: 'hover:border-teal-500/40',
+      colorClass: 'text-teal-700',
+      bgBadgeClass: 'bg-teal-50 text-teal-700 border-teal-200',
+      borderHoverClass: 'hover:border-teal-300',
       description: `Departmental ${name} championship division.`,
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
