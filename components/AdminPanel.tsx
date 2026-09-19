@@ -6,7 +6,7 @@ import { useTournament } from '@/context/TournamentContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Match, MatchStatus, LeaderboardEntry, Team, Sport, SportType } from '@/lib/types'
 import { generateTacticalCoordinates, FORMATION_PRESETS, TacticalOptions } from '@/lib/mock-data'
-import { getSportMeta } from '@/lib/sports-theme'
+import { getSportMeta, getSportDisplayImage, isSportWithImage, SPORT_SPECIFIC_IMAGES } from '@/lib/sports-theme'
 import {
   Shield,
   Lock,
@@ -32,6 +32,7 @@ import {
   MapPin,
   Edit2,
   UserCheck,
+  Image as ImageIcon,
 } from 'lucide-react'
 
 export default function AdminPanel() {
@@ -93,8 +94,11 @@ export default function AdminPanel() {
   const [newSportName, setNewSportName] = useState('')
   const [newSportType, setNewSportType] = useState<SportType>('team')
   const [newSportVenue, setNewSportVenue] = useState('')
+  const [newSportImage, setNewSportImage] = useState('')
   const [editingVenueSportId, setEditingVenueSportId] = useState<string | null>(null)
   const [tempVenueName, setTempVenueName] = useState('')
+  const [editingImageSportId, setEditingImageSportId] = useState<string | null>(null)
+  const [tempImageName, setTempImageName] = useState('')
   const [isSubmittingSport, setIsSubmittingSport] = useState(false)
 
   // New Team Form State
@@ -102,9 +106,9 @@ export default function AdminPanel() {
   const [newTeamName, setNewTeamName] = useState('')
   const [newTeamDept, setNewTeamDept] = useState('')
   const [newTeamManager, setNewTeamManager] = useState('')
+  const [newTeamRating, setNewTeamRating] = useState('')
   const [editingManagerTeamId, setEditingManagerTeamId] = useState<string | null>(null)
   const [tempManagerName, setTempManagerName] = useState('')
-  const [newTeamLogo, setNewTeamLogo] = useState('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop')
   const [newTeamFormation, setNewTeamFormation] = useState('2-2-1')
   const [teamFilterSportId, setTeamFilterSportId] = useState<string>('all')
   const [isSubmittingTeam, setIsSubmittingTeam] = useState(false)
@@ -225,14 +229,15 @@ export default function AdminPanel() {
     setTimeout(() => setStatusMessage(null), 3500)
   }
 
-  // Handle Team Creation
+  // Handle Team / Competitor Creation
   const handleAddTeam = async (e: React.FormEvent) => {
     e.preventDefault()
     const cleanName = newTeamName.trim()
     const cleanDept = newTeamDept.trim()
     const cleanManager = newTeamManager.trim()
+    const cleanRating = newTeamRating.trim()
     if (!cleanName) {
-      notify('Please enter a team name.')
+      notify('Please enter a valid name.')
       return
     }
     const targetSport = sports.find((s) => s.id === newTeamSportId) || sports[0]
@@ -241,20 +246,55 @@ export default function AdminPanel() {
       return
     }
 
+    const isSolo = targetSport.type === 'solo' || targetSport.name.toLowerCase() === 'chess'
+    const isDuo = targetSport.type === 'duo'
+    const isFootball = targetSport.name.toLowerCase() === 'football'
+
+    let formation = 'Standard'
+    if (isFootball) {
+      formation = newTeamFormation || '2-2-1'
+    } else if (isDuo) {
+      formation = 'Duo'
+    } else if (isSolo) {
+      formation = 'Solo'
+    }
+
+    const managerOrTitle = isSolo
+      ? (cleanRating || undefined)
+      : isDuo
+      ? (cleanRating || undefined)
+      : (cleanManager || undefined)
+
     setIsSubmittingTeam(true)
     try {
-      await addTeam({
+      const created = await addTeam({
         name: cleanName,
         department: cleanDept || 'Computer Science Lab',
-        logo_url: newTeamLogo || 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop',
+        logo_url: '',
         sport_id: targetSport.id,
-        formation: targetSport.name.toLowerCase() === 'football' ? newTeamFormation : (targetSport.type === 'duo' ? 'Standard Duo' : 'Standard'),
-        manager: cleanManager || undefined,
+        formation,
+        manager: managerOrTitle,
       })
-      notify(`Team "${cleanName}" enrolled in ${targetSport.name}!`)
+
+      // If solo competitor, also create corresponding athlete profile so they appear in rosters
+      if (isSolo && created) {
+        await addPlayer({
+          team_id: created.id,
+          name: cleanName,
+          photo_url: '',
+          role: cleanRating ? `Competitor (${cleanRating})` : 'Solo Competitor',
+          jersey_number: 1,
+          position_x: 50,
+          position_y: 50,
+          is_icon: true,
+        })
+      }
+
+      notify(`${isSolo ? 'Competitor' : isDuo ? 'Pair' : 'Team'} "${cleanName}" enrolled in ${targetSport.name}!`)
       setNewTeamName('')
       setNewTeamDept('')
       setNewTeamManager('')
+      setNewTeamRating('')
     } catch (err: any) {
       notify(`Failed creating team: ${err?.message || 'Error'}`)
     } finally {
@@ -266,11 +306,11 @@ export default function AdminPanel() {
   const handleRemoveTeam = async (teamId: string, teamName: string) => {
     if (
       confirm(
-        `Are you sure you want to remove team "${teamName}"?\n\nThis will remove its enrolled players, scheduled matches, and leaderboard standings.`
+        `Are you sure you want to remove "${teamName}"?\n\nThis will remove its enrolled players, scheduled matches, and leaderboard standings.`
       )
     ) {
       await removeTeam(teamId)
-      notify(`Team "${teamName}" removed.`)
+      notify(`"${teamName}" removed.`)
     }
   }
 
@@ -278,11 +318,11 @@ export default function AdminPanel() {
   const handleScheduleMatch = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMatchTeamAId || !newMatchTeamBId) {
-      notify('Please select both Team A and Team B.')
+      notify('Please select both participants.')
       return
     }
     if (newMatchTeamAId === newMatchTeamBId) {
-      notify('Team A and Team B must be different teams.')
+      notify('Selected participants must be different.')
       return
     }
     const targetSport = sports.find((s) => s.id === newMatchSportId) || sports[0]
@@ -290,6 +330,8 @@ export default function AdminPanel() {
       notify('Please select an event / division.')
       return
     }
+
+    const isSolo = targetSport.type === 'solo' || targetSport.name.toLowerCase() === 'chess'
 
     setIsSubmittingMatch(true)
     try {
@@ -304,7 +346,10 @@ export default function AdminPanel() {
         minute: newMatchStatus === 'live' ? 1 : undefined,
         venue: newMatchVenue.trim() || targetSport.venue || undefined,
       })
-      notify(`Match scheduled between teams in ${targetSport.name}!`)
+
+      const partA = teams.find((t) => t.id === newMatchTeamAId)?.name || 'Participant 1'
+      const partB = teams.find((t) => t.id === newMatchTeamBId)?.name || 'Participant 2'
+      notify(`${isSolo ? 'Solo Match' : 'Match'} scheduled: ${partA} vs ${partB} in ${targetSport.name}!`)
       setNewMatchTeamAScore(0)
       setNewMatchTeamBScore(0)
     } catch (err: any) {
@@ -327,6 +372,7 @@ export default function AdminPanel() {
     e.preventDefault()
     const trimmed = newSportName.trim()
     const trimmedVenue = newSportVenue.trim()
+    const trimmedImage = newSportImage.trim()
     if (!trimmed) {
       notify('Please enter a valid division/sport name.')
       return
@@ -340,14 +386,22 @@ export default function AdminPanel() {
 
     setIsSubmittingSport(true)
     try {
+      // Strictly provide images ONLY for Football, Badminton, Chess, or Carroms.
+      // Any other sport has no image.
+      const resolvedImage = isSportWithImage(trimmed)
+        ? (trimmedImage || getSportDisplayImage(trimmed, newSportType))
+        : undefined
+
       await addSport({
         name: trimmed,
         type: newSportType,
         venue: trimmedVenue || undefined,
+        image_url: resolvedImage,
       })
-      notify(`Division "${trimmed}" successfully registered with venue and synced!`)
+      notify(`Division "${trimmed}" registered successfully!`)
       setNewSportName('')
       setNewSportVenue('')
+      setNewSportImage('')
     } catch (err: any) {
       notify(`Failed adding division: ${err?.message || 'Unknown error'}`)
     } finally {
@@ -815,140 +869,171 @@ END $$;`
         <div className="space-y-6">
           {/* Schedule Match Card */}
           <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-blue-400" />
-                <span>Schedule New Tournament Match</span>
-              </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase">
-                Match Scheduler
-              </span>
-            </div>
+            {(() => {
+              const currentMatchSport = sports.find((s) => s.id === newMatchSportId) || sports[0]
+              const isSolo = currentMatchSport?.type === 'solo' || currentMatchSport?.name?.toLowerCase() === 'chess'
+              const isDuo = currentMatchSport?.type === 'duo'
 
-            {teamsInMatchSport.length < 2 ? (
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 text-xs space-y-2">
-                <div className="flex items-center space-x-2 text-amber-400 font-medium">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  <span>
-                    Need at least 2 teams in{' '}
-                    {sports.find((s) => s.id === newMatchSportId)?.name || 'this event'} to schedule a match.
-                  </span>
-                </div>
-                <p className="text-slate-400 text-[11px]">
-                  There are currently {teamsInMatchSport.length} team(s) enrolled in this division.
-                </p>
-                <div className="flex items-center space-x-3 pt-1">
-                  <select
-                    value={newMatchSportId}
-                    onChange={(e) => setNewMatchSportId(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    {sports.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        Switch to: {s.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() => setActiveTab('teams')}
-                    className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-all shadow-sm"
-                  >
-                    Go to Teams & Squads Tab →
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleScheduleMatch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
+              return (
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                    Event / Sport
-                  </label>
-                  <select
-                    value={newMatchSportId}
-                    onChange={(e) => setNewMatchSportId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    {sports.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                      <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
+                        <Plus className="w-4 h-4 text-blue-400" />
+                        <span>
+                          {isSolo
+                            ? `Schedule Solo Match (1v1 - ${currentMatchSport?.name || 'Chess'})`
+                            : isDuo
+                            ? `Schedule Doubles Match (2v2 - ${currentMatchSport?.name || 'Doubles'})`
+                            : `Schedule Team Fixture (${currentMatchSport?.name || 'Football'})`}
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {isSolo
+                          ? `Assign two competing players and official match venue for ${currentMatchSport?.name}.`
+                          : isDuo
+                          ? `Assign two competing doubles pairs and official arena court venue.`
+                          : `Assign two competing team squads and stadium pitch venue.`}
+                      </p>
+                    </div>
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase self-start">
+                      {isSolo ? 'Solo 1v1 Scheduler' : isDuo ? 'Doubles 2v2 Scheduler' : 'Squad Match Scheduler'}
+                    </span>
+                  </div>
 
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                    Team A (Home)
-                  </label>
-                  <select
-                    value={newMatchTeamAId}
-                    onChange={(e) => setNewMatchTeamAId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    {teamsInMatchSport.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  {teamsInMatchSport.length < 2 ? (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 text-xs space-y-2">
+                      <div className="flex items-center space-x-2 text-amber-400 font-medium">
+                        <AlertTriangle className="w-4 h-4 shrink-0" />
+                        <span>
+                          Need at least 2 {isSolo ? 'players / competitors' : isDuo ? 'pairs' : 'teams'} in{' '}
+                          {currentMatchSport?.name || 'this event'} to schedule a match.
+                        </span>
+                      </div>
+                      <p className="text-slate-400 text-[11px]">
+                        There are currently {teamsInMatchSport.length} {isSolo ? 'competitor(s)' : 'team(s)'} enrolled in this division.
+                      </p>
+                      <div className="flex items-center space-x-3 pt-1">
+                        <select
+                          value={newMatchSportId}
+                          onChange={(e) => setNewMatchSportId(e.target.value)}
+                          className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                        >
+                          {sports.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              Switch to: {s.name} ({s.type})
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => setActiveTab('teams')}
+                          className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-all shadow-sm"
+                        >
+                          {isSolo ? 'Enroll Players Now →' : isDuo ? 'Enroll Pairs Now →' : 'Enroll Teams Now →'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleScheduleMatch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Event / Sport
+                        </label>
+                        <select
+                          value={newMatchSportId}
+                          onChange={(e) => setNewMatchSportId(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        >
+                          {sports.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name} ({s.type === 'solo' ? '1v1 Solo' : s.type === 'duo' ? '2v2 Duo' : 'Team'})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                    Team B (Away)
-                  </label>
-                  <select
-                    value={newMatchTeamBId}
-                    onChange={(e) => setNewMatchTeamBId(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    {teamsInMatchSport.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          {isSolo ? 'Player 1 (White / Home)' : isDuo ? 'Pair 1 / Team 1' : 'Team A (Home)'}
+                        </label>
+                        <select
+                          value={newMatchTeamAId}
+                          onChange={(e) => setNewMatchTeamAId(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        >
+                          {teamsInMatchSport.map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {t.name} ({t.department})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                    Match Venue
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Main Turf Stadium"
-                    value={newMatchVenue}
-                    onChange={(e) => setNewMatchVenue(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          {isSolo ? 'Player 2 (Black / Away)' : isDuo ? 'Pair 2 / Team 2' : 'Team B (Away)'}
+                        </label>
+                        <select
+                          value={newMatchTeamBId}
+                          onChange={(e) => setNewMatchTeamBId(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        >
+                          {teamsInMatchSport.map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {t.name} ({t.department})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                    Match Status
-                  </label>
-                  <select
-                    value={newMatchStatus}
-                    onChange={(e) => setNewMatchStatus(e.target.value as MatchStatus)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="upcoming">Upcoming</option>
-                    <option value="live">Live</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Official Venue
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={isSolo ? 'e.g. Seminar Hall A' : isDuo ? 'e.g. Badminton Court 1' : 'e.g. Main Turf Stadium'}
+                          value={newMatchVenue}
+                          onChange={(e) => setNewMatchVenue(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
 
-                <div className="flex items-end">
-                  <button
-                    type="submit"
-                    disabled={isSubmittingMatch}
-                    className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
-                  >
-                    {isSubmittingMatch ? 'Scheduling...' : '+ Schedule Match'}
-                  </button>
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Match Status
+                        </label>
+                        <select
+                          value={newMatchStatus}
+                          onChange={(e) => setNewMatchStatus(e.target.value as MatchStatus)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        >
+                          <option value="upcoming">Upcoming</option>
+                          <option value="live">Live</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-end">
+                        <button
+                          type="submit"
+                          disabled={isSubmittingMatch}
+                          className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
+                        >
+                          {isSubmittingMatch
+                            ? 'Scheduling...'
+                            : isSolo
+                            ? '+ Schedule Solo Match'
+                            : isDuo
+                            ? '+ Schedule Doubles'
+                            : '+ Schedule Match'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
-              </form>
-            )}
+              )
+            })()}
           </div>
 
           {/* Matches List */}
@@ -965,139 +1050,160 @@ END $$;`
                   No matches currently scheduled.
                 </div>
                 <p className="text-[11px] text-slate-400">
-                  Use the scheduler above to create matches between enrolled teams.
+                  Use the scheduler above to create matches between enrolled participants.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {matches.map((match) => (
-                  <div
-                    key={match.id}
-                    className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm"
-                  >
-                    {/* Match Header */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-blue-400 uppercase px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
-                        {match.sport?.name || 'Sport'}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        {/* Status Dropdown */}
-                        <select
-                          value={match.status}
-                          onChange={(e) => {
-                            const newStatus = e.target.value as MatchStatus
-                            updateMatchScore(match.id, match.team_a_score, match.team_b_score, newStatus)
-                            notify(`Match status changed to ${newStatus.toUpperCase()}`)
-                          }}
-                          className={`text-xs font-medium px-2 py-1 rounded border focus:outline-none ${
-                            match.status === 'live'
-                              ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                              : match.status === 'completed'
-                              ? 'bg-slate-800 border-slate-700 text-slate-300'
-                              : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                          }`}
-                        >
-                          <option value="upcoming">Upcoming</option>
-                          <option value="live">Live</option>
-                          <option value="completed">Completed</option>
-                        </select>
+                {matches.map((match) => {
+                  const isSoloCard = match.sport?.type === 'solo' || match.sport?.name?.toLowerCase() === 'chess'
+                  const isDuoCard = match.sport?.type === 'duo'
 
-                        <button
-                          onClick={() => handleRemoveMatch(match.id)}
-                          className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-rose-400 hover:bg-rose-950/60 hover:border-rose-600/50 transition-colors"
-                          title="Delete Match Fixture"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Score Controls */}
-                    <div className="grid grid-cols-7 items-center gap-2 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                      {/* Team A */}
-                      <div className="col-span-3 text-center">
-                        <div className="font-semibold text-sm text-white truncate">
-                          {match.team_a?.name || 'Team A'}
-                        </div>
-                        <div className="flex items-center justify-center space-x-2 mt-2">
-                          <button
-                            onClick={() =>
-                              updateMatchScore(
-                                match.id,
-                                Math.max(0, match.team_a_score - 1),
-                                match.team_b_score
-                              )
-                            }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
-                          >
-                            -
-                          </button>
-                          <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
-                            {match.team_a_score}
+                  return (
+                    <div
+                      key={match.id}
+                      className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm"
+                    >
+                      {/* Match Header */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-semibold text-blue-400 uppercase px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                            {match.sport?.name || 'Sport'}
                           </span>
-                          <button
-                            onClick={() =>
-                              updateMatchScore(
-                                match.id,
-                                match.team_a_score + 1,
-                                match.team_b_score
-                              )
-                            }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* VS Divider */}
-                      <div className="col-span-1 text-center text-xs text-slate-500 font-medium">
-                        VS
-                      </div>
-
-                      {/* Team B */}
-                      <div className="col-span-3 text-center">
-                        <div className="font-semibold text-sm text-white truncate">
-                          {match.team_b?.name || 'Team B'}
-                        </div>
-                        <div className="flex items-center justify-center space-x-2 mt-2">
-                          <button
-                            onClick={() =>
-                              updateMatchScore(
-                                match.id,
-                                match.team_a_score,
-                                Math.max(0, match.team_b_score - 1)
-                              )
-                            }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
-                          >
-                            -
-                          </button>
-                          <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
-                            {match.team_b_score}
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            {isSoloCard ? '👤 1v1 Solo Match' : isDuoCard ? '👥 2v2 Doubles' : '🛡️ Team Match'}
                           </span>
-                          <button
-                            onClick={() =>
-                              updateMatchScore(
-                                match.id,
-                                match.team_a_score,
-                                match.team_b_score + 1
-                              )
-                            }
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {/* Status Dropdown */}
+                          <select
+                            value={match.status}
+                            onChange={(e) => {
+                              const newStatus = e.target.value as MatchStatus
+                              updateMatchScore(match.id, match.team_a_score, match.team_b_score, newStatus)
+                              notify(`Match status changed to ${newStatus.toUpperCase()}`)
+                            }}
+                            className={`text-xs font-medium px-2 py-1 rounded border focus:outline-none ${
+                              match.status === 'live'
+                                ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                                : match.status === 'completed'
+                                ? 'bg-slate-800 border-slate-700 text-slate-300'
+                                : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                            }`}
                           >
-                            +
+                            <option value="upcoming">Upcoming</option>
+                            <option value="live">Live</option>
+                            <option value="completed">Completed</option>
+                          </select>
+
+                          <button
+                            onClick={() => handleRemoveMatch(match.id)}
+                            className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-rose-400 hover:bg-rose-950/60 hover:border-rose-600/50 transition-colors"
+                            title="Delete Match Fixture"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="text-[11px] text-slate-400 flex items-center justify-between">
-                      <span>Venue: {match.venue || 'Arena Court'}</span>
-                      <span className="text-emerald-400 text-[10px]">Synced</span>
+                      {/* Score Controls */}
+                      <div className="grid grid-cols-7 items-center gap-2 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                        {/* Participant A */}
+                        <div className="col-span-3 text-center">
+                          <div className="font-semibold text-sm text-white truncate flex items-center justify-center space-x-1">
+                            {isSoloCard ? <span className="text-xs text-blue-400">👤</span> : null}
+                            <span className="truncate">{match.team_a?.name || (isSoloCard ? 'Player 1' : 'Team A')}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate">
+                            {match.team_a?.department || 'Department'}
+                          </div>
+                          <div className="flex items-center justify-center space-x-2 mt-2">
+                            <button
+                              onClick={() =>
+                                updateMatchScore(
+                                  match.id,
+                                  Math.max(0, match.team_a_score - 1),
+                                  match.team_b_score
+                                )
+                              }
+                              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
+                            >
+                              -
+                            </button>
+                            <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
+                              {match.team_a_score}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateMatchScore(
+                                  match.id,
+                                  match.team_a_score + 1,
+                                  match.team_b_score
+                                )
+                              }
+                              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* VS Divider */}
+                        <div className="col-span-1 text-center text-xs text-slate-500 font-medium">
+                          VS
+                        </div>
+
+                        {/* Participant B */}
+                        <div className="col-span-3 text-center">
+                          <div className="font-semibold text-sm text-white truncate flex items-center justify-center space-x-1">
+                            {isSoloCard ? <span className="text-xs text-blue-400">👤</span> : null}
+                            <span className="truncate">{match.team_b?.name || (isSoloCard ? 'Player 2' : 'Team B')}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate">
+                            {match.team_b?.department || 'Department'}
+                          </div>
+                          <div className="flex items-center justify-center space-x-2 mt-2">
+                            <button
+                              onClick={() =>
+                                updateMatchScore(
+                                  match.id,
+                                  match.team_a_score,
+                                  Math.max(0, match.team_b_score - 1)
+                                )
+                              }
+                              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold"
+                            >
+                              -
+                            </button>
+                            <span className="text-2xl font-bold font-mono text-white min-w-[32px]">
+                              {match.team_b_score}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateMatchScore(
+                                  match.id,
+                                  match.team_a_score,
+                                  match.team_b_score + 1
+                                )
+                              }
+                              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-[11px] text-slate-400 flex items-center justify-between">
+                        <span className="flex items-center space-x-1.5 truncate">
+                          <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <span className="truncate">Venue: {match.venue || match.sport?.venue || 'Arena Court'}</span>
+                        </span>
+                        <span className="text-emerald-400 text-[10px] shrink-0 font-medium">● Realtime Sync</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
@@ -1107,110 +1213,188 @@ END $$;`
       {/* TAB: TEAMS & SQUADS MANAGEMENT */}
       {activeTab === 'teams' && (
         <div className="space-y-6">
-          {/* Enroll Team Form Card */}
+          {/* Enroll Team / Competitor Form Card */}
           <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-blue-400" />
-                <span>Enroll New Team in an Event</span>
-              </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase">
-                Team Enrollment
-              </span>
-            </div>
+            {(() => {
+              const enrollSport = sports.find((s) => s.id === newTeamSportId) || sports[0]
+              const isSoloEnroll = enrollSport?.type === 'solo' || enrollSport?.name?.toLowerCase() === 'chess'
+              const isDuoEnroll = enrollSport?.type === 'duo'
+              const isFootballEnroll = enrollSport?.name?.toLowerCase() === 'football'
 
-            <form onSubmit={handleAddTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                  Event / Sport
-                </label>
-                <select
-                  value={newTeamSportId}
-                  onChange={(e) => setNewTeamSportId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                >
-                  {sports.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.type})
-                    </option>
-                  ))}
-                </select>
-              </div>
+              return (
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div>
+                      <h3 className="font-semibold text-white text-sm uppercase tracking-wide flex items-center space-x-2">
+                        <Plus className="w-4 h-4 text-blue-400" />
+                        <span>
+                          {isSoloEnroll
+                            ? `Enroll Competitor / Player (${enrollSport?.name || 'Solo'})`
+                            : isDuoEnroll
+                            ? `Enroll Doubles Pair (${enrollSport?.name || 'Doubles'})`
+                            : isFootballEnroll
+                            ? `Enroll Football Squad (6v6)`
+                            : `Enroll Team Squad (${enrollSport?.name || 'Team'})`}
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {isSoloEnroll
+                          ? `Register an individual competitor for the ${enrollSport?.name || 'solo'} division.`
+                          : isDuoEnroll
+                          ? `Register a doubles pair for ${enrollSport?.name || 'doubles'} division.`
+                          : isFootballEnroll
+                          ? `Register a 6v6 football squad with tactical formation & manager.`
+                          : `Register a departmental squad for ${enrollSport?.name || 'tournament'}.`}
+                      </p>
+                    </div>
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium uppercase self-start">
+                      {isSoloEnroll ? 'Player Enrollment' : isDuoEnroll ? 'Pair Enrollment' : 'Squad Enrollment'}
+                    </span>
+                  </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                  Team / Squad Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Neural Nets FC"
-                  value={newTeamName}
-                  onChange={(e) => setNewTeamName(e.target.value)}
-                  required
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
+                  <form onSubmit={handleAddTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                        Event / Sport
+                      </label>
+                      <select
+                        value={newTeamSportId}
+                        onChange={(e) => setNewTeamSportId(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                      >
+                        {sports.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} ({s.type === 'solo' ? '1v1 Solo' : s.type === 'duo' ? '2v2 Duo' : 'Team'})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                  Department / Lab
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. CS AI & Robotics Lab"
-                  value={newTeamDept}
-                  onChange={(e) => setNewTeamDept(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                        {isSoloEnroll ? 'Player / Competitor Name' : isDuoEnroll ? 'Pair Name / Members' : 'Team / Squad Name'}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={
+                          isSoloEnroll
+                            ? 'e.g. Magnus Carlsen or Ada Lovelace'
+                            : isDuoEnroll
+                            ? 'e.g. Alan & Grace or Systems Pair'
+                            : isFootballEnroll
+                            ? 'e.g. Neural Nets FC'
+                            : 'e.g. Cyber Strikers'
+                        }
+                        value={newTeamName}
+                        onChange={(e) => setNewTeamName(e.target.value)}
+                        required
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                  Team Manager / Coach
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Prof. Alan Turing"
-                  value={newTeamManager}
-                  onChange={(e) => setNewTeamManager(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                        Department / Lab
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. CS AI & Robotics Lab"
+                        value={newTeamDept}
+                        onChange={(e) => setNewTeamDept(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
-                  Initial Formation
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 2-2-1 or Duo"
-                  value={newTeamFormation}
-                  onChange={(e) => setNewTeamFormation(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
-                />
-              </div>
+                    {isSoloEnroll ? (
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Rating / Elo / Title (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 1950 Elo / Candidate Master"
+                          value={newTeamRating}
+                          onChange={(e) => setNewTeamRating(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    ) : isDuoEnroll ? (
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Pair Seed / Tier (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Seed #1 or Tier A"
+                          value={newTeamRating}
+                          onChange={(e) => setNewTeamRating(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          Team Manager / Coach
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Prof. Alan Turing"
+                          value={newTeamManager}
+                          onChange={(e) => setNewTeamManager(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    )}
 
-              <div className="flex items-end">
-                <button
-                  type="submit"
-                  disabled={isSubmittingTeam}
-                  className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
-                >
-                  {isSubmittingTeam ? 'Enrolling...' : '+ Enroll Team'}
-                </button>
-              </div>
-            </form>
+                    {isFootballEnroll && (
+                      <div>
+                        <label className="block text-[11px] font-medium text-slate-400 uppercase mb-1">
+                          6v6 Formation Preset
+                        </label>
+                        <select
+                          value={newTeamFormation}
+                          onChange={(e) => setNewTeamFormation(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
+                        >
+                          <option value="2-2-1">2-2-1 (Balanced)</option>
+                          <option value="2-1-2">2-1-2 (Attacking)</option>
+                          <option value="3-1-1">3-1-1 (Defensive)</option>
+                          <option value="1-3-1">1-3-1 (Midfield)</option>
+                          <option value="1-2-2">1-2-2 (Counter)</option>
+                        </select>
+                      </div>
+                    )}
+
+                    <div className="flex items-end">
+                      <button
+                        type="submit"
+                        disabled={isSubmittingTeam}
+                        className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium tracking-wide shadow-sm transition-all disabled:opacity-50"
+                      >
+                        {isSubmittingTeam
+                          ? 'Enrolling...'
+                          : isSoloEnroll
+                          ? '+ Enroll Competitor'
+                          : isDuoEnroll
+                          ? '+ Enroll Pair'
+                          : '+ Enroll Team'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )
+            })()}
           </div>
 
-          {/* Registered Teams List with Event Filtering */}
+          {/* Registered Teams & Competitors List with Event Filtering */}
           <div className="bg-card border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="font-semibold text-white text-sm uppercase tracking-wide">
-                  Registered Teams & Labs ({teams.length})
+                  Registered Participants &amp; Squads ({teams.length})
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Manage active squads and their associated rosters across all tournament divisions.
+                  Manage active competitors, squads, and rosters across all tournament divisions.
                 </p>
               </div>
 
@@ -1245,7 +1429,7 @@ END $$;`
               </div>
             </div>
 
-            {/* Teams Grid */}
+            {/* Teams & Competitors Grid */}
             {(() => {
               const displayTeams = teams.filter((t) =>
                 teamFilterSportId === 'all' ? true : t.sport_id === teamFilterSportId
@@ -1256,10 +1440,10 @@ END $$;`
                   <div className="py-12 text-center rounded-xl bg-slate-900/50 border border-dashed border-slate-800 space-y-2">
                     <Shield className="w-8 h-8 text-slate-600 mx-auto" />
                     <div className="text-xs font-medium text-slate-300">
-                      No teams registered in this division yet.
+                      No participants registered in this division yet.
                     </div>
                     <p className="text-[11px] text-slate-400">
-                      Use the form above to enroll a squad into {sports.find((s) => s.id === teamFilterSportId)?.name || 'the tournament'}.
+                      Use the form above to enroll a competitor or squad into {sports.find((s) => s.id === teamFilterSportId)?.name || 'the tournament'}.
                     </p>
                   </div>
                 )
@@ -1270,28 +1454,31 @@ END $$;`
                   {displayTeams.map((team) => {
                     const sport = sports.find((s) => s.id === team.sport_id)
                     const roster = players.filter((p) => p.team_id === team.id)
+                    const iconPlayer = roster.find((p) => p.is_icon)
+                    const isSolo = sport?.type === 'solo' || team.formation === 'Solo' || sport?.name?.toLowerCase() === 'chess'
+                    const isDuo = sport?.type === 'duo' || team.formation === 'Duo'
+                    const isFootball = sport?.name?.toLowerCase() === 'football'
+
                     return (
                       <div
                         key={team.id}
                         className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start justify-between hover:border-slate-700 transition-all gap-2"
                       >
                         <div className="flex items-start space-x-3 min-w-0 flex-1">
-                          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0 mt-0.5">
-                            <img
-                              src={team.logo_url}
-                              alt={team.name}
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700/80 flex items-center justify-center font-bold font-mono text-xs text-slate-300 shrink-0 mt-0.5">
+                            {(team.name || 'T').substring(0, 2).toUpperCase()}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="font-semibold text-xs text-white truncate">
-                              {team.name}
+                            <div className="font-semibold text-xs text-white truncate flex items-center space-x-1">
+                              <span>{team.name}</span>
+                              {isSolo && <span className="text-blue-400 text-[10px]">👤</span>}
+                              {isDuo && <span className="text-blue-400 text-[10px]">👥</span>}
                             </div>
                             <div className="text-[10px] text-slate-400 truncate">
                               {team.department}
                             </div>
 
-                            {/* Manager Inline Management */}
+                            {/* Manager / Title / Rating Display */}
                             <div className="text-[10px] text-slate-300 mt-1">
                               {editingManagerTeamId === team.id ? (
                                 <div className="flex items-center space-x-1 pt-0.5">
@@ -1299,14 +1486,14 @@ END $$;`
                                     type="text"
                                     value={tempManagerName}
                                     onChange={(e) => setTempManagerName(e.target.value)}
-                                    placeholder="Manager Name"
+                                    placeholder={isSolo ? 'Rating / Title' : isDuo ? 'Seed / Tier' : 'Manager Name'}
                                     className="bg-slate-950 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-white focus:outline-none focus:border-blue-500 w-28"
                                   />
                                   <button
                                     onClick={async () => {
                                       await updateTeam(team.id, { manager: tempManagerName.trim() })
                                       setEditingManagerTeamId(null)
-                                      notify(`Updated manager for ${team.name}`)
+                                      notify(`Updated for ${team.name}`)
                                     }}
                                     className="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-[9px]"
                                   >
@@ -1321,7 +1508,9 @@ END $$;`
                                 </div>
                               ) : (
                                 <div className="flex items-center space-x-1.5">
-                                  <span className="text-slate-400">👔 Mgr:</span>
+                                  <span className="text-slate-400">
+                                    {isSolo ? '⭐ Rating:' : isDuo ? '⭐ Seed:' : '👔 Mgr:'}
+                                  </span>
                                   <span className="text-white font-medium truncate max-w-[110px]">
                                     {team.manager || <span className="text-slate-500 italic">None</span>}
                                   </span>
@@ -1338,13 +1527,26 @@ END $$;`
                               )}
                             </div>
 
-                            <div className="flex items-center space-x-2 mt-1.5">
+                            {/* Tags */}
+                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                               <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-400 border border-slate-700">
                                 {sport?.name || 'Sport'}
                               </span>
-                              <span className="text-[9px] text-slate-400">
-                                {roster.length} Athletes
-                              </span>
+                              {isFootball && team.formation && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700 font-mono">
+                                  Shape: {team.formation}
+                                </span>
+                              )}
+                              {isFootball && iconPlayer && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">
+                                  ⭐ {iconPlayer.name.split(' ')[0]}
+                                </span>
+                              )}
+                              {!isSolo && (
+                                <span className="text-[9px] text-slate-400">
+                                  {roster.length} Athletes
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1352,7 +1554,7 @@ END $$;`
                         <button
                           onClick={() => handleRemoveTeam(team.id, team.name)}
                           className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950/60 transition-colors shrink-0"
-                          title="Remove Team"
+                          title={`Remove ${team.name}`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -2142,7 +2344,7 @@ END $$;`
               </span>
             </div>
 
-            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+            <form onSubmit={handleAddSport} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
               <div>
                 <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
                   Sport / Game Name
@@ -2166,9 +2368,9 @@ END $$;`
                   onChange={(e) => setNewSportType(e.target.value as SportType)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                 >
-                  <option value="team">Team Squad (Multi-player, e.g. Football, Basketball)</option>
+                  <option value="team">Team Squad (Multi-player, e.g. Football)</option>
                   <option value="duo">Doubles / Pairs (2v2, e.g. Badminton, Carrom)</option>
-                  <option value="solo">Solo (1v1 Single player, e.g. Chess, Table Tennis)</option>
+                  <option value="solo">Solo (1v1 Single player, e.g. Chess)</option>
                 </select>
               </div>
 
@@ -2183,6 +2385,16 @@ END $$;`
                   onChange={(e) => setNewSportVenue(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase text-slate-400 font-medium mb-1">
+                  Sport Image Policy
+                </label>
+                <div className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400 flex items-center space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                  <span className="truncate">Visuals provided for Football, Badminton, Chess & Carroms</span>
+                </div>
               </div>
 
               <div className="flex items-end">
@@ -2207,7 +2419,7 @@ END $$;`
                   <span>Active Registered Divisions ({sports.length})</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Realtime database-backed tournament categories.
+                  Realtime database-backed tournament categories with dedicated display imagery.
                 </p>
               </div>
               <span className="text-xs text-slate-500 font-mono">
@@ -2225,112 +2437,209 @@ END $$;`
                 return (
                   <div
                     key={sport.id}
-                    className="bg-slate-950/60 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all flex flex-col justify-between space-y-3"
+                    className="bg-slate-950/60 border border-slate-800 hover:border-slate-700 rounded-xl overflow-hidden transition-all flex flex-col justify-between"
                   >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
+                    {/* Sport Display Image Cover - Strictly for 4 supported sports */}
+                    {meta.imageUrl ? (
+                      <div className="relative h-32 w-full overflow-hidden bg-slate-900 border-b border-slate-800">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={meta.imageUrl}
+                          alt={sport.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const norm = sport.name.toLowerCase()
+                            if (norm.includes('football') || norm.includes('soccer')) {
+                              if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
+                                e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
+                              }
+                            }
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+                        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                          <span
+                            className={`text-[10px] font-medium px-2 py-0.5 rounded backdrop-blur-md border ${meta.bgBadgeClass}`}
+                          >
+                            {meta.badgeText}
+                          </span>
+                          <div className="w-6 h-6 rounded-lg bg-slate-950/70 backdrop-blur-md border border-slate-700/60 flex items-center justify-center">
+                            <Icon className={`w-3.5 h-3.5 ${meta.colorClass}`} />
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-2 right-2">
+                          <button
+                            onClick={() => {
+                              setEditingImageSportId(editingImageSportId === sport.id ? null : sport.id)
+                              setTempImageName(sport.image_url || meta.imageUrl || '')
+                            }}
+                            className="text-[10px] px-2 py-0.5 rounded bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-slate-200 backdrop-blur-md flex items-center space-x-1 transition-colors"
+                            title="Change display image"
+                          >
+                            <ImageIcon className="w-2.5 h-2.5 text-blue-400" />
+                            <span>Image</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 pb-0 flex items-center justify-between">
                         <span
-                          className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-800 bg-slate-900 text-slate-400"
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}
                         >
                           {meta.badgeText}
                         </span>
-                        <Icon className={`w-4 h-4 ${meta.colorClass}`} />
+                        <div className="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
+                          <Icon className={`w-4 h-4 ${meta.colorClass}`} />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-semibold text-base text-white flex items-center space-x-2">
+                          <span>{sport.name}</span>
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                          {meta.description}
+                        </p>
                       </div>
 
-                      <h4 className="font-semibold text-base text-white flex items-center space-x-2">
-                        <span>{sport.name}</span>
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                        {meta.description}
-                      </p>
-                    </div>
+                      <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
+                        {/* Image Editor Slot */}
+                        {editingImageSportId === sport.id && meta.imageUrl && (
+                          <div className="p-2.5 rounded-lg bg-slate-900 border border-blue-500/30 space-y-1.5 animate-in fade-in duration-200">
+                            <div className="flex items-center justify-between text-xs text-slate-400">
+                              <span className="text-blue-400 font-medium text-[11px] flex items-center space-x-1">
+                                <ImageIcon className="w-3 h-3" />
+                                <span>CUSTOM COVER IMAGE</span>
+                              </span>
+                              <button
+                                onClick={() => setEditingImageSportId(null)}
+                                className="text-slate-400 hover:text-white text-xs"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                            <input
+                              type="url"
+                              value={tempImageName}
+                              onChange={(e) => setTempImageName(e.target.value)}
+                              placeholder="https://images.unsplash.com/..."
+                              className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                            />
+                            <div className="flex items-center justify-between pt-1">
+                              <button
+                                onClick={async () => {
+                                  const fallback = getSportDisplayImage(sport.name, sport.type)
+                                  await updateSport(sport.id, { image_url: fallback })
+                                  setEditingImageSportId(null)
+                                  notify(`Reset image for ${sport.name}`)
+                                }}
+                                className="text-[10px] text-slate-400 hover:text-slate-200 underline"
+                              >
+                                Auto-Assign
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  await updateSport(sport.id, { image_url: tempImageName.trim() })
+                                  setEditingImageSportId(null)
+                                  notify(`✅ Updated display image for ${sport.name}`)
+                                }}
+                                className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
+                              >
+                                Save Image
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
-                    <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
-                      {/* Venue Management Slot */}
-                      <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
-                        <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span className="flex items-center space-x-1.5 text-slate-300 font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                            <span>EVENT VENUE</span>
-                          </span>
-                          {editingVenueSportId !== sport.id ? (
-                            <button
-                              onClick={() => {
-                                setEditingVenueSportId(sport.id)
-                                setTempVenueName(sport.venue || '')
-                              }}
-                              className="text-blue-400 hover:text-blue-300 hover:underline flex items-center space-x-1 text-xs"
-                            >
-                              <Edit2 className="w-2.5 h-2.5" />
-                              <span>Change Venue</span>
-                            </button>
+                        {/* Venue Management Slot */}
+                        <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                          <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="flex items-center space-x-1.5 text-slate-300 font-medium">
+                              <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                              <span>EVENT VENUE</span>
+                            </span>
+                            {editingVenueSportId !== sport.id ? (
+                              <button
+                                onClick={() => {
+                                  setEditingVenueSportId(sport.id)
+                                  setTempVenueName(sport.venue || '')
+                                }}
+                                className="text-blue-400 hover:text-blue-300 hover:underline flex items-center space-x-1 text-xs"
+                              >
+                                <Edit2 className="w-2.5 h-2.5" />
+                                <span>Change Venue</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setEditingVenueSportId(null)}
+                                className="text-slate-400 hover:text-white text-xs"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </div>
+
+                          {editingVenueSportId === sport.id ? (
+                            <div className="flex items-center space-x-1.5 pt-0.5">
+                              <input
+                                type="text"
+                                value={tempVenueName}
+                                onChange={(e) => setTempVenueName(e.target.value)}
+                                placeholder="e.g. Student Activity Turf"
+                                className="flex-1 bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                              />
+                              <button
+                                onClick={async () => {
+                                  await updateSport(sport.id, { venue: tempVenueName.trim() })
+                                  setEditingVenueSportId(null)
+                                  notify(`✅ Updated venue for ${sport.name} to "${tempVenueName.trim()}"`)
+                                }}
+                                className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
+                              >
+                                Save
+                              </button>
+                            </div>
                           ) : (
-                            <button
-                              onClick={() => setEditingVenueSportId(null)}
-                              className="text-slate-400 hover:text-white text-xs"
-                            >
-                              Cancel
-                            </button>
+                            <div className="text-xs text-slate-200 truncate flex items-center space-x-1.5">
+                              <span className="text-slate-500">Slot:</span>
+                              <span className="font-medium text-blue-400 truncate">
+                                {sport.venue || <span className="text-slate-500 italic font-normal">No Venue Assigned</span>}
+                              </span>
+                            </div>
                           )}
                         </div>
 
-                        {editingVenueSportId === sport.id ? (
-                          <div className="flex items-center space-x-1.5 pt-0.5">
-                            <input
-                              type="text"
-                              value={tempVenueName}
-                              onChange={(e) => setTempVenueName(e.target.value)}
-                              placeholder="e.g. Student Activity Turf"
-                              className="flex-1 bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
-                            />
-                            <button
-                              onClick={async () => {
-                                await updateSport(sport.id, { venue: tempVenueName.trim() })
-                                setEditingVenueSportId(null)
-                                notify(`✅ Updated venue for ${sport.name} to "${tempVenueName.trim()}"`)
-                              }}
-                              className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
-                            >
-                              Save
-                            </button>
+                        <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                          <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
+                            <span className="text-slate-400 block text-[10px] uppercase font-medium">Teams</span>
+                            <span className="font-semibold text-slate-200 font-mono">{sportTeams.length}</span>
                           </div>
-                        ) : (
-                          <div className="text-xs text-slate-200 truncate flex items-center space-x-1.5">
-                            <span className="text-slate-500">Slot:</span>
-                            <span className="font-medium text-blue-400 truncate">
-                              {sport.venue || <span className="text-slate-500 italic font-normal">No Venue Assigned</span>}
-                            </span>
+                          <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
+                            <span className="text-slate-400 block text-[10px] uppercase font-medium">Matches</span>
+                            <span className="font-semibold text-slate-200 font-mono">{sportMatches.length}</span>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                        <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
-                          <span className="text-slate-400 block text-[10px] uppercase font-medium">Teams</span>
-                          <span className="font-semibold text-slate-200 font-mono">{sportTeams.length}</span>
                         </div>
-                        <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60">
-                          <span className="text-slate-400 block text-[10px] uppercase font-medium">Matches</span>
-                          <span className="font-semibold text-slate-200 font-mono">{sportMatches.length}</span>
+
+                        <div className="flex items-center space-x-2 pt-1">
+                          <Link
+                            href={`/leaderboards?sport=${encodeURIComponent(sport.name)}`}
+                            className="flex-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs text-center transition-colors flex items-center justify-center space-x-1 font-medium"
+                          >
+                            <span>Standings</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+
+                          <button
+                            onClick={() => handleRemoveSport(sport.id, sport.name)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors shrink-0"
+                            title={`Delete ${sport.name}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2 pt-1">
-                        <Link
-                          href={`/leaderboards?sport=${encodeURIComponent(sport.name)}`}
-                          className="flex-1 py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs text-center transition-colors flex items-center justify-center space-x-1 font-medium"
-                        >
-                          <span>Standings</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </Link>
-
-                        <button
-                          onClick={() => handleRemoveSport(sport.id, sport.name)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors shrink-0"
-                          title={`Delete ${sport.name}`}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
                       </div>
                     </div>
                   </div>

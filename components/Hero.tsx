@@ -8,8 +8,9 @@ import {
   Trophy,
   ArrowRight,
   Crosshair,
+  MapPin,
 } from 'lucide-react'
-import { getSportMeta } from '@/lib/sports-theme'
+import { getSportMeta, SPORT_SPECIFIC_IMAGES } from '@/lib/sports-theme'
 
 export default function Hero() {
   const { sports, matches } = useTournament()
@@ -78,13 +79,8 @@ export default function Hero() {
               <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex items-center justify-between">
                 {/* Team A */}
                 <div className="flex flex-col items-center text-center w-5/12">
-                  <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 mb-2 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={footballFeatured.team_a?.logo_url || 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop'}
-                      alt={footballFeatured.team_a?.name || 'Team A'}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700/80 mb-2 flex items-center justify-center font-mono font-bold text-sm text-slate-200">
+                    {(footballFeatured.team_a?.name || 'A').substring(0, 2).toUpperCase()}
                   </div>
                   <span className="font-semibold text-xs text-slate-200 truncate max-w-[110px]">
                     {footballFeatured.team_a?.name || 'Team A'}
@@ -104,13 +100,8 @@ export default function Hero() {
 
                 {/* Team B */}
                 <div className="flex flex-col items-center text-center w-5/12">
-                  <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 mb-2 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={footballFeatured.team_b?.logo_url || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=128&h=128&fit=crop'}
-                      alt={footballFeatured.team_b?.name || 'Team B'}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700/80 mb-2 flex items-center justify-center font-mono font-bold text-sm text-slate-200">
+                    {(footballFeatured.team_b?.name || 'B').substring(0, 2).toUpperCase()}
                   </div>
                   <span className="font-semibold text-xs text-slate-200 truncate max-w-[110px]">
                     {footballFeatured.team_b?.name || 'Team B'}
@@ -164,26 +155,77 @@ export default function Hero() {
               <Link
                 key={sport.id}
                 href={meta.link}
-                className="bg-card hover:bg-card-hover border border-slate-800 hover:border-slate-700 rounded-xl p-5 transition-all group flex flex-col justify-between shadow-sm"
+                className="bg-card hover:bg-card-hover border border-slate-800 hover:border-slate-700 rounded-xl overflow-hidden transition-all group flex flex-col justify-between shadow-sm"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`text-[10px] font-medium px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}
-                    >
-                      {meta.badgeText}
-                    </span>
-                    <Icon className={`w-4 h-4 ${meta.colorClass}`} />
+                  {meta.imageUrl ? (
+                    /* Display Image Cover strictly for Football, Badminton, Chess, and Carroms */
+                    <div className="relative h-32 w-full overflow-hidden bg-slate-900 border-b border-slate-800">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={meta.imageUrl}
+                        alt={sport.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          const norm = sport.name.toLowerCase()
+                          if (norm.includes('football') || norm.includes('soccer')) {
+                            if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
+                              e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
+                            }
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+                      <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                        <span
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded backdrop-blur-md border ${meta.bgBadgeClass}`}
+                        >
+                          {meta.badgeText}
+                        </span>
+                        <div className="w-6 h-6 rounded-lg bg-slate-950/70 backdrop-blur-md border border-slate-700/60 flex items-center justify-center">
+                          <Icon className={`w-3.5 h-3.5 ${meta.colorClass}`} />
+                        </div>
+                      </div>
+                      {sport.venue && (
+                        <div className="absolute bottom-2 left-2.5 right-2.5 text-[10px] text-slate-300 truncate flex items-center space-x-1">
+                          <MapPin className="w-3 h-3 text-blue-400 shrink-0" />
+                          <span className="truncate">{sport.venue}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Clean No-Image Header for sports that are not Football, Badminton, Chess, or Carroms */
+                    <div className="p-4 pb-1">
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}
+                        >
+                          {meta.badgeText}
+                        </span>
+                        <div className="w-6 h-6 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center">
+                          <Icon className={`w-3.5 h-3.5 ${meta.colorClass}`} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={meta.imageUrl ? "p-4" : "px-4 pb-3"}>
+                    <h3 className="font-semibold text-base text-white group-hover:text-blue-400 transition-colors">
+                      {sport.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                      {meta.description}
+                    </p>
+                    {!meta.imageUrl && sport.venue && (
+                      <div className="mt-2 text-[10px] text-slate-400 truncate flex items-center space-x-1">
+                        <MapPin className="w-3 h-3 text-blue-400 shrink-0" />
+                        <span className="truncate">{sport.venue}</span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-semibold text-base text-white group-hover:text-blue-400 transition-colors">
-                    {sport.name}
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    {meta.description}
-                  </p>
                 </div>
 
-                <div className="mt-4 text-xs font-medium text-slate-400 group-hover:text-blue-400 flex items-center space-x-1 transition-colors pt-2 border-t border-slate-800/60">
+                <div className="px-4 pb-3.5 pt-2 text-xs font-medium text-slate-400 group-hover:text-blue-400 flex items-center justify-between transition-colors border-t border-slate-800/60">
                   <span>{meta.actionLabel}</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </div>

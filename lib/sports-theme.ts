@@ -19,6 +19,7 @@ export interface SportMeta {
   name: string
   type: SportType
   icon: LucideIcon
+  imageUrl?: string // Only defined for Football, Badminton, Chess, and Carroms
   badgeText: string
   colorClass: string
   bgBadgeClass: string
@@ -26,6 +27,70 @@ export interface SportMeta {
   description: string
   link: string
   actionLabel: string
+}
+
+// Curated sport-specific display images strictly for the 4 allowed sports
+export const SPORT_SPECIFIC_IMAGES: Record<string, string> = {
+  football: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop',
+  soccer: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop',
+  badminton: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&auto=format&fit=crop',
+  chess: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop',
+  carrom: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop',
+  carroms: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop',
+}
+
+/**
+ * Checks if a sport is one of the 4 designated sports that have images:
+ * Football, Badminton, Chess, or Carrom / Carroms.
+ */
+export function isSportWithImage(sportOrName: Sport | string): boolean {
+  const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
+  const normalized = name.trim().toLowerCase()
+  if (normalized.includes('e-football') || normalized.includes('efootball')) {
+    return false
+  }
+  return (
+    normalized === 'football' ||
+    normalized === 'soccer' ||
+    normalized.includes('football') ||
+    normalized === 'badminton' ||
+    normalized.includes('badminton') ||
+    normalized === 'chess' ||
+    normalized.includes('chess') ||
+    normalized === 'carrom' ||
+    normalized === 'carroms' ||
+    normalized.includes('carrom')
+  )
+}
+
+/**
+ * Resolves a sport-related display image.
+ * STRICT RULE: Only Football, Badminton, Chess, and Carroms provide images.
+ * For all other sports, returns undefined.
+ */
+export function getSportDisplayImage(sportOrName: Sport | string, sportType?: SportType): string | undefined {
+  const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
+  const normalized = name.trim().toLowerCase()
+
+  if (normalized.includes('e-football') || normalized.includes('efootball')) {
+    return undefined
+  }
+
+  if (normalized === 'football' || normalized === 'soccer' || normalized.includes('football')) {
+    return SPORT_SPECIFIC_IMAGES.football
+  }
+  if (normalized === 'badminton' || normalized.includes('badminton')) {
+    return SPORT_SPECIFIC_IMAGES.badminton
+  }
+  if (normalized === 'chess' || normalized.includes('chess')) {
+    return SPORT_SPECIFIC_IMAGES.chess
+  }
+  if (normalized === 'carrom' || normalized === 'carroms' || normalized.includes('carrom')) {
+    return SPORT_SPECIFIC_IMAGES.carrom
+  }
+
+  // Any other sport gets NO image
+  return undefined
 }
 
 // Professional subtle palette cycle for dynamic/custom sports
@@ -79,6 +144,16 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
   const type = typeof sportOrName === 'object' && sportOrName.type ? sportOrName.type : sportType || 'team'
   const normalized = name.trim().toLowerCase()
 
+  const isAllowed = isSportWithImage(name)
+  const defaultImg = getSportDisplayImage(name, type)
+
+  let customImg = typeof sportOrName === 'object' && sportOrName.image_url ? sportOrName.image_url : undefined
+  if (customImg && (customImg.includes('1508098682722') || customImg.trim() === '')) {
+    customImg = undefined
+  }
+
+  const imageUrl = isAllowed ? (customImg || defaultImg) : undefined
+
   // Format badge based on sport or type
   let badgeText = type === 'duo' ? 'DOUBLES' : type === 'solo' ? 'SOLO 1v1' : 'TEAM'
 
@@ -88,6 +163,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type,
       icon: Flame,
+      imageUrl,
       badgeText: '6 v 6',
       colorClass: 'text-emerald-400',
       bgBadgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -103,6 +179,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type,
       icon: Swords,
+      imageUrl,
       badgeText: 'DOUBLES',
       colorClass: 'text-sky-400',
       bgBadgeClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
@@ -118,6 +195,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type,
       icon: ShieldCheck,
+      imageUrl,
       badgeText: 'SOLO 1v1',
       colorClass: 'text-amber-400',
       bgBadgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
@@ -133,6 +211,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type,
       icon: Layers,
+      imageUrl,
       badgeText: 'DOUBLES',
       colorClass: 'text-violet-400',
       bgBadgeClass: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
@@ -195,7 +274,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
     }
   }
 
-  // Fallback for any arbitrary newly added sport:
+  // Fallback for any arbitrary newly added sport (strictly NO image):
   let hash = 0
   for (let i = 0; i < normalized.length; i++) {
     hash = (hash * 31 + normalized.charCodeAt(i)) & 0xffffffff

@@ -10,9 +10,10 @@ import {
   Search,
   Users,
   Star,
+  MapPin,
 } from 'lucide-react'
 import Link from 'next/link'
-import { getSportMeta } from '@/lib/sports-theme'
+import { getSportMeta, SPORT_SPECIFIC_IMAGES } from '@/lib/sports-theme'
 
 interface LeaderboardTableProps {
   initialSportName?: string
@@ -88,6 +89,62 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
         })}
       </div>
 
+      {/* Active Division Feature Banner */}
+      {activeSport && (() => {
+        const meta = getSportMeta(activeSport)
+        return (
+          <div className="relative rounded-xl overflow-hidden border border-slate-800 shadow-sm bg-slate-900/70">
+            {meta.imageUrl && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={meta.imageUrl}
+                  alt={activeSport.name}
+                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  onError={(e) => {
+                    const norm = activeSport.name.toLowerCase()
+                    if (norm.includes('football') || norm.includes('soccer')) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
+                      }
+                    }
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/40" />
+              </>
+            )}
+            <div className="relative z-10 flex items-center justify-between p-5">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}>
+                    {meta.badgeText}
+                  </span>
+                  {activeSport.venue && (
+                    <span className="text-[11px] text-slate-300 flex items-center space-x-1">
+                      <MapPin className="w-3 h-3 text-blue-400" />
+                      <span>{activeSport.venue}</span>
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  {activeSport.name} Division
+                </h2>
+                <p className="text-xs text-slate-400 max-w-md line-clamp-1">
+                  {meta.description}
+                </p>
+              </div>
+
+              <div className="hidden sm:flex items-center space-x-3 text-right">
+                <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-lg px-3.5 py-2">
+                  <span className="text-[10px] text-slate-400 uppercase block font-medium">Contenders</span>
+                  <span className="text-lg font-bold text-white font-mono">{filteredEntries.length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Table Card */}
       <div className="bg-card border border-slate-800 rounded-xl overflow-hidden shadow-sm">
         <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between bg-slate-900/40 text-xs">
@@ -105,13 +162,17 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
               <tr className="border-b border-slate-800 bg-slate-900/60 text-slate-400 font-medium uppercase text-[11px]">
                 <th className="py-3 px-4 w-12 text-center">Rank</th>
                 <th className="py-3 px-2 w-8 text-center">Δ</th>
-                <th className="py-3 px-4">Team / Laboratory</th>
+                <th className="py-3 px-4">
+                  {activeSport?.type === 'solo' ? 'Competitor / Department' : activeSport?.type === 'duo' ? 'Pair / Department' : 'Team / Laboratory'}
+                </th>
                 <th className="py-3 px-3 text-center">Played</th>
                 <th className="py-3 px-3 text-center text-emerald-400">Won</th>
                 <th className="py-3 px-3 text-center text-slate-400">Drawn</th>
                 <th className="py-3 px-3 text-center text-rose-400">Lost</th>
                 <th className="py-3 px-4 text-center font-semibold text-white">Points</th>
-                <th className="py-3 px-4 text-right">Roster</th>
+                <th className="py-3 px-4 text-right">
+                  {activeSport?.type === 'solo' ? 'Profile' : 'Roster'}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
@@ -160,13 +221,8 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                       {/* Team */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden shrink-0">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={team?.logo_url || 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=128&h=128&fit=crop'}
-                              alt={team?.name || 'Team'}
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700/70 flex items-center justify-center text-xs font-bold font-mono text-slate-300 shrink-0">
+                            {(team?.name || 'T').substring(0, 2).toUpperCase()}
                           </div>
                           <div>
                             <div className="font-semibold text-slate-100 group-hover:text-blue-400 transition-colors">
@@ -197,7 +253,7 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                           className="inline-flex items-center space-x-1.5 text-[11px] text-slate-300 hover:text-white font-medium py-1 px-2.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700/80"
                         >
                           <Users className="w-3 h-3" />
-                          <span>Roster</span>
+                          <span>{activeSport?.type === 'solo' ? 'Profile' : 'Roster'}</span>
                         </Link>
                       </td>
                     </tr>

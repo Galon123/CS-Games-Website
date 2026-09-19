@@ -12,7 +12,7 @@ export interface Sport {
 export interface Team {
   id: string
   name: string
-  logo_url: string
+  logo_url?: string
   department: string
   sport_id: string
   formation?: string

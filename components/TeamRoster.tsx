@@ -11,10 +11,11 @@ import {
   X,
   Sparkles,
   Crosshair,
+  MapPin,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { getSportMeta } from '@/lib/sports-theme'
+import { getSportMeta, SPORT_SPECIFIC_IMAGES } from '@/lib/sports-theme'
 
 export default function TeamRoster() {
   const { sports, teams, players } = useTournament()
@@ -98,11 +99,73 @@ export default function TeamRoster() {
         </div>
       </div>
 
+      {/* Active Sport Division Filter Banner with Sport Display Image */}
+      {selectedSportFilter !== 'all' && (() => {
+        const activeFilterSport = sports.find((s) => s.id === selectedSportFilter)
+        if (!activeFilterSport) return null
+        const meta = getSportMeta(activeFilterSport)
+
+        return (
+          <div className="relative h-28 sm:h-32 w-full rounded-xl overflow-hidden border border-slate-800 shadow-sm bg-slate-900">
+            {meta.imageUrl && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={meta.imageUrl}
+                  alt={activeFilterSport.name}
+                  className="w-full h-full object-cover opacity-45"
+                  onError={(e) => {
+                    const norm = activeFilterSport.name.toLowerCase()
+                    if (norm.includes('football') || norm.includes('soccer')) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
+                      }
+                    }
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/40" />
+              </>
+            )}
+            <div className="relative z-10 h-full flex items-center justify-between p-5">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded border ${meta.bgBadgeClass}`}>
+                    {meta.badgeText}
+                  </span>
+                  {activeFilterSport.venue && (
+                    <span className="text-[11px] text-slate-300 flex items-center space-x-1">
+                      <MapPin className="w-3 h-3 text-blue-400" />
+                      <span>{activeFilterSport.venue}</span>
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  {activeFilterSport.name} Division Rosters
+                </h2>
+                <p className="text-xs text-slate-400 max-w-md line-clamp-1">
+                  {meta.description}
+                </p>
+              </div>
+
+              <div className="hidden sm:flex items-center space-x-3 text-right">
+                <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-lg px-3.5 py-2">
+                  <span className="text-[10px] text-slate-400 uppercase block font-medium">Enrolled</span>
+                  <span className="text-lg font-bold text-white font-mono">{filteredTeams.length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Teams Grid */}
       {filteredTeams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTeams.map((team) => {
-            const sportName = getSportName(team.sport_id)
+            const sportObj = sports.find((s) => s.id === team.sport_id)
+            const sportName = sportObj?.name || getSportName(team.sport_id)
+            const isSolo = sportObj?.type === 'solo' || sportName.toLowerCase() === 'chess'
+            const isDuo = sportObj?.type === 'duo'
             const teamRoster = players.filter((p) => p.team_id === team.id)
 
             return (
@@ -112,13 +175,8 @@ export default function TeamRoster() {
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="w-14 h-14 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={team.logo_url}
-                        alt={team.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
+                    <div className="w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center font-bold font-mono text-sm text-slate-200 shrink-0">
+                      {(team.name || 'T').substring(0, 2).toUpperCase()}
                     </div>
 
                     <div className="flex flex-col items-end space-y-1">
@@ -129,11 +187,15 @@ export default function TeamRoster() {
                       >
                         {sportName}
                       </span>
-                      {team.formation && (
+                      {isSolo ? (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          1v1 Solo
+                        </span>
+                      ) : team.formation ? (
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">
                           {team.formation}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
 
@@ -143,16 +205,16 @@ export default function TeamRoster() {
                   <p className="text-xs text-slate-400 mb-3">{team.department}</p>
 
                   {/* Manager and Icon Player Badges */}
-                  {(team.manager || teamRoster.some((p) => p.is_icon)) && (
+                  {(team.manager || (!isSolo && teamRoster.some((p) => p.is_icon))) && (
                     <div className="flex flex-wrap gap-1.5 mb-3 text-[11px]">
                       {team.manager && (
                         <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/80 text-slate-300">
-                          <span>👔</span>
-                          <span className="text-slate-400">Mgr:</span>
+                          <span>{isSolo ? '⭐' : '👔'}</span>
+                          <span className="text-slate-400">{isSolo ? 'Rating / Title:' : isDuo ? 'Seed:' : 'Mgr:'}</span>
                           <span className="text-white font-medium truncate max-w-[130px]">{team.manager}</span>
                         </span>
                       )}
-                      {teamRoster.find((p) => p.is_icon) && (
+                      {!isSolo && teamRoster.find((p) => p.is_icon) && (
                         <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300">
                           <span>⭐</span>
                           <span className="text-amber-400/80">Icon:</span>
@@ -164,9 +226,9 @@ export default function TeamRoster() {
 
                   <div className="bg-slate-900/60 rounded-lg p-3 border border-slate-800/80 mb-4">
                     <div className="flex items-center justify-between text-xs mb-2">
-                      <span className="text-slate-400">Squad Size</span>
+                      <span className="text-slate-400">{isSolo ? 'Competitor' : isDuo ? 'Pair Roster' : 'Squad Size'}</span>
                       <span className="font-semibold text-white">
-                        {teamRoster.length} Athletes
+                        {isSolo ? 'Solo Athlete' : isDuo ? `${teamRoster.length} Players` : `${teamRoster.length} Athletes`}
                       </span>
                     </div>
 
@@ -203,7 +265,7 @@ export default function TeamRoster() {
                     onClick={() => setActiveModalTeam(team)}
                     className="flex-1 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-200 hover:text-white border border-slate-700/80 transition-all flex items-center justify-center space-x-1.5"
                   >
-                    <span>Full Roster</span>
+                    <span>{isSolo ? 'View Profile' : 'Full Roster'}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </button>
 
@@ -239,14 +301,9 @@ export default function TeamRoster() {
           <div className="bg-card border border-slate-700/80 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-xl">
             {/* Modal Header */}
             <div className="p-6 bg-slate-900/80 border-b border-slate-800 flex items-start justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={activeModalTeam.logo_url}
-                    alt={activeModalTeam.name}
-                    className="w-full h-full object-cover"
-                  />
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold font-mono text-sm text-slate-200 shrink-0">
+                  {(activeModalTeam.name || 'T').substring(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
@@ -262,19 +319,27 @@ export default function TeamRoster() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">{activeModalTeam.department}</p>
-                  <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
-                    {activeModalTeam.formation && (
-                      <span className="font-mono text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700/60">
-                        Shape: {activeModalTeam.formation}
-                      </span>
-                    )}
-                    {activeModalTeam.manager && (
-                      <span className="text-slate-300 flex items-center space-x-1">
-                        <span>👔 Mgr:</span>
-                        <span className="font-medium text-white">{activeModalTeam.manager}</span>
-                      </span>
-                    )}
-                  </div>
+                  {(() => {
+                    const modalSport = sports.find((s) => s.id === activeModalTeam.sport_id)
+                    const isModalSolo = modalSport?.type === 'solo' || modalSport?.name?.toLowerCase() === 'chess'
+                    const isModalDuo = modalSport?.type === 'duo'
+
+                    return (
+                      <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
+                        {!isModalSolo && !isModalDuo && activeModalTeam.formation && (
+                          <span className="font-mono text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700/60">
+                            Shape: {activeModalTeam.formation}
+                          </span>
+                        )}
+                        {activeModalTeam.manager && (
+                          <span className="text-slate-300 flex items-center space-x-1">
+                            <span>{isModalSolo ? '⭐ Rating / Title:' : isModalDuo ? 'Seed:' : '👔 Mgr:'}</span>
+                            <span className="font-medium text-white">{activeModalTeam.manager}</span>
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
 
@@ -290,7 +355,18 @@ export default function TeamRoster() {
             {/* Modal Body: Player Roster Grid */}
             <div className="p-6 overflow-y-auto space-y-4 flex-1">
               <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-2">
-                <span>Athletes & Roster ({modalTeamPlayers.length})</span>
+                <span>
+                  {(() => {
+                    const modalSport = sports.find((s) => s.id === activeModalTeam.sport_id)
+                    const isModalSolo = modalSport?.type === 'solo' || modalSport?.name?.toLowerCase() === 'chess'
+                    const isModalDuo = modalSport?.type === 'duo'
+                    return isModalSolo
+                      ? 'Competitor Profile'
+                      : isModalDuo
+                      ? `Pair Members (${modalTeamPlayers.length})`
+                      : `Athletes & Roster (${modalTeamPlayers.length})`
+                  })()}
+                </span>
                 <span>Status: Verified Eligible</span>
               </div>
 
