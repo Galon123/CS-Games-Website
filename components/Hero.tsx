@@ -119,7 +119,7 @@ export default function Hero() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="bg-[#F59E0B] text-[#1A1A1A] font-mono font-black px-2.5 py-1 rounded shadow-editorial-sm border border-[#1A1A1A] tracking-wider uppercase">
-                    APRIL 18–20, 2026
+                    SEPTEMBER 21–25, 2026
                   </span>
                   <span className="text-white/40">•</span>
                   <span className="text-blue-100 font-mono font-bold tracking-wider uppercase text-[11px]">
@@ -164,7 +164,7 @@ export default function Hero() {
                   className="inline-flex items-center space-x-2 bg-[#F59E0B] hover:bg-[#D97706] text-[#1A1A1A] px-6 py-3.5 rounded-md font-sans font-black text-xs tracking-wider uppercase shadow-editorial-sm hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all border border-[#1A1A1A]"
                 >
                   <Crosshair className="w-4 h-4 text-[#1A1A1A]" />
-                  <span>CS Cup Tactical Pitch</span>
+                  <span>CS Cup Formations</span>
                 </Link>
 
                 <Link
@@ -182,41 +182,6 @@ export default function Hero() {
                   <Users className="w-4 h-4 text-blue-200" />
                   <span>Squad Rosters</span>
                 </Link>
-              </div>
-
-              {/* 6. High-Contrast Telemetry Metrics Cards */}
-              <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
-                <div className="p-3 bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] rounded-md shadow-editorial-sm">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Trophy className="w-4 h-4 text-[#D97706]" />
-                    <span className="font-mono font-black text-base text-[#1A1A1A]">CS Cup</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Perpetual Trophy</span>
-                </div>
-
-                <div className="p-3 bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] rounded-md shadow-editorial-sm">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Zap className="w-4 h-4 text-blue-600" />
-                    <span className="font-mono font-black text-base text-[#1A1A1A]">{sports.length} Sports</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Divisions</span>
-                </div>
-
-                <div className="p-3 bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] rounded-md shadow-editorial-sm">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Flame className="w-4 h-4 text-[#D97706]" />
-                    <span className="font-mono font-black text-base text-[#1A1A1A]">{matches.length} Games</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Fixtures</span>
-                </div>
-
-                <div className="p-3 bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] rounded-md shadow-editorial-sm">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Shield className="w-4 h-4 text-slate-900" />
-                    <span className="font-mono font-black text-base text-[#1A1A1A]">CS Dept</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Official Arena</span>
-                </div>
               </div>
             </div>
 
@@ -239,94 +204,125 @@ export default function Hero() {
                     </span>
                   </div>
                   <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded bg-[#F59E0B] text-[#1A1A1A] border border-[#1A1A1A]">
-                    6v6 FOOTBALL
+                    {csCupFeatured?.is_free_for_all || csCupFeatured?.sport?.type === 'free_for_all'
+                      ? 'FREE FOR ALL'
+                      : isCsCupFootball(csCupFeatured?.sport?.name)
+                      ? '6v6 FOOTBALL'
+                      : csCupFeatured?.sport?.name?.toUpperCase() || 'FEATURED'}
                   </span>
                 </div>
 
-                {/* Scoreboard Box: Robust 3-Column Symmetrical Layout */}
+                {/* Scoreboard Box: Robust Layout */}
                 {csCupFeatured ? (
                   <div className="bg-[#FBF9F5] border-2 border-[#1A1A1A] rounded-lg p-4 sm:p-5">
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
-                      {/* Team A */}
-                      <div className="flex flex-col items-center text-center min-w-0">
-                        <div className="w-12 h-12 rounded-md bg-white border-2 border-[#1A1A1A] mb-2 flex items-center justify-center font-mono font-black text-sm text-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
-                          {(csCupFeatured.team_a?.name || 'A').substring(0, 2).toUpperCase()}
+                    {csCupFeatured.is_free_for_all || csCupFeatured.sport?.type === 'free_for_all' ? (
+                      <div className="flex flex-col items-center justify-center text-center py-2 space-y-2">
+                        <span className="text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded uppercase tracking-wider">
+                          FREE FOR ALL MASS SHOWDOWN
+                        </span>
+                        <div className="font-serif font-black text-base text-[#1A1A1A]">
+                          {csCupFeatured.sport?.name} All-Play Championship
                         </div>
-                        <span
-                          className="font-bold text-xs text-[#1A1A1A] truncate max-w-full block"
-                          title={csCupFeatured.team_a?.name}
-                        >
-                          {csCupFeatured.team_a?.name || 'Team A'}
-                        </span>
-                        <span className="text-[10px] text-slate-600 truncate max-w-full block mt-0.5 font-medium">
-                          {csCupFeatured.team_a?.department || 'CS Squad'}
-                        </span>
-                      </div>
-
-                      {/* Center Scoreboard / VS Unit */}
-                      <div className="flex flex-col items-center justify-center shrink-0 px-2 sm:px-3">
-                        {csCupFeatured.status === 'upcoming' ? (
-                          <div className="flex flex-col items-center justify-center">
-                            <div className="w-12 h-9 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
-                              <span className="font-mono font-black text-blue-600 text-sm tracking-widest">
-                                VS
-                              </span>
-                            </div>
-                            <span className="text-[10px] font-mono font-bold text-slate-700 bg-slate-200 border border-slate-300 px-2 py-0.5 rounded uppercase mt-2 tracking-wider">
-                              UPCOMING
-                            </span>
-                          </div>
+                        <p className="text-[11px] text-slate-600 font-mono">
+                          {csCupFeatured.participants?.length || 'All'} Competitors in Collective Competition
+                        </p>
+                        {csCupFeatured.status === 'live' ? (
+                          <span className="bg-[#059669] text-white font-mono text-xs font-black px-3 py-1 rounded tracking-wide whitespace-nowrap border border-emerald-800 shadow-2xs">
+                            LIVE IN PROGRESS
+                          </span>
+                        ) : csCupFeatured.status === 'completed' ? (
+                          <span className="px-2.5 py-0.5 rounded bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wide border border-slate-300">
+                            FINAL RESULT
+                          </span>
                         ) : (
-                          <div className="flex flex-col items-center justify-center">
-                            {/* Dual Score Tabular Blocks */}
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
-                                <span className="text-xl sm:text-2xl font-mono font-black text-[#1A1A1A] tabular-nums">
-                                  {csCupFeatured.team_a_score ?? 0}
-                                </span>
-                              </div>
-                              <span className="text-[#1A1A1A] font-mono font-black text-lg select-none px-0.5">
-                                :
-                              </span>
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
-                                <span className="text-xl sm:text-2xl font-mono font-black text-[#1A1A1A] tabular-nums">
-                                  {csCupFeatured.team_b_score ?? 0}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Centered Match Status Indicator */}
-                            <div className="mt-2 flex items-center justify-center">
-                              {csCupFeatured.status === 'live' ? (
-                                <span className="bg-[#059669] text-white font-mono text-xs font-black px-2.5 py-1 rounded tracking-wide whitespace-nowrap border border-emerald-800 shadow-2xs">
-                                  {csCupFeatured.minute ? `${csCupFeatured.minute}' LIVE` : 'LIVE'}
-                                </span>
-                              ) : (
-                                <span className="px-2.5 py-0.5 rounded bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wide whitespace-nowrap border border-slate-300">
-                                  FINAL RESULT
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                          <span className="text-[10px] font-mono font-bold text-slate-700 bg-slate-200 border border-slate-300 px-2 py-0.5 rounded uppercase tracking-wider">
+                            UPCOMING
+                          </span>
                         )}
                       </div>
-
-                      {/* Team B */}
-                      <div className="flex flex-col items-center text-center min-w-0">
-                        <div className="w-12 h-12 rounded-md bg-white border-2 border-[#1A1A1A] mb-2 flex items-center justify-center font-mono font-black text-sm text-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
-                          {(csCupFeatured.team_b?.name || 'B').substring(0, 2).toUpperCase()}
+                    ) : (
+                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
+                        {/* Team A */}
+                        <div className="flex flex-col items-center text-center min-w-0">
+                          <div className="w-12 h-12 rounded-md bg-white border-2 border-[#1A1A1A] mb-2 flex items-center justify-center font-mono font-black text-sm text-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
+                            {(csCupFeatured.team_a?.name || 'A').substring(0, 2).toUpperCase()}
+                          </div>
+                          <span
+                            className="font-bold text-xs text-[#1A1A1A] truncate max-w-full block"
+                            title={csCupFeatured.team_a?.name}
+                          >
+                            {csCupFeatured.team_a?.name || 'Team A'}
+                          </span>
+                          <span className="text-[10px] text-slate-600 truncate max-w-full block mt-0.5 font-medium">
+                            {csCupFeatured.team_a?.department || 'CS Squad'}
+                          </span>
                         </div>
-                        <span
-                          className="font-bold text-xs text-[#1A1A1A] truncate max-w-full block"
-                          title={csCupFeatured.team_b?.name}
-                        >
-                          {csCupFeatured.team_b?.name || 'Team B'}
-                        </span>
-                        <span className="text-[10px] text-slate-600 truncate max-w-full block mt-0.5 font-medium">
-                          {csCupFeatured.team_b?.department || 'CS Squad'}
-                        </span>
+
+                        {/* Center Scoreboard / VS Unit */}
+                        <div className="flex flex-col items-center justify-center shrink-0 px-2 sm:px-3">
+                          {csCupFeatured.status === 'upcoming' ? (
+                            <div className="flex flex-col items-center justify-center">
+                              <div className="w-12 h-9 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
+                                <span className="font-mono font-black text-blue-600 text-sm tracking-widest">
+                                  VS
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-mono font-bold text-slate-700 bg-slate-200 border border-slate-300 px-2 py-0.5 rounded uppercase mt-2 tracking-wider">
+                                UPCOMING
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center">
+                              {/* Dual Score Tabular Blocks */}
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
+                                  <span className="text-xl sm:text-2xl font-mono font-black text-[#1A1A1A] tabular-nums">
+                                    {csCupFeatured.team_a_score ?? 0}
+                                  </span>
+                                </div>
+                                <span className="text-[#1A1A1A] font-mono font-black text-lg select-none px-0.5">
+                                  :
+                                </span>
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-white border-2 border-[#1A1A1A] flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
+                                  <span className="text-xl sm:text-2xl font-mono font-black text-[#1A1A1A] tabular-nums">
+                                    {csCupFeatured.team_b_score ?? 0}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Centered Match Status Indicator */}
+                              <div className="mt-2 flex items-center justify-center">
+                                {csCupFeatured.status === 'live' ? (
+                                  <span className="bg-[#059669] text-white font-mono text-xs font-black px-2.5 py-1 rounded tracking-wide whitespace-nowrap border border-emerald-800 shadow-2xs">
+                                    {csCupFeatured.minute ? `${csCupFeatured.minute}' LIVE` : 'LIVE'}
+                                  </span>
+                                ) : (
+                                  <span className="px-2.5 py-0.5 rounded bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wide whitespace-nowrap border border-slate-300">
+                                    FINAL RESULT
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Team B */}
+                        <div className="flex flex-col items-center text-center min-w-0">
+                          <div className="w-12 h-12 rounded-md bg-white border-2 border-[#1A1A1A] mb-2 flex items-center justify-center font-mono font-black text-sm text-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]">
+                            {(csCupFeatured.team_b?.name || 'B').substring(0, 2).toUpperCase()}
+                          </div>
+                          <span
+                            className="font-bold text-xs text-[#1A1A1A] truncate max-w-full block"
+                            title={csCupFeatured.team_b?.name}
+                          >
+                            {csCupFeatured.team_b?.name || 'Team B'}
+                          </span>
+                          <span className="text-[10px] text-slate-600 truncate max-w-full block mt-0.5 font-medium">
+                            {csCupFeatured.team_b?.department || 'CS Squad'}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Featured Match Date, Time & Venue Banner */}
                     {(csCupFeatured.scheduled_at || csCupFeatured.venue) && (
@@ -445,43 +441,6 @@ export default function Hero() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Anchor Strip of the 100vh Hero Viewport */}
-        <div className="relative z-10 pt-4 pb-1 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          {/* Quick Division Links */}
-          <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar max-w-full py-0.5">
-            <span className="text-white/80 font-bold text-[11px] uppercase tracking-wider shrink-0 mr-1">
-              Divisions:
-            </span>
-            {sports.map((sport) => {
-              const isCsCup = isCsCupFootball(sport.name)
-              const displayName = isCsCup ? 'CS Cup (Football)' : sport.name
-
-              return (
-                <a
-                  key={sport.id}
-                  href="#divisions"
-                  className={`shrink-0 px-2.5 py-1 rounded-md transition-all text-[11px] font-bold shadow-2xs ${
-                    isCsCup
-                      ? 'bg-[#F59E0B] text-[#1A1A1A] border-2 border-[#1A1A1A] font-black'
-                      : 'bg-white/15 border border-white/30 text-white hover:bg-white hover:text-[#1A1A1A]'
-                  }`}
-                >
-                  {displayName}
-                </a>
-              )
-            })}
-          </div>
-
-          {/* Smooth Scroll Cue to Divisions Grid */}
-          <a
-            href="#divisions"
-            className="inline-flex items-center space-x-2 text-white hover:text-[#F59E0B] font-bold transition-colors shrink-0 group select-none"
-          >
-            <span>Explore All {sports.length} Tournament Divisions</span>
-            <ArrowDown className="w-3.5 h-3.5 text-[#F59E0B] animate-bounce" />
-          </a>
-        </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -593,7 +552,7 @@ export default function Hero() {
                     </div>
                     <p className="text-xs text-slate-600 mt-1 leading-relaxed line-clamp-2 font-sans">
                       {isCsCup
-                        ? 'The flagship 6v6 football championship of CS Games 2026 with interactive tactical pitch tracking.'
+                        ? 'The flagship 6v6 football championship of CS Games 2026 with interactive formations pitch tracking.'
                         : meta.description}
                     </p>
                     {!meta.imageUrl && sport.venue && (

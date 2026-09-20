@@ -41,6 +41,7 @@ interface TournamentContextType {
   getSportById: (id: string) => Sport | undefined
   getTeamById: (id: string) => Team | undefined
   getPlayersByTeam: (teamId: string) => Player[]
+  getPlayersBySport: (sportId: string) => Player[]
 }
 
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined)
@@ -335,6 +336,13 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const getSportById = useCallback((id: string) => sports.find((s) => s.id === id), [sports])
   const getTeamById = useCallback((id: string) => teams.find((t) => t.id === id), [teams])
   const getPlayersByTeam = useCallback((teamId: string) => players.filter((p) => p.team_id === teamId), [players])
+  const getPlayersBySport = useCallback(
+    (sportId: string) => {
+      const sportTeamIds = new Set(teams.filter((t) => t.sport_id === sportId).map((t) => t.id))
+      return players.filter((p) => p.sport_id === sportId || (p.team_id && sportTeamIds.has(p.team_id)))
+    },
+    [players, teams]
+  )
 
   // Realtime & Local mutations
   const updateMatchScore = useCallback(
@@ -672,13 +680,34 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       setPlayers((prev) => [...prev, newPlayer])
 
+      // If player has no team but belongs to a sport, create initial leaderboard entry
+      if (!playerData.team_id && playerData.sport_id) {
+        const tempLbId = 'lb_' + Math.random().toString(36).substring(2, 9)
+        const initialLbEntry: LeaderboardEntry = {
+          id: tempLbId,
+          sport_id: playerData.sport_id,
+          player_id: tempId,
+          team_id: null,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          points: 0,
+          rank: 1,
+          rankChange: 'same',
+        }
+        setLeaderboards((prev) => [...prev, initialLbEntry])
+      }
+
       if (isSupabaseConfigured() && supabase) {
-        // Explicitly remove stats (and any non-table columns) from player payload during insert
+        // Explicitly remove stats (and non-table columns) from player payload during insert
         const { stats, ...playerInsertData } = playerData as any
         let { data, error } = await supabase.from('players').insert([playerInsertData]).select()
-        if (error && error.code === 'PGRST204' && playerInsertData.is_icon !== undefined) {
-          console.warn('⚠️ Supabase schema missing is_icon column, retrying without is_icon')
-          const { is_icon, ...fallbackData } = playerInsertData
+
+        // Fallback retry if columns like sport_id, department, or is_icon aren't in schema yet
+        if (error && (error.code === 'PGRST204' || error.message?.includes('column'))) {
+          console.warn('⚠️ Supabase schema missing extended columns on players, retrying with compatible payload')
+          const { sport_id: _s, department: _d, is_icon: _i, ...fallbackData } = playerInsertData
           const retry = await supabase.from('players').insert([fallbackData]).select()
           data = retry.data
           error = retry.error
@@ -689,7 +718,38 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setSupabaseError(`Failed adding player: ${error.message} (${error.code})`)
         } else if (data && data[0]) {
           const inserted = data[0] as Player
-          setPlayers((prev) => prev.map((p) => (p.id === tempId ? { ...inserted, is_icon: Boolean(playerData.is_icon) } : p)))
+          setPlayers((prev) =>
+            prev.map((p) =>
+              p.id === tempId
+                ? {
+                    ...inserted,
+                    sport_id: playerData.sport_id,
+                    department: playerData.department,
+                    is_icon: Boolean(playerData.is_icon),
+                  }
+                : p
+            )
+          )
+
+          // Also insert leaderboard entry for teamless player if needed
+          if (!playerData.team_id && playerData.sport_id) {
+            try {
+              await supabase.from('leaderboards').insert([
+                {
+                  sport_id: playerData.sport_id,
+                  player_id: inserted.id,
+                  played: 0,
+                  won: 0,
+                  drawn: 0,
+                  lost: 0,
+                  points: 0,
+                },
+              ])
+            } catch (lbErr) {
+              console.warn('Leaderboard entry insert skipped for player:', lbErr)
+            }
+          }
+
           console.log('✅ Supabase addPlayer succeeded with id:', inserted.id)
           setSupabaseError(null)
         }
@@ -701,8 +761,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const removePlayer = useCallback(
     async (playerId: string) => {
       setPlayers((prev) => prev.filter((p) => p.id !== playerId))
+      setLeaderboards((prev) => prev.filter((l) => l.player_id !== playerId))
+      setMatches((prev) => prev.filter((m) => m.player_a_id !== playerId && m.player_b_id !== playerId))
 
       if (isSupabaseConfigured() && supabase) {
+        await Promise.allSettled([
+          supabase.from('matches').delete().or(`player_a_id.eq.${playerId},player_b_id.eq.${playerId}`),
+          supabase.from('leaderboards').delete().eq('player_id', playerId),
+        ])
+
         const { error } = await supabase.from('players').delete().eq('id', playerId)
         if (error) {
           console.error('❌ Supabase removePlayer failed:', error)
@@ -901,12 +968,12 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setMatches((prev) => [newMatch, ...prev])
 
       if (isSupabaseConfigured() && supabase) {
-        // Strip client-only or joined fields (minute, team_a, team_b, sport) before Supabase insert
-        const { team_a, team_b, sport, minute, ...matchInsertData } = matchData as any
+        // Strip client-only or joined fields before Supabase insert
+        const { team_a, team_b, player_a, player_b, sport, minute, participants, ...matchInsertData } = matchData as any
         let { data, error } = await supabase.from('matches').insert([matchInsertData]).select()
-        if (error && error.code === 'PGRST204' && matchInsertData.venue !== undefined) {
-          console.warn('⚠️ Supabase missing venue column on matches, retrying without venue')
-          const { venue: _v, ...rest } = matchInsertData
+        if (error && (error.code === 'PGRST204' || error.message?.includes('column'))) {
+          console.warn('⚠️ Supabase missing extended columns on matches, retrying with fallback')
+          const { venue: _v, is_free_for_all: _ffa, player_a_id: _pa, player_b_id: _pb, ...rest } = matchInsertData
           const retry = await supabase.from('matches').insert([rest]).select()
           data = retry.data
           error = retry.error
@@ -924,6 +991,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     ...inserted,
                     minute: matchData.minute,
                     venue: matchData.venue,
+                    is_free_for_all: matchData.is_free_for_all,
+                    player_a_id: matchData.player_a_id,
+                    player_b_id: matchData.player_b_id,
+                    player_a: matchData.player_a,
+                    player_b: matchData.player_b,
                     team_a: matchData.team_a,
                     team_b: matchData.team_b,
                     sport: matchData.sport,
@@ -983,25 +1055,106 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [resetToDefaultData, fetchSupabaseData])
 
-  // Enriched matches with team objects
+  // Enriched matches with team/player objects and Free-For-All participant list
   const enrichedMatches = useMemo(() => {
-    return matches.map((m) => ({
-      ...m,
-      team_a: teams.find((t) => t.id === m.team_a_id),
-      team_b: teams.find((t) => t.id === m.team_b_id),
-      sport: sports.find((s) => s.id === m.sport_id),
-    }))
-  }, [matches, teams, sports])
+    return matches.map((m) => {
+      const sport = sports.find((s) => s.id === m.sport_id)
+      const sportTeams = teams.filter((t) => t.sport_id === m.sport_id)
+      const isFfa = sport?.type === 'free_for_all' || Boolean(m.is_free_for_all)
+
+      const sportTeamIds = new Set(sportTeams.map((t) => t.id))
+      const sportPlayers = players.filter(
+        (p) => p.sport_id === m.sport_id || (p.team_id && sportTeamIds.has(p.team_id))
+      )
+
+      const playerA = m.player_a_id ? players.find((p) => p.id === m.player_a_id) : undefined
+      const playerB = m.player_b_id ? players.find((p) => p.id === m.player_b_id) : undefined
+
+      let teamA = teams.find((t) => t.id === m.team_a_id)
+      let teamB = teams.find((t) => t.id === m.team_b_id)
+
+      // If teamA doesn't exist but playerA does, synthesize teamA so components render cleanly
+      if (!teamA && playerA) {
+        teamA = {
+          id: playerA.id,
+          name: playerA.name,
+          department: playerA.department || 'Computer Science & Engineering',
+          sport_id: m.sport_id,
+          logo_url: playerA.photo_url,
+        }
+      }
+
+      // If teamB doesn't exist but playerB does, synthesize teamB
+      if (!teamB && playerB) {
+        teamB = {
+          id: playerB.id,
+          name: playerB.name,
+          department: playerB.department || 'Computer Science & Engineering',
+          sport_id: m.sport_id,
+          logo_url: playerB.photo_url,
+        }
+      }
+
+      // Participants for Free For All
+      let participants: Team[] | undefined = undefined
+      if (isFfa) {
+        if (sportPlayers.length > 0) {
+          participants = sportPlayers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            department: p.department || 'Computer Science & Engineering',
+            sport_id: m.sport_id,
+            logo_url: p.photo_url,
+          }))
+        } else {
+          participants = sportTeams
+        }
+      }
+
+      return {
+        ...m,
+        is_free_for_all: isFfa,
+        player_a_id: m.player_a_id,
+        player_b_id: m.player_b_id,
+        player_a: playerA,
+        player_b: playerB,
+        team_a: teamA,
+        team_b: teamB,
+        participants,
+        sport,
+      }
+    })
+  }, [matches, teams, players, sports])
 
   // Enriched and sorted leaderboards with rank calculation
   const enrichedLeaderboards = useMemo(() => {
     return leaderboards
-      .map((entry) => ({
-        ...entry,
-        team: teams.find((t) => t.id === entry.team_id),
-      }))
+      .map((entry) => {
+        let team = teams.find((t) => t.id === entry.team_id)
+        const player = entry.player_id
+          ? players.find((p) => p.id === entry.player_id)
+          : !team
+          ? players.find((p) => p.id === entry.team_id)
+          : undefined
+
+        if (!team && player) {
+          team = {
+            id: player.id,
+            name: player.name,
+            department: player.department || 'Computer Science & Engineering',
+            sport_id: entry.sport_id,
+            logo_url: player.photo_url,
+          }
+        }
+
+        return {
+          ...entry,
+          team,
+          player,
+        }
+      })
       .sort((a, b) => b.points - a.points || b.won - a.won)
-  }, [leaderboards, teams])
+  }, [leaderboards, teams, players])
 
   const value = {
     sports,
@@ -1039,6 +1192,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     getSportById,
     getTeamById,
     getPlayersByTeam,
+    getPlayersBySport,
   }
 
   return <TournamentContext.Provider value={value}>{children}</TournamentContext.Provider>

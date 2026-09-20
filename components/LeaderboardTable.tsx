@@ -268,7 +268,13 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 <th className="py-3 px-4 w-14 text-center">Rank</th>
                 <th className="py-3 px-2 w-8 text-center">Δ</th>
                 <th className="py-3 px-4">
-                  {activeSport?.type === 'solo' ? 'Competitor / Department' : activeSport?.type === 'duo' ? 'Pair / Department' : 'Team / Laboratory'}
+                  {activeSport?.type === 'solo'
+                    ? 'Competitor / Department'
+                    : activeSport?.type === 'duo'
+                    ? 'Pair / Department'
+                    : activeSport?.type === 'free_for_all'
+                    ? 'Contender / Department'
+                    : 'Team / Laboratory'}
                 </th>
                 <th className="py-3 px-3 text-center">Played</th>
                 <th className="py-3 px-3 text-center text-emerald-800">Won</th>
@@ -276,7 +282,7 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 <th className="py-3 px-3 text-center text-rose-800">Lost</th>
                 <th className="py-3 px-4 text-center font-black text-[#1A1A1A]">Points</th>
                 <th className="py-3 px-4 text-right">
-                  {activeSport?.type === 'solo' ? 'Profile' : 'Roster'}
+                  {activeSport?.type === 'solo' || activeSport?.type === 'free_for_all' ? 'Profile' : 'Roster'}
                 </th>
               </tr>
             </thead>

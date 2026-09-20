@@ -36,6 +36,10 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
   // Form Fields
   const [name, setName] = useState(initialPlayer?.name || '')
   const [teamId, setTeamId] = useState(initialPlayer?.team_id || '')
+  const [department, setDepartment] = useState(initialPlayer?.department || 'Computer Science & Engineering')
+  const [formSportId, setFormSportId] = useState(
+    initialPlayer?.sport_id || activeSportId || (sports.length > 0 ? sports[0].id : '')
+  )
   const [role, setRole] = useState(initialPlayer?.role || '')
   const [jerseyNumber, setJerseyNumber] = useState<number | ''>(
     initialPlayer?.jersey_number !== undefined ? initialPlayer.jersey_number : 10
@@ -53,15 +57,18 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
 
   // Determine current sport and type
   const selectedTeam = teams.find((t) => t.id === teamId)
-  const targetSport = sports.find((s) => s.id === selectedTeam?.sport_id || s.id === activeSportId)
-  const isSoloOrDuo =
-    targetSport?.type === 'solo' || targetSport?.type === 'duo' || targetSport?.name?.toLowerCase() === 'chess'
-  const isTeamSport = !isSoloOrDuo
+  const targetSport = sports.find(
+    (s) => s.id === (formSportId || selectedTeam?.sport_id || activeSportId)
+  )
+  const isSolo = targetSport?.type === 'solo' || targetSport?.name?.toLowerCase() === 'chess'
+  const isFfa = targetSport?.type === 'free_for_all'
+  const isDirectTeamless = isSolo || isFfa
+  const isDuo = targetSport?.type === 'duo'
+  const isTeamSport = !isSolo && !isDuo && !isFfa
 
-  // Set default team if create mode and none selected
+  // Set default team if create mode and team sport
   useEffect(() => {
-    if (!isEditMode && !teamId && teams.length > 0) {
-      // Filter teams by active sport if provided
+    if (!isEditMode && !isDirectTeamless && !teamId && teams.length > 0) {
       const validTeams = activeSportId ? teams.filter((t) => t.sport_id === activeSportId) : teams
       if (validTeams.length > 0) {
         setTeamId(validTeams[0].id)
@@ -69,13 +76,15 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
         setTeamId(teams[0].id)
       }
     }
-  }, [isEditMode, teamId, teams, activeSportId])
+  }, [isEditMode, isDirectTeamless, teamId, teams, activeSportId])
 
   // Sync initialPlayer changes
   useEffect(() => {
     if (initialPlayer) {
       setName(initialPlayer.name)
-      setTeamId(initialPlayer.team_id)
+      setTeamId(initialPlayer.team_id || '')
+      setDepartment(initialPlayer.department || 'Computer Science & Engineering')
+      if (initialPlayer.sport_id) setFormSportId(initialPlayer.sport_id)
       setRole(initialPlayer.role)
       setJerseyNumber(initialPlayer.jersey_number)
       setIsIcon(Boolean(initialPlayer.is_icon))
@@ -130,7 +139,7 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
       setUploadError('Please enter an athlete name.')
       return
     }
-    if (!teamId) {
+    if (!isDirectTeamless && !teamId) {
       setUploadError('Please select a squad/team.')
       return
     }
@@ -159,25 +168,29 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
       }
 
       const assignedSportType = targetSport?.type || 'team'
-      const assignedIsSoloOrDuo = assignedSportType === 'solo' || assignedSportType === 'duo' || targetSport?.name.toLowerCase() === 'chess'
+      const assignedIsSoloOrDuo = assignedSportType === 'solo' || assignedSportType === 'duo' || targetSport?.name.toLowerCase() === 'chess' || isFfa
 
       const finalIsIcon = !assignedIsSoloOrDuo && isIcon
-      const finalRole = role.trim() || (assignedIsSoloOrDuo ? 'Competitor' : 'Athlete')
+      const finalRole = role.trim() || (isFfa ? 'Contender' : isSolo ? 'Competitor' : assignedIsSoloOrDuo ? 'Competitor' : 'Athlete')
       const finalJerseyNumber = assignedIsSoloOrDuo ? 1 : Number(jerseyNumber) || 1
+      const finalSportId = isDirectTeamless ? (targetSport?.id || activeSportId || null) : (selectedTeam?.sport_id || formSportId || null)
+      const finalTeamId = isDirectTeamless ? null : teamId
 
       // 2. Perform DB Update or Insert
       if (isEditMode && initialPlayer && updatePlayer) {
         await updatePlayer(initialPlayer.id, {
           name: cleanName,
-          team_id: teamId,
+          team_id: finalTeamId,
+          sport_id: finalSportId,
+          department: department.trim() || 'Computer Science & Engineering',
           role: finalRole,
           jersey_number: finalJerseyNumber,
           is_icon: finalIsIcon,
           photo_url: finalPhotoUrl,
         })
 
-        if (finalIsIcon && setIconPlayer) {
-          await setIconPlayer(teamId, initialPlayer.id)
+        if (finalIsIcon && finalTeamId && setIconPlayer) {
+          await setIconPlayer(finalTeamId, initialPlayer.id)
         }
 
         notify(`✅ Updated profile for ${cleanName}!`)
@@ -185,7 +198,9 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
           onSubmitSuccess({
             ...initialPlayer,
             name: cleanName,
-            team_id: teamId,
+            team_id: finalTeamId,
+            sport_id: finalSportId,
+            department: department.trim() || 'Computer Science & Engineering',
             role: finalRole,
             jersey_number: finalJerseyNumber,
             is_icon: finalIsIcon,
@@ -194,7 +209,9 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
         }
       } else if (addPlayer) {
         await addPlayer({
-          team_id: teamId,
+          team_id: finalTeamId,
+          sport_id: finalSportId,
+          department: department.trim() || 'Computer Science & Engineering',
           name: cleanName,
           photo_url: finalPhotoUrl,
           role: finalRole,
@@ -204,7 +221,7 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
           is_icon: finalIsIcon,
         })
 
-        notify(`✅ Enrolled ${cleanName} with profile photo!${finalIsIcon ? ' (Team Icon ⭐)' : ''}`)
+        notify(`✅ Enrolled ${cleanName} directly into ${targetSport?.name || 'event'}!${finalIsIcon ? ' (Team Icon ⭐)' : ''}`)
 
         // Reset fields after successful create
         setName('')
@@ -220,7 +237,9 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
         if (onSubmitSuccess) {
           onSubmitSuccess({
             id: 'new',
-            team_id: teamId,
+            team_id: finalTeamId,
+            sport_id: finalSportId,
+            department: department.trim() || 'Computer Science & Engineering',
             name: cleanName,
             photo_url: finalPhotoUrl,
             role: finalRole,
@@ -330,35 +349,62 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
       </div>
 
       {/* Grid of Attributes */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isTeamSport ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3`}>
-        {/* Squad Selection */}
-        <div>
-          <label className="block text-xs uppercase text-slate-600 font-semibold mb-1">
-            {isSoloOrDuo ? 'Assign Competitor' : 'Assign to Team'}
-          </label>
-          <select
-            value={teamId}
-            onChange={(e) => setTeamId(e.target.value)}
-            required
-            disabled={isUploading}
-            className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs"
-          >
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
+      {isDirectTeamless && (
+        <div className="p-3 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
+          <span className="font-semibold flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>Direct {targetSport?.type === 'free_for_all' ? 'Free For All' : 'Solo'} Athlete Enrollment</span>
+          </span>
+          <span className="text-[11px] text-amber-800 font-medium">No team creation required</span>
         </div>
+      )}
+
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isTeamSport ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3`}>
+        {/* Squad Selection OR Department Input */}
+        {isDirectTeamless ? (
+          <div>
+            <label className="block text-xs uppercase text-slate-600 font-semibold mb-1">
+              Department / Laboratory
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. CS AI & Robotics Lab"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              required
+              disabled={isUploading}
+              className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs"
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block text-xs uppercase text-slate-600 font-semibold mb-1">
+              {isDuo ? 'Assign Pair / Squad' : 'Assign to Team'}
+            </label>
+            <select
+              value={teamId}
+              onChange={(e) => setTeamId(e.target.value)}
+              required
+              disabled={isUploading}
+              className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs"
+            >
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Athlete Name */}
         <div>
           <label className="block text-xs uppercase text-slate-600 font-semibold mb-1">
-            {isSoloOrDuo ? 'Competitor Name' : 'Athlete Name'}
+            {isDirectTeamless ? 'Contender / Athlete Name' : isDuo ? 'Pair Athlete Name' : 'Athlete Name'}
           </label>
           <input
             type="text"
-            placeholder={isSoloOrDuo ? 'e.g. Magnus Carlsen' : 'e.g. Alex Morgan'}
+            placeholder={isFfa ? 'e.g. Linus Torvalds' : isSolo ? 'e.g. Magnus Carlsen' : 'e.g. Alex Morgan'}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -370,11 +416,11 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
         {/* Role / Position */}
         <div>
           <label className="block text-xs uppercase text-slate-600 font-semibold mb-1">
-            {isSoloOrDuo ? 'Role / Title' : 'Role / Position'}
+            {isDirectTeamless ? 'Role / Title' : 'Role / Position'}
           </label>
           <input
             type="text"
-            placeholder={isSoloOrDuo ? 'e.g. Solo Competitor' : 'e.g. Centre Forward / Sweeper'}
+            placeholder={isFfa ? 'e.g. Contender' : isSolo ? 'e.g. Candidate Master / Solo' : 'e.g. Centre Forward / Sweeper'}
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required

@@ -56,6 +56,22 @@ const config: Config = {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        slideInUp: {
+          '0%': { opacity: '0', transform: 'translateY(18px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInDown: {
+          '0%': { opacity: '0', transform: 'translateY(-18px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-22px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(22px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
         scaleIn: {
           '0%': { opacity: '0', transform: 'scale(0.96)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
@@ -78,6 +94,11 @@ const config: Config = {
         marquee: 'marquee 36s linear infinite',
         'marquee-fast': 'marquee 22s linear infinite',
         'fade-in-up': 'fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'slide-in-up': 'slideInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-in-down': 'slideInDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-in-left': 'slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-in-right': 'slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-in': 'slideInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
         'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pitch-drop': 'pitchDrop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         sheen: 'sheen 2s ease-in-out infinite',

@@ -1,4 +1,4 @@
-export type SportType = 'team' | 'solo' | 'duo'
+export type SportType = 'team' | 'solo' | 'duo' | 'free_for_all'
 
 export interface Sport {
   id: string
@@ -21,7 +21,9 @@ export interface Team {
 
 export interface Player {
   id: string
-  team_id: string
+  team_id?: string | null
+  sport_id?: string | null
+  department?: string
   name: string
   photo_url: string
   role: string
@@ -43,30 +45,39 @@ export type MatchStatus = 'upcoming' | 'live' | 'completed'
 export interface Match {
   id: string
   sport_id: string
-  team_a_id: string
-  team_b_id: string
-  team_a_score: number
-  team_b_score: number
+  team_a_id?: string | null
+  team_b_id?: string | null
+  player_a_id?: string | null
+  player_b_id?: string | null
+  team_a_score?: number
+  team_b_score?: number
   status: MatchStatus
   scheduled_at: string
   // Populated / joined properties
   team_a?: Team
   team_b?: Team
+  player_a?: Player
+  player_b?: Player
   sport?: Sport
   minute?: number
   venue?: string
+  // Free For All properties
+  is_free_for_all?: boolean
+  participants?: Team[]
 }
 
 export interface LeaderboardEntry {
   id: string
   sport_id: string
-  team_id: string
+  team_id?: string | null
+  player_id?: string | null
   played: number
   won: number
   drawn: number
   lost: number
   points: number
   team?: Team
+  player?: Player
   rank?: number
   rankChange?: 'up' | 'down' | 'same'
   goalDifference?: number

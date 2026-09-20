@@ -65,7 +65,7 @@ export default function TacticalBoard() {
             <Crosshair className="w-5 h-5 text-blue-600" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
-            CS Cup • Tactical Formation Studio
+            CS Cup • Formations Studio
           </h1>
         </div>
 
@@ -91,8 +91,8 @@ export default function TacticalBoard() {
   return (
     <div className="space-y-6">
       {/* Top Header & Team Switcher */}
-      <div className="relative overflow-hidden bg-white p-5 rounded-xl border-2 border-[#1A1A1A] flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-editorial-md">
-        {/* Subtle Tactical Pitch Vector Watermark */}
+      <div className="relative overflow-hidden bg-white p-5 rounded-xl border-2 border-[#1A1A1A] flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-editorial-md animate-slide-in-down">
+        {/* Subtle Formations Pitch Vector Watermark */}
         <svg
           className="absolute right-2 -bottom-6 w-48 h-48 text-slate-900 opacity-[0.035] pointer-events-none -rotate-12"
           viewBox="0 0 200 200"
@@ -114,11 +114,11 @@ export default function TacticalBoard() {
               <Crosshair className="w-5 h-5 text-[#1A1A1A]" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
-              CS Cup • Tactical Formation Studio
+              CS Cup • Formations Studio
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
-            6v6 pitch layout, dynamic player coordinates, and live tactical stances for the CS Cup football tournament.
+            6v6 pitch layout, dynamic player coordinates, and live formation stances for the CS Cup football tournament.
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export default function TacticalBoard() {
                 setSelectedTeamId(team.id)
                 setSelectedPlayer(null)
               }}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 hover:translate-y-[-1px] ${
                 team.id === activeTeam?.id
                   ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
                   : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
@@ -143,10 +143,10 @@ export default function TacticalBoard() {
         </div>
       </div>
 
-      {/* Main Tactical Grid */}
+      {/* Main Formations Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Pitch Display (8 Cols) */}
-        <div className="lg:col-span-8 space-y-4">
+        <div className="lg:col-span-8 space-y-4 animate-slide-in-left">
           {/* Pitch Control Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border-2 border-[#1A1A1A] shadow-editorial-sm">
             {/* Formation Display / Selectors */}
@@ -392,11 +392,11 @@ export default function TacticalBoard() {
           </div>
         </div>
 
-        {/* Tactical Info & Player Inspector (4 Cols) */}
-        <div className="lg:col-span-4 space-y-4">
+        {/* Formations Info & Player Inspector (4 Cols) */}
+        <div className="lg:col-span-4 space-y-4 animate-slide-in-right">
           {/* Selected Player Card or Default Overview */}
           {selectedPlayer ? (
-            <div className="bg-white rounded-xl p-5 space-y-4 border-2 border-[#1A1A1A] shadow-editorial-md">
+            <div key={selectedPlayer.id} className="bg-white rounded-xl p-5 space-y-4 border-2 border-[#1A1A1A] shadow-editorial-md animate-slide-in-up">
               <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
                 <div className="flex items-center space-x-2">
                   <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-[#D97706]' : 'text-[#1E40AF]'}`} />
@@ -489,7 +489,7 @@ export default function TacticalBoard() {
               </div>
             </div>
           ) : (
-            <div className="bg-white border-2 border-[#1A1A1A] rounded-xl p-5 space-y-4 shadow-editorial-md">
+            <div key="overview" className="bg-white border-2 border-[#1A1A1A] rounded-xl p-5 space-y-4 shadow-editorial-md animate-slide-in-up">
               <div className="flex items-center space-x-2 text-slate-900">
                 <Shield className="w-4 h-4 text-[#1E40AF]" />
                 <h3 className="font-serif font-black text-sm tracking-tight text-[#1A1A1A]">
@@ -540,13 +540,13 @@ export default function TacticalBoard() {
                   <Info className="w-3.5 h-3.5 text-[#1E40AF]" />
                   <span>Interactive Pitch Tip</span>
                 </p>
-                <p className="text-[11px]">Click on any athlete node on the turf pitch to view detailed tactics.</p>
+                <p className="text-[11px]">Click on any athlete node on the turf pitch to view detailed formations &amp; player dossiers.</p>
               </div>
             </div>
           )}
 
           {/* Roster & Reserves */}
-          <div className="bg-white border-2 border-[#1A1A1A] rounded-xl p-4 space-y-3 shadow-editorial-sm">
+          <div className="bg-white border-2 border-[#1A1A1A] rounded-xl p-4 space-y-3 shadow-editorial-sm animate-slide-in-up animation-delay-150">
             <div className="flex items-center justify-between text-xs">
               <span className="font-serif font-black text-slate-900 uppercase tracking-wide">6v6 Squad Roster</span>
               <span className="text-slate-500 font-mono text-[11px]">{teamPlayers.length} Members ({starting6.length} Fielded)</span>
@@ -561,7 +561,7 @@ export default function TacticalBoard() {
                   <button
                     key={p.id}
                     onClick={() => setSelectedPlayer(p)}
-                    className={`w-full flex items-center justify-between p-2 rounded-md text-xs transition-all text-left ${
+                    className={`w-full flex items-center justify-between p-2 rounded-md text-xs transition-all duration-150 text-left hover:translate-x-1 ${
                       isSelected
                         ? 'bg-blue-50 text-blue-900 border border-blue-300'
                         : isIcon

@@ -16,7 +16,7 @@ export default function Navbar() {
     { label: 'Overview', href: '/', icon: Flame },
     { label: 'Leaderboards', href: '/leaderboards', icon: Trophy },
     { label: 'Teams & Rosters', href: '/roster', icon: Users },
-    { label: 'CS Cup Pitch', href: '/tactics', icon: Crosshair },
+    { label: 'Formations', href: '/tactics', icon: Crosshair },
   ]
 
   return (

@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS sports CASCADE;
 CREATE TABLE sports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
-    type TEXT NOT NULL CHECK (type IN ('team', 'solo', 'duo')),
+    type TEXT NOT NULL CHECK (type IN ('team', 'solo', 'duo', 'free_for_all')),
     venue TEXT,
     image_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -36,10 +36,13 @@ CREATE TABLE teams (
 );
 
 -- 5. Create 'players' Table
+-- Note: team_id is nullable for athletes participating directly in solo or free_for_all events
 CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    sport_id UUID REFERENCES sports(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
+    department TEXT DEFAULT 'Computer Science & Engineering',
     photo_url TEXT,
     role TEXT NOT NULL,
     jersey_number INTEGER,
@@ -53,13 +56,16 @@ CREATE TABLE players (
 CREATE TABLE matches (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sport_id UUID NOT NULL REFERENCES sports(id) ON DELETE CASCADE,
-    team_a_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
-    team_b_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    team_a_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    team_b_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    player_a_id UUID REFERENCES players(id) ON DELETE CASCADE,
+    player_b_id UUID REFERENCES players(id) ON DELETE CASCADE,
     team_a_score INTEGER DEFAULT 0,
     team_b_score INTEGER DEFAULT 0,
     status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'live', 'completed')),
     venue TEXT,
     scheduled_at TIMESTAMPTZ NOT NULL,
+    is_free_for_all BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -67,14 +73,16 @@ CREATE TABLE matches (
 CREATE TABLE leaderboards (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sport_id UUID NOT NULL REFERENCES sports(id) ON DELETE CASCADE,
-    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    player_id UUID REFERENCES players(id) ON DELETE CASCADE,
     played INTEGER DEFAULT 0,
     won INTEGER DEFAULT 0,
     drawn INTEGER DEFAULT 0,
     lost INTEGER DEFAULT 0,
     points INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT unique_sport_team UNIQUE (sport_id, team_id)
+    CONSTRAINT unique_sport_team UNIQUE (sport_id, team_id),
+    CONSTRAINT unique_sport_player UNIQUE (sport_id, player_id)
 );
 
 -- ==============================================================================

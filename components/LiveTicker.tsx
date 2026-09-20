@@ -16,7 +16,9 @@ export default function LiveTicker() {
       type: 'live' as const,
       id: m.id,
       sport: m.sport?.name || 'Match',
-      text: `${m.team_a?.name} ${m.team_a_score ?? 0} - ${m.team_b_score ?? 0} ${m.team_b?.name}`,
+      text: m.is_free_for_all || m.sport?.type === 'free_for_all'
+        ? `Free For All Mass Showdown • All ${m.participants?.length || 'Enrolled'} Competitors in Action`
+        : `${m.team_a?.name || 'Team A'} ${m.team_a_score ?? 0} - ${m.team_b_score ?? 0} ${m.team_b?.name || 'Team B'}`,
       minute: m.minute ? `${m.minute}'` : 'LIVE',
     })),
     {
@@ -30,7 +32,9 @@ export default function LiveTicker() {
       type: 'upcoming' as const,
       id: m.id,
       sport: m.sport?.name || 'Fixture',
-      text: `${m.team_a?.name} vs ${m.team_b?.name}`,
+      text: m.is_free_for_all || m.sport?.type === 'free_for_all'
+        ? `Free For All Championship • All ${m.participants?.length || 'Enrolled'} Competitors Participating`
+        : `${m.team_a?.name || 'Team A'} vs ${m.team_b?.name || 'Team B'}`,
       minute: 'UPCOMING',
     })),
     {

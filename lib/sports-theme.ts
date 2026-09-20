@@ -194,7 +194,14 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
   const imageUrl = isAllowed ? (customImg || defaultImg) : undefined
 
   // Format badge based on sport or type
-  let badgeText = type === 'duo' ? 'DOUBLES' : type === 'solo' ? 'SOLO 1v1' : 'TEAM'
+  let badgeText =
+    type === 'free_for_all'
+      ? 'FREE FOR ALL'
+      : type === 'duo'
+      ? 'DOUBLES'
+      : type === 'solo'
+      ? 'SOLO 1v1'
+      : 'TEAM'
 
   // Pre-configured flagship sports: The CS Cup (Strictly physical 6v6 Football)
   if (isCsCupFootball(name)) {
@@ -210,6 +217,23 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       description: 'The marquee 6v6 football championship of CS Games 2026 with interactive tactical pitch tracking.',
       link: '/tactics',
       actionLabel: 'CS Cup Tactical Pitch',
+    }
+  }
+
+  // Free For All category events (Mass / All-Play showdowns)
+  if (type === 'free_for_all') {
+    return {
+      name,
+      type,
+      icon: Swords,
+      imageUrl,
+      badgeText: 'FREE FOR ALL',
+      colorClass: 'text-amber-800',
+      bgBadgeClass: 'bg-amber-100 text-amber-900 border-amber-300 font-mono font-bold',
+      borderHoverClass: 'hover:border-amber-400',
+      description: `Open-field mass championship for ${name}. All registered participants compete simultaneously in the event match.`,
+      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
+      actionLabel: 'View FFA Standings',
     }
   }
 
