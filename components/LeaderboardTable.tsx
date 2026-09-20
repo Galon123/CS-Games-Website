@@ -345,22 +345,22 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                         )}
                       </td>
 
-                      {/* Team */}
+                      {/* Competitor / Team */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold font-mono text-slate-700 shrink-0 group-hover:border-blue-300 transition-colors">
-                            {(team?.name || 'T').substring(0, 2).toUpperCase()}
+                            {(team?.name || entry.player?.name || '?').substring(0, 2).toUpperCase()}
                           </div>
                           <div>
                             <div className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors flex items-center space-x-1.5">
-                              <span>{team?.name || 'Team'}</span>
+                              <span>{team?.name || entry.player?.name || '—'}</span>
                               {rank === 1 && (
                                 <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 font-sans">
                                   LEADER
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-slate-500">{team?.department}</div>
+                            <div className="text-[11px] text-slate-500">{team?.department || entry.player?.department}</div>
                           </div>
                         </div>
                       </td>

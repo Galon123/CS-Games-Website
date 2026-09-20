@@ -1130,13 +1130,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const enrichedLeaderboards = useMemo(() => {
     return leaderboards
       .map((entry) => {
-        let team = teams.find((t) => t.id === entry.team_id)
+        // Resolve team
+        let team = entry.team_id ? teams.find((t) => t.id === entry.team_id) : undefined
+
+        // Resolve player — prefer explicit player_id link
         const player = entry.player_id
           ? players.find((p) => p.id === entry.player_id)
-          : !team
-          ? players.find((p) => p.id === entry.team_id)
           : undefined
 
+        // Synthesize a virtual "team" object from player data for solo/FFA entries
         if (!team && player) {
           team = {
             id: player.id,
@@ -1153,6 +1155,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           player,
         }
       })
+      // Drop orphaned entries where neither a team nor a player could be resolved
+      .filter((entry) => Boolean(entry.team))
       .sort((a, b) => b.points - a.points || b.won - a.won)
   }, [leaderboards, teams, players])
 
