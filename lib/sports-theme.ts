@@ -197,6 +197,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
   let badgeText =
     type === 'free_for_all'
       ? 'FREE FOR ALL'
+      : type === 'quad'
+      ? '1v1v1v1'
       : type === 'duo'
       ? 'DOUBLES'
       : type === 'solo'
@@ -234,6 +236,23 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       description: `Open-field mass championship for ${name}. All registered participants compete simultaneously in the event match.`,
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View FFA Standings',
+    }
+  }
+
+  // Quad 1v1v1v1 Category events (4-player simultaneous board games)
+  if (type === 'quad') {
+    return {
+      name,
+      type,
+      icon: Layers,
+      imageUrl,
+      badgeText: '1v1v1v1',
+      colorClass: 'text-violet-700',
+      bgBadgeClass: 'bg-violet-100 text-violet-900 border-violet-300 font-mono font-bold',
+      borderHoverClass: 'hover:border-violet-400',
+      description: `4-Player 1v1v1v1 board championship for ${name}. Four solo contenders face off on a single board simultaneously.`,
+      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
+      actionLabel: 'View Standings',
     }
   }
 
@@ -292,17 +311,18 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
     }
   }
 
-  if (normalized === 'carrom' || normalized === 'carroms') {
+  if (normalized === 'carrom' || normalized === 'carroms' || normalized.includes('carrom')) {
+    const isCarromDuo = type === 'duo'
     return {
       name,
-      type,
+      type: type || 'quad',
       icon: Layers,
       imageUrl,
-      badgeText: 'DOUBLES',
+      badgeText: isCarromDuo ? 'DOUBLES' : '1v1v1v1',
       colorClass: 'text-violet-700',
-      bgBadgeClass: 'bg-violet-50 text-violet-700 border-violet-200',
+      bgBadgeClass: isCarromDuo ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-violet-100 text-violet-900 border-violet-300 font-mono font-bold',
       borderHoverClass: 'hover:border-violet-300',
-      description: 'Doubles tournament board play and points standings.',
+      description: isCarromDuo ? 'Doubles tournament board play and points standings.' : '4-Player 1v1v1v1 Carrom showdown — solo contenders face off on a single board simultaneously.',
       link: `/leaderboards?sport=${encodeURIComponent(name)}`,
       actionLabel: 'View Standings',
     }

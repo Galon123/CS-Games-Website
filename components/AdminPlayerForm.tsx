@@ -60,11 +60,13 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
   const targetSport = sports.find(
     (s) => s.id === (formSportId || selectedTeam?.sport_id || activeSportId)
   )
+  const isCarrom = targetSport?.name?.toLowerCase().includes('carrom')
   const isSolo = targetSport?.type === 'solo' || targetSport?.name?.toLowerCase() === 'chess'
   const isFfa = targetSport?.type === 'free_for_all'
-  const isDirectTeamless = isSolo || isFfa
-  const isDuo = targetSport?.type === 'duo'
-  const isTeamSport = !isSolo && !isDuo && !isFfa
+  const isQuad = targetSport?.type === 'quad' || (isCarrom && targetSport?.type !== 'duo')
+  const isDirectTeamless = isSolo || isFfa || isQuad
+  const isDuo = targetSport?.type === 'duo' && !isQuad
+  const isTeamSport = !isDirectTeamless && !isDuo
 
   // Set default team if create mode and team sport
   useEffect(() => {
@@ -168,10 +170,10 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
       }
 
       const assignedSportType = targetSport?.type || 'team'
-      const assignedIsSoloOrDuo = assignedSportType === 'solo' || assignedSportType === 'duo' || targetSport?.name.toLowerCase() === 'chess' || isFfa
+      const assignedIsSoloOrDuo = assignedSportType === 'solo' || assignedSportType === 'duo' || assignedSportType === 'quad' || targetSport?.name.toLowerCase() === 'chess' || isFfa || isQuad
 
       const finalIsIcon = !assignedIsSoloOrDuo && isIcon
-      const finalRole = role.trim() || (isFfa ? 'Contender' : isSolo ? 'Competitor' : assignedIsSoloOrDuo ? 'Competitor' : 'Athlete')
+      const finalRole = role.trim() || (isQuad ? 'Player' : isFfa ? 'Contender' : isSolo ? 'Competitor' : assignedIsSoloOrDuo ? 'Competitor' : 'Athlete')
       const finalJerseyNumber = assignedIsSoloOrDuo ? 1 : Number(jerseyNumber) || 1
       const finalSportId = isDirectTeamless ? (targetSport?.id || activeSportId || null) : (selectedTeam?.sport_id || formSportId || null)
       const finalTeamId = isDirectTeamless ? null : teamId
@@ -353,7 +355,7 @@ export const AdminPlayerForm: React.FC<AdminPlayerFormProps> = ({
         <div className="p-3 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
           <span className="font-semibold flex items-center space-x-1.5">
             <span className="w-2 h-2 rounded-full bg-amber-500" />
-            <span>Direct {targetSport?.type === 'free_for_all' ? 'Free For All' : 'Solo'} Athlete Enrollment</span>
+            <span>Direct {isQuad ? '1v1v1v1' : isFfa ? 'Free For All' : 'Solo'} Athlete Enrollment</span>
           </span>
           <span className="text-[11px] text-amber-800 font-medium">No team creation required</span>
         </div>

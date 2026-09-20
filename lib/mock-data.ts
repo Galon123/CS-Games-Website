@@ -4,7 +4,7 @@ export const initialSports: Sport[] = [
   { id: '11111111-1111-1111-1111-111111111111', name: 'Football', type: 'team', venue: 'Main Outdoor Turf Stadium', image_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop' },
   { id: '22222222-2222-2222-2222-222222222222', name: 'Badminton', type: 'duo', venue: 'Indoor Badminton Arena (Court 1)', image_url: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&auto=format&fit=crop' },
   { id: '33333333-3333-3333-3333-333333333333', name: 'Chess', type: 'solo', venue: 'Seminar Hall A', image_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop' },
-  { id: '44444444-4444-4444-4444-444444444444', name: 'Carrom', type: 'duo', venue: 'Student Activity Center', image_url: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop' },
+  { id: '44444444-4444-4444-4444-444444444444', name: 'Carrom', type: 'quad', venue: 'Student Activity Center', image_url: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop' },
 ]
 
 

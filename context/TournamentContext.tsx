@@ -19,7 +19,14 @@ interface TournamentContextType {
   supabaseConnected: boolean
   supabaseError: string | null
   refreshSupabaseData: () => Promise<void>
-  updateMatchScore: (matchId: string, teamAScore: number, teamBScore: number, status?: MatchStatus) => Promise<void>
+  updateMatchScore: (
+    matchId: string,
+    teamAScore: number,
+    teamBScore: number,
+    status?: MatchStatus,
+    playerCScore?: number,
+    playerDScore?: number
+  ) => Promise<void>
   updateMatchSchedule: (matchId: string, scheduled_at: string, venue?: string) => Promise<void>
   updateLeaderboard: (leaderboardId: string, updates: Partial<LeaderboardEntry>) => Promise<void>
   updateTeamFormation: (teamId: string, formation: string, options?: TacticalOptions) => Promise<void>
@@ -346,7 +353,14 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Realtime & Local mutations
   const updateMatchScore = useCallback(
-    async (matchId: string, teamAScore: number, teamBScore: number, status?: MatchStatus) => {
+    async (
+      matchId: string,
+      teamAScore: number,
+      teamBScore: number,
+      status?: MatchStatus,
+      playerCScore?: number,
+      playerDScore?: number
+    ) => {
       // 1. Optimistic local state update
       setMatches((prev) =>
         prev.map((m) => {
@@ -355,6 +369,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               ...m,
               team_a_score: teamAScore,
               team_b_score: teamBScore,
+              player_c_score: playerCScore !== undefined ? playerCScore : m.player_c_score,
+              player_d_score: playerDScore !== undefined ? playerDScore : m.player_d_score,
               status: status ?? m.status,
             }
           }
@@ -368,9 +384,21 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           team_a_score: teamAScore,
           team_b_score: teamBScore,
         }
+        if (playerCScore !== undefined) payload.player_c_score = playerCScore
+        if (playerDScore !== undefined) payload.player_d_score = playerDScore
         if (status) payload.status = status
 
-        const { error } = await supabase.from('matches').update(payload).eq('id', matchId)
+        let { error } = await supabase.from('matches').update(payload).eq('id', matchId)
+        if (error && (error.code === 'PGRST204' || error.message?.includes('column'))) {
+          console.warn('⚠️ Supabase schema missing player_c_score/player_d_score, retrying without extended columns')
+          const fallbackPayload: Record<string, unknown> = {
+            team_a_score: teamAScore,
+            team_b_score: teamBScore,
+          }
+          if (status) fallbackPayload.status = status
+          const retry = await supabase.from('matches').update(fallbackPayload).eq('id', matchId)
+          error = retry.error
+        }
         if (error) {
           console.error('❌ Supabase updateMatchScore failed:', error)
           setSupabaseError(`Failed updating match: ${error.message} (${error.code})`)
@@ -969,11 +997,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       if (isSupabaseConfigured() && supabase) {
         // Strip client-only or joined fields before Supabase insert
-        const { team_a, team_b, player_a, player_b, sport, minute, participants, ...matchInsertData } = matchData as any
+        const { team_a, team_b, player_a, player_b, player_c, player_d, sport, minute, participants, ...matchInsertData } = matchData as any
         let { data, error } = await supabase.from('matches').insert([matchInsertData]).select()
         if (error && (error.code === 'PGRST204' || error.message?.includes('column'))) {
           console.warn('⚠️ Supabase missing extended columns on matches, retrying with fallback')
-          const { venue: _v, is_free_for_all: _ffa, player_a_id: _pa, player_b_id: _pb, ...rest } = matchInsertData
+          const { venue: _v, is_free_for_all: _ffa, is_quad: _iq, player_a_id: _pa, player_b_id: _pb, player_c_id: _pc, player_d_id: _pd, player_c_score: _pcs, player_d_score: _pds, ...rest } = matchInsertData
           const retry = await supabase.from('matches').insert([rest]).select()
           data = retry.data
           error = retry.error
@@ -992,10 +1020,19 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     minute: matchData.minute,
                     venue: matchData.venue,
                     is_free_for_all: matchData.is_free_for_all,
+                    is_quad: matchData.is_quad,
                     player_a_id: matchData.player_a_id,
                     player_b_id: matchData.player_b_id,
+                    player_c_id: matchData.player_c_id,
+                    player_d_id: matchData.player_d_id,
+                    team_a_score: matchData.team_a_score,
+                    team_b_score: matchData.team_b_score,
+                    player_c_score: matchData.player_c_score,
+                    player_d_score: matchData.player_d_score,
                     player_a: matchData.player_a,
                     player_b: matchData.player_b,
+                    player_c: matchData.player_c,
+                    player_d: matchData.player_d,
                     team_a: matchData.team_a,
                     team_b: matchData.team_b,
                     sport: matchData.sport,
@@ -1055,12 +1092,14 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [resetToDefaultData, fetchSupabaseData])
 
-  // Enriched matches with team/player objects and Free-For-All participant list
+  // Enriched matches with team/player objects and Free-For-All / Quad participant list
   const enrichedMatches = useMemo(() => {
     return matches.map((m) => {
       const sport = sports.find((s) => s.id === m.sport_id)
       const sportTeams = teams.filter((t) => t.sport_id === m.sport_id)
-      const isFfa = sport?.type === 'free_for_all' || Boolean(m.is_free_for_all)
+      const isCarrom = sport?.name?.toLowerCase().includes('carrom')
+      const isQuad = Boolean(m.is_quad) || sport?.type === 'quad' || (isCarrom && Boolean(m.player_c_id || m.player_d_id || (sport?.type !== 'duo' && sport?.type !== 'team')))
+      const isFfa = (sport?.type === 'free_for_all' || Boolean(m.is_free_for_all)) && !isQuad
 
       const sportTeamIds = new Set(sportTeams.map((t) => t.id))
       const sportPlayers = players.filter(
@@ -1069,6 +1108,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       const playerA = m.player_a_id ? players.find((p) => p.id === m.player_a_id) : undefined
       const playerB = m.player_b_id ? players.find((p) => p.id === m.player_b_id) : undefined
+      const playerC = m.player_c_id ? players.find((p) => p.id === m.player_c_id) : undefined
+      const playerD = m.player_d_id ? players.find((p) => p.id === m.player_d_id) : undefined
 
       let teamA = teams.find((t) => t.id === m.team_a_id)
       let teamB = teams.find((t) => t.id === m.team_b_id)
@@ -1095,7 +1136,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       }
 
-      // Participants for Free For All
+      // Participants for Free For All or Quad
       let participants: Team[] | undefined = undefined
       if (isFfa) {
         if (sportPlayers.length > 0) {
@@ -1114,10 +1155,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return {
         ...m,
         is_free_for_all: isFfa,
+        is_quad: isQuad,
         player_a_id: m.player_a_id,
         player_b_id: m.player_b_id,
+        player_c_id: m.player_c_id,
+        player_d_id: m.player_d_id,
         player_a: playerA,
         player_b: playerB,
+        player_c: playerC,
+        player_d: playerD,
         team_a: teamA,
         team_b: teamB,
         participants,

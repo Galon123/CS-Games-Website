@@ -138,6 +138,8 @@ export default function AdminPanel() {
   const [newMatchTeamBId, setNewMatchTeamBId] = useState('')
   const [newMatchPlayerAId, setNewMatchPlayerAId] = useState('')
   const [newMatchPlayerBId, setNewMatchPlayerBId] = useState('')
+  const [newMatchPlayerCId, setNewMatchPlayerCId] = useState('')
+  const [newMatchPlayerDId, setNewMatchPlayerDId] = useState('')
   const [newMatchStatus, setNewMatchStatus] = useState<MatchStatus>('upcoming')
   const [newMatchVenue, setNewMatchVenue] = useState('')
   const [newMatchDate, setNewMatchDate] = useState<string>(() => {
@@ -152,6 +154,8 @@ export default function AdminPanel() {
   })
   const [newMatchTeamAScore, setNewMatchTeamAScore] = useState(0)
   const [newMatchTeamBScore, setNewMatchTeamBScore] = useState(0)
+  const [newMatchPlayerCScore, setNewMatchPlayerCScore] = useState(0)
+  const [newMatchPlayerDScore, setNewMatchPlayerDScore] = useState(0)
   const [isSubmittingMatch, setIsSubmittingMatch] = useState(false)
 
   // Fixture schedule editing state
@@ -209,14 +213,14 @@ export default function AdminPanel() {
     return teams.filter((t) => t.sport_id === newMatchSportId)
   }, [teams, newMatchSportId])
 
-  // Sync available players for match scheduling (for solo & FFA sports)
+  // Sync available players for match scheduling (for solo, FFA & quad sports)
   const playersInMatchSport = useMemo(() => {
     const sportTeamIds = new Set(teams.filter((t) => t.sport_id === newMatchSportId).map((t) => t.id))
     return players.filter((p) => p.sport_id === newMatchSportId || (p.team_id && sportTeamIds.has(p.team_id)))
   }, [players, teams, newMatchSportId])
 
   React.useEffect(() => {
-    if (playersInMatchSport.length >= 2) {
+    if (playersInMatchSport.length >= 4) {
       if (!newMatchPlayerAId || !playersInMatchSport.some((p) => p.id === newMatchPlayerAId)) {
         setNewMatchPlayerAId(playersInMatchSport[0].id)
       }
@@ -227,14 +231,48 @@ export default function AdminPanel() {
       ) {
         setNewMatchPlayerBId(playersInMatchSport[1].id)
       }
+      if (
+        !newMatchPlayerCId ||
+        !playersInMatchSport.some((p) => p.id === newMatchPlayerCId) ||
+        newMatchPlayerCId === playersInMatchSport[0]?.id ||
+        newMatchPlayerCId === playersInMatchSport[1]?.id
+      ) {
+        setNewMatchPlayerCId(playersInMatchSport[2].id)
+      }
+      if (
+        !newMatchPlayerDId ||
+        !playersInMatchSport.some((p) => p.id === newMatchPlayerDId) ||
+        newMatchPlayerDId === playersInMatchSport[0]?.id ||
+        newMatchPlayerDId === playersInMatchSport[1]?.id ||
+        newMatchPlayerDId === playersInMatchSport[2]?.id
+      ) {
+        setNewMatchPlayerDId(playersInMatchSport[3].id)
+      }
+    } else if (playersInMatchSport.length >= 2) {
+      if (!newMatchPlayerAId || !playersInMatchSport.some((p) => p.id === newMatchPlayerAId)) {
+        setNewMatchPlayerAId(playersInMatchSport[0].id)
+      }
+      if (
+        !newMatchPlayerBId ||
+        !playersInMatchSport.some((p) => p.id === newMatchPlayerBId) ||
+        newMatchPlayerBId === playersInMatchSport[0]?.id
+      ) {
+        setNewMatchPlayerBId(playersInMatchSport[1].id)
+      }
+      setNewMatchPlayerCId('')
+      setNewMatchPlayerDId('')
     } else if (playersInMatchSport.length === 1) {
       setNewMatchPlayerAId(playersInMatchSport[0].id)
       setNewMatchPlayerBId('')
+      setNewMatchPlayerCId('')
+      setNewMatchPlayerDId('')
     } else {
       setNewMatchPlayerAId('')
       setNewMatchPlayerBId('')
+      setNewMatchPlayerCId('')
+      setNewMatchPlayerDId('')
     }
-  }, [playersInMatchSport, newMatchPlayerAId, newMatchPlayerBId])
+  }, [playersInMatchSport, newMatchPlayerAId, newMatchPlayerBId, newMatchPlayerCId, newMatchPlayerDId])
 
   React.useEffect(() => {
     if (teamsInMatchSport.length >= 2) {
@@ -377,10 +415,26 @@ export default function AdminPanel() {
       return
     }
 
-    const isSolo = targetSport.type === 'solo' || targetSport.name.toLowerCase() === 'chess'
-    const isFfa = targetSport.type === 'free_for_all'
+    const isCarrom = targetSport.name.toLowerCase().includes('carrom')
+    const isQuad = targetSport.type === 'quad' || (isCarrom && targetSport.type !== 'duo')
+    const isSolo = (targetSport.type === 'solo' || targetSport.name.toLowerCase() === 'chess') && !isQuad
+    const isFfa = targetSport.type === 'free_for_all' && !isQuad
 
-    if (isSolo) {
+    if (isQuad) {
+      if (playersInMatchSport.length < 4) {
+        notify(`Please enroll at least 4 competitors in ${targetSport.name} before scheduling a 1v1v1v1 match.`)
+        return
+      }
+      if (!newMatchPlayerAId || !newMatchPlayerBId || !newMatchPlayerCId || !newMatchPlayerDId) {
+        notify('Please select all 4 competitors for this 1v1v1v1 match.')
+        return
+      }
+      const uniqueSelected = new Set([newMatchPlayerAId, newMatchPlayerBId, newMatchPlayerCId, newMatchPlayerDId])
+      if (uniqueSelected.size !== 4) {
+        notify('All 4 competitors must be different athletes.')
+        return
+      }
+    } else if (isSolo) {
       if (playersInMatchSport.length < 2) {
         notify(`Please enroll at least 2 competitors in ${targetSport.name} before scheduling a solo match.`)
         return
@@ -423,20 +477,31 @@ export default function AdminPanel() {
     try {
       await addMatch({
         sport_id: targetSport.id,
-        player_a_id: isSolo ? newMatchPlayerAId : undefined,
-        player_b_id: isSolo ? newMatchPlayerBId : undefined,
-        team_a_id: isSolo ? null : isFfa ? (teamsInMatchSport[0]?.id || null) : newMatchTeamAId,
-        team_b_id: isSolo ? null : isFfa ? (teamsInMatchSport[1]?.id || teamsInMatchSport[0]?.id || null) : newMatchTeamBId,
+        player_a_id: isSolo || isQuad ? newMatchPlayerAId : undefined,
+        player_b_id: isSolo || isQuad ? newMatchPlayerBId : undefined,
+        player_c_id: isQuad ? newMatchPlayerCId : undefined,
+        player_d_id: isQuad ? newMatchPlayerDId : undefined,
+        team_a_id: isSolo || isQuad ? null : isFfa ? (teamsInMatchSport[0]?.id || null) : newMatchTeamAId,
+        team_b_id: isSolo || isQuad ? null : isFfa ? (teamsInMatchSport[1]?.id || teamsInMatchSport[0]?.id || null) : newMatchTeamBId,
         team_a_score: isFfa ? 0 : Number(newMatchTeamAScore) || 0,
         team_b_score: isFfa ? 0 : Number(newMatchTeamBScore) || 0,
+        player_c_score: isQuad ? Number(newMatchPlayerCScore) || 0 : undefined,
+        player_d_score: isQuad ? Number(newMatchPlayerDScore) || 0 : undefined,
         status: newMatchStatus,
         scheduled_at: scheduledAt,
         minute: newMatchStatus === 'live' ? 1 : undefined,
         venue: newMatchVenue.trim() || targetSport.venue || undefined,
         is_free_for_all: isFfa,
+        is_quad: isQuad,
       })
 
-      if (isFfa) {
+      if (isQuad) {
+        const partA = players.find((p) => p.id === newMatchPlayerAId)?.name || 'P1'
+        const partB = players.find((p) => p.id === newMatchPlayerBId)?.name || 'P2'
+        const partC = players.find((p) => p.id === newMatchPlayerCId)?.name || 'P3'
+        const partD = players.find((p) => p.id === newMatchPlayerDId)?.name || 'P4'
+        notify(`1v1v1v1 Match scheduled: ${partA} vs ${partB} vs ${partC} vs ${partD} in ${targetSport.name}!`)
+      } else if (isFfa) {
         const participantCount = playersInMatchSport.length > 0 ? playersInMatchSport.length : teamsInMatchSport.length
         notify(`Free For All event scheduled: ${targetSport.name} with all ${participantCount} participants!`)
       } else if (isSolo) {
@@ -450,6 +515,8 @@ export default function AdminPanel() {
       }
       setNewMatchTeamAScore(0)
       setNewMatchTeamBScore(0)
+      setNewMatchPlayerCScore(0)
+      setNewMatchPlayerDScore(0)
     } catch (err: any) {
       notify(`Failed scheduling match: ${err?.message || 'Error'}`)
     } finally {
@@ -1029,9 +1096,11 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg p-5 space-y-4">
             {(() => {
               const currentMatchSport = sports.find((s) => s.id === newMatchSportId) || sports[0]
-              const isSolo = currentMatchSport?.type === 'solo' || currentMatchSport?.name?.toLowerCase() === 'chess'
-              const isDuo = currentMatchSport?.type === 'duo'
-              const isFfa = currentMatchSport?.type === 'free_for_all'
+              const isCarromMatch = currentMatchSport?.name?.toLowerCase().includes('carrom')
+              const isQuad = currentMatchSport?.type === 'quad' || (isCarromMatch && currentMatchSport?.type !== 'duo')
+              const isSolo = (currentMatchSport?.type === 'solo' || currentMatchSport?.name?.toLowerCase() === 'chess') && !isQuad
+              const isDuo = currentMatchSport?.type === 'duo' && !isQuad
+              const isFfa = currentMatchSport?.type === 'free_for_all' && !isQuad
 
               return (
                 <div>
@@ -1040,7 +1109,9 @@ END $$;`
                       <h3 className="font-serif font-bold text-slate-900 text-sm uppercase tracking-wide flex items-center space-x-2">
                         <Plus className="w-4 h-4 text-blue-600" />
                         <span>
-                          {isFfa
+                          {isQuad
+                            ? `Schedule 1v1v1v1 Quad Match (${currentMatchSport?.name || 'Carrom'})`
+                            : isFfa
                             ? `Schedule Free For All Event (${currentMatchSport?.name || 'All-Play'})`
                             : isSolo
                             ? `Schedule Solo Match (1v1 - ${currentMatchSport?.name || 'Chess'})`
@@ -1050,7 +1121,9 @@ END $$;`
                         </span>
                       </h3>
                       <p className="text-xs text-slate-600 mt-0.5">
-                        {isFfa
+                        {isQuad
+                          ? `Assign four individual competitors around the board for this 1v1v1v1 ${currentMatchSport?.name || 'Carrom'} showdown.`
+                          : isFfa
                           ? `All ${teamsInMatchSport.length} enrolled participants compete simultaneously in this mass event match.`
                           : isSolo
                           ? `Assign two competing players and official match venue for ${currentMatchSport?.name}.`
@@ -1060,7 +1133,9 @@ END $$;`
                       </p>
                     </div>
                     <span className={`text-[10px] px-2.5 py-0.5 rounded-md font-medium uppercase self-start border ${
-                      isFfa
+                      isQuad
+                        ? 'bg-violet-100 text-violet-900 border-violet-300 font-bold'
+                        : isFfa
                         ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold'
                         : isSolo
                         ? 'bg-blue-50 text-blue-700 border-blue-200'
@@ -1068,11 +1143,35 @@ END $$;`
                         ? 'bg-purple-50 text-purple-700 border-purple-200'
                         : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     }`}>
-                      {isFfa ? 'Free For All Mass Scheduler' : isSolo ? 'Solo 1v1 Scheduler' : isDuo ? 'Doubles 2v2 Scheduler' : 'Squad Match Scheduler'}
+                      {isQuad ? '1v1v1v1 Quad Match Scheduler' : isFfa ? 'Free For All Mass Scheduler' : isSolo ? 'Solo 1v1 Scheduler' : isDuo ? 'Doubles 2v2 Scheduler' : 'Squad Match Scheduler'}
                     </span>
                   </div>
 
-                  {!isFfa && !isSolo && teamsInMatchSport.length < 2 ? (
+                  {isQuad && playersInMatchSport.length < 4 ? (
+                    <div className="p-4 rounded-md bg-amber-50 border border-amber-200 text-xs space-y-2">
+                      <div className="flex items-center space-x-2 text-amber-800 font-medium">
+                        <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+                        <span>
+                          Need at least 4 competitors in {currentMatchSport?.name || 'this 1v1v1v1 event'} to schedule a match.
+                        </span>
+                      </div>
+                      <p className="text-slate-600 text-[11px]">
+                        Contenders enroll directly into {currentMatchSport?.name || 'Carrom'} without creating teams. Currently {playersInMatchSport.length} competitor(s) registered.
+                      </p>
+                      <div className="flex items-center space-x-3 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTab('players')
+                            setPlayerEnrollSportId(newMatchSportId)
+                          }}
+                          className="px-3.5 h-10 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs transition-all shadow-sm flex items-center"
+                        >
+                          Enroll Carrom Competitors Now →
+                        </button>
+                      </div>
+                    </div>
+                  ) : !isFfa && !isSolo && !isQuad && teamsInMatchSport.length < 2 ? (
                     <div className="p-4 rounded-md bg-amber-50 border border-amber-200 text-xs space-y-2">
                       <div className="flex items-center space-x-2 text-amber-800 font-medium">
                         <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
@@ -1170,13 +1269,87 @@ END $$;`
                           >
                             {sports.map((s) => (
                               <option key={s.id} value={s.id}>
-                                {s.name} ({s.type === 'free_for_all' ? 'Free For All' : s.type === 'solo' ? '1v1 Solo' : s.type === 'duo' ? '2v2 Duo' : 'Team'})
+                                {s.name} ({s.type === 'free_for_all' ? 'Free For All' : s.type === 'quad' || (s.name.toLowerCase().includes('carrom') && s.type !== 'duo') ? '1v1v1v1 Quad' : s.type === 'solo' ? '1v1 Solo' : s.type === 'duo' ? '2v2 Duo' : 'Team'})
                               </option>
                             ))}
                           </select>
                         </div>
 
-                        {isFfa ? (
+                        {isQuad ? (
+                          <>
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-600 uppercase mb-1 flex items-center space-x-1">
+                                <span className="w-2 h-2 rounded-full bg-red-600" />
+                                <span>Player 1 (North)</span>
+                              </label>
+                              <select
+                                value={newMatchPlayerAId}
+                                onChange={(e) => setNewMatchPlayerAId(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs font-medium"
+                              >
+                                {playersInMatchSport.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.department ? `(${p.department})` : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-600 uppercase mb-1 flex items-center space-x-1">
+                                <span className="w-2 h-2 rounded-full bg-blue-600" />
+                                <span>Player 2 (South)</span>
+                              </label>
+                              <select
+                                value={newMatchPlayerBId}
+                                onChange={(e) => setNewMatchPlayerBId(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs font-medium"
+                              >
+                                {playersInMatchSport.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.department ? `(${p.department})` : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-600 uppercase mb-1 flex items-center space-x-1">
+                                <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                                <span>Player 3 (East)</span>
+                              </label>
+                              <select
+                                value={newMatchPlayerCId}
+                                onChange={(e) => setNewMatchPlayerCId(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs font-medium"
+                              >
+                                {playersInMatchSport.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.department ? `(${p.department})` : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-600 uppercase mb-1 flex items-center space-x-1">
+                                <span className="w-2 h-2 rounded-full bg-amber-600" />
+                                <span>Player 4 (West)</span>
+                              </label>
+                              <select
+                                value={newMatchPlayerDId}
+                                onChange={(e) => setNewMatchPlayerDId(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs font-medium"
+                              >
+                                {playersInMatchSport.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.department ? `(${p.department})` : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </>
+                        ) : isFfa ? (
                           <div className="sm:col-span-2 xl:col-span-2">
                             <label className="block text-[11px] font-semibold text-slate-600 uppercase mb-1 flex items-center justify-between">
                               <span className="flex items-center space-x-1">
@@ -1306,7 +1479,7 @@ END $$;`
                           </label>
                           <input
                             type="text"
-                            placeholder={isSolo ? 'e.g. Seminar Hall A' : isDuo ? 'e.g. Badminton Court 1' : 'e.g. Main Turf Stadium'}
+                            placeholder={isQuad ? 'e.g. Activity Center Board 1' : isSolo ? 'e.g. Seminar Hall A' : isDuo ? 'e.g. Badminton Court 1' : 'e.g. Main Turf Stadium'}
                             value={newMatchVenue}
                             onChange={(e) => setNewMatchVenue(e.target.value)}
                             className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs"
@@ -1339,6 +1512,8 @@ END $$;`
                           <span>
                             {isSubmittingMatch
                               ? 'Scheduling...'
+                              : isQuad
+                              ? 'Schedule 1v1v1v1 Match'
                               : isSolo
                               ? 'Schedule Solo Match'
                               : isDuo
@@ -1374,9 +1549,11 @@ END $$;`
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matches.map((match) => {
-                  const isSoloCard = match.sport?.type === 'solo' || match.sport?.name?.toLowerCase() === 'chess'
-                  const isDuoCard = match.sport?.type === 'duo'
-                  const isFfaCard = match.sport?.type === 'free_for_all' || Boolean(match.is_free_for_all)
+                  const isCarromCard = match.sport?.name?.toLowerCase().includes('carrom')
+                  const isQuadCard = Boolean(match.is_quad) || match.sport?.type === 'quad' || (isCarromCard && Boolean(match.player_c_id || match.player_d_id || (match.sport?.type !== 'duo' && match.sport?.type !== 'team')))
+                  const isSoloCard = (match.sport?.type === 'solo' || match.sport?.name?.toLowerCase() === 'chess') && !isQuadCard
+                  const isDuoCard = match.sport?.type === 'duo' && !isQuadCard
+                  const isFfaCard = (match.sport?.type === 'free_for_all' || Boolean(match.is_free_for_all)) && !isQuadCard
 
                   return (
                     <div
@@ -1390,7 +1567,15 @@ END $$;`
                             {match.sport?.name || 'Sport'}
                           </span>
                           <span className="text-[10px] text-slate-500 font-medium">
-                            {isFfaCard ? '⚔️ Free For All (All-Play)' : isSoloCard ? '👤 1v1 Solo Match' : isDuoCard ? '👥 2v2 Doubles' : '🛡️ Team Match'}
+                            {isQuadCard
+                              ? '🎯 1v1v1v1 Quad Showdown'
+                              : isFfaCard
+                              ? '⚔️ Free For All (All-Play)'
+                              : isSoloCard
+                              ? '👤 1v1 Solo Match'
+                              : isDuoCard
+                              ? '👥 2v2 Doubles'
+                              : '🛡️ Team Match'}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -1399,7 +1584,14 @@ END $$;`
                             value={match.status}
                             onChange={(e) => {
                               const newStatus = e.target.value as MatchStatus
-                              updateMatchScore(match.id, match.team_a_score ?? 0, match.team_b_score ?? 0, newStatus)
+                              updateMatchScore(
+                                match.id,
+                                match.team_a_score ?? 0,
+                                match.team_b_score ?? 0,
+                                newStatus,
+                                match.player_c_score ?? 0,
+                                match.player_d_score ?? 0
+                              )
                               notify(`Match status changed to ${newStatus.toUpperCase()}`)
                             }}
                             className={`text-xs font-medium px-2 py-1 rounded-md border focus:outline-none ${
@@ -1426,7 +1618,236 @@ END $$;`
                       </div>
 
                       {/* Score or All-Play Field Controls */}
-                      {isFfaCard ? (
+                      {isQuadCard ? (
+                        <div className="bg-[#FAF8F5] p-3.5 rounded-lg border border-slate-200 space-y-3 shadow-2xs">
+                          <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-700 border-b border-slate-200 pb-2">
+                            <span className="flex items-center space-x-1.5 text-violet-950 font-serif font-black uppercase tracking-wide">
+                              <span>🎯 4-Player 1v1v1v1 Board Match</span>
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-violet-100 text-violet-900 border border-violet-300 text-[10px] font-bold">
+                              4 CONTENDERS
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2.5">
+                            {/* Position 1 (North) */}
+                            <div className="bg-white p-2.5 rounded-md border border-slate-200 flex flex-col justify-between">
+                              <div className="min-w-0">
+                                <div className="text-[10px] uppercase font-bold text-red-700 flex items-center space-x-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block" />
+                                  <span>Position 1</span>
+                                </div>
+                                <div className="font-bold text-xs text-slate-900 truncate mt-0.5">
+                                  {match.player_a?.name || match.team_a?.name || 'Player 1'}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate">
+                                  {match.player_a?.department || match.team_a?.department || 'CS'}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                <span className="text-[10px] uppercase font-bold text-slate-500">Pts</span>
+                                <div className="flex items-center space-x-1.5">
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        Math.max(0, (match.team_a_score ?? 0) - 1),
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="font-mono font-black text-sm text-slate-900 min-w-[18px] text-center">
+                                    {match.team_a_score ?? 0}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        (match.team_a_score ?? 0) + 1,
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Position 2 (South) */}
+                            <div className="bg-white p-2.5 rounded-md border border-slate-200 flex flex-col justify-between">
+                              <div className="min-w-0">
+                                <div className="text-[10px] uppercase font-bold text-blue-700 flex items-center space-x-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block" />
+                                  <span>Position 2</span>
+                                </div>
+                                <div className="font-bold text-xs text-slate-900 truncate mt-0.5">
+                                  {match.player_b?.name || match.team_b?.name || 'Player 2'}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate">
+                                  {match.player_b?.department || match.team_b?.department || 'CS'}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                <span className="text-[10px] uppercase font-bold text-slate-500">Pts</span>
+                                <div className="flex items-center space-x-1.5">
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        Math.max(0, (match.team_b_score ?? 0) - 1),
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="font-mono font-black text-sm text-slate-900 min-w-[18px] text-center">
+                                    {match.team_b_score ?? 0}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        (match.team_b_score ?? 0) + 1,
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Position 3 (East) */}
+                            <div className="bg-white p-2.5 rounded-md border border-slate-200 flex flex-col justify-between">
+                              <div className="min-w-0">
+                                <div className="text-[10px] uppercase font-bold text-emerald-700 flex items-center space-x-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
+                                  <span>Position 3</span>
+                                </div>
+                                <div className="font-bold text-xs text-slate-900 truncate mt-0.5">
+                                  {match.player_c?.name || 'Player 3'}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate">
+                                  {match.player_c?.department || 'CS'}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                <span className="text-[10px] uppercase font-bold text-slate-500">Pts</span>
+                                <div className="flex items-center space-x-1.5">
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        Math.max(0, (match.player_c_score ?? 0) - 1),
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="font-mono font-black text-sm text-slate-900 min-w-[18px] text-center">
+                                    {match.player_c_score ?? 0}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        (match.player_c_score ?? 0) + 1,
+                                        match.player_d_score ?? 0
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Position 4 (West) */}
+                            <div className="bg-white p-2.5 rounded-md border border-slate-200 flex flex-col justify-between">
+                              <div className="min-w-0">
+                                <div className="text-[10px] uppercase font-bold text-amber-700 flex items-center space-x-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600 inline-block" />
+                                  <span>Position 4</span>
+                                </div>
+                                <div className="font-bold text-xs text-slate-900 truncate mt-0.5">
+                                  {match.player_d?.name || 'Player 4'}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate">
+                                  {match.player_d?.department || 'CS'}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                                <span className="text-[10px] uppercase font-bold text-slate-500">Pts</span>
+                                <div className="flex items-center space-x-1.5">
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        Math.max(0, (match.player_d_score ?? 0) - 1)
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="font-mono font-black text-sm text-slate-900 min-w-[18px] text-center">
+                                    {match.player_d_score ?? 0}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      updateMatchScore(
+                                        match.id,
+                                        match.team_a_score ?? 0,
+                                        match.team_b_score ?? 0,
+                                        undefined,
+                                        match.player_c_score ?? 0,
+                                        (match.player_d_score ?? 0) + 1
+                                      )
+                                    }
+                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 text-blue-600 font-bold font-mono text-xs flex items-center justify-center"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : isFfaCard ? (
                         <div className="bg-[#FBF9F5] p-4 rounded-lg border border-slate-200 space-y-2.5">
                           <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-700">
                             <span className="flex items-center space-x-1.5 text-amber-900 font-serif font-black uppercase">
@@ -1656,10 +2077,12 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg p-5 space-y-4">
             {(() => {
               const enrollSport = sports.find((s) => s.id === newTeamSportId) || sports[0]
+              const isCarromEnroll = enrollSport?.name?.toLowerCase().includes('carrom')
               const isSoloEnroll = enrollSport?.type === 'solo' || enrollSport?.name?.toLowerCase() === 'chess'
               const isFfaEnroll = enrollSport?.type === 'free_for_all'
-              const isTeamlessEnroll = isSoloEnroll || isFfaEnroll
-              const isDuoEnroll = enrollSport?.type === 'duo'
+              const isQuadEnroll = enrollSport?.type === 'quad' || (isCarromEnroll && enrollSport?.type !== 'duo')
+              const isTeamlessEnroll = isSoloEnroll || isFfaEnroll || isQuadEnroll
+              const isDuoEnroll = enrollSport?.type === 'duo' && !isQuadEnroll
               const isFootballEnroll = enrollSport?.name?.toLowerCase() === 'football'
 
               return (
@@ -1670,7 +2093,7 @@ END $$;`
                         <Plus className="w-4 h-4 text-blue-600" />
                         <span>
                           {isTeamlessEnroll
-                            ? `${isFfaEnroll ? 'Free For All Event' : 'Solo 1v1 Event'} (${enrollSport?.name || 'Event'})`
+                            ? `${isQuadEnroll ? '1v1v1v1 Quad Event' : isFfaEnroll ? 'Free For All Event' : 'Solo 1v1 Event'} (${enrollSport?.name || 'Event'})`
                             : isDuoEnroll
                             ? `Enroll Doubles Pair (${enrollSport?.name || 'Doubles'})`
                             : isFootballEnroll
@@ -1709,7 +2132,7 @@ END $$;`
                     >
                       {sports.map((s) => (
                         <option key={s.id} value={s.id}>
-                          {s.name} ({s.type === 'free_for_all' ? 'Free For All • Direct Enrollment' : s.type === 'solo' ? 'Solo • Direct Enrollment' : s.type === 'duo' ? '2v2 Doubles' : 'Team Squad'})
+                          {s.name} ({s.type === 'free_for_all' ? 'Free For All • Direct Enrollment' : s.type === 'quad' || (s.name.toLowerCase().includes('carrom') && s.type !== 'duo') ? '1v1v1v1 Quad • Direct Enrollment' : s.type === 'solo' ? 'Solo • Direct Enrollment' : s.type === 'duo' ? '2v2 Doubles' : 'Team Squad'})
                         </option>
                       ))}
                     </select>
@@ -1722,7 +2145,7 @@ END $$;`
                           <span>👤 Individual Athlete Registration Active</span>
                         </div>
                         <p className="text-slate-600 text-xs max-w-xl leading-relaxed">
-                          Since <strong>{enrollSport?.name}</strong> is a {isFfaEnroll ? 'Free For All mass event' : 'Solo 1v1 event'}, no squads or teams need to be created. Individual athletes enroll directly in the Player Roster tab.
+                          Since <strong>{enrollSport?.name}</strong> is a {isQuadEnroll ? '1v1v1v1 4-player event' : isFfaEnroll ? 'Free For All mass event' : 'Solo 1v1 event'}, no squads or teams need to be created. Individual athletes enroll directly in the Player Roster tab.
                         </p>
                       </div>
                       <button
@@ -2495,7 +2918,8 @@ END $$;`
               <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
                 {sports.map((sport) => {
                   const isSelected = sport.id === playerEnrollSportId
-                  const isTeamless = sport.type === 'solo' || sport.type === 'free_for_all' || sport.name.toLowerCase() === 'chess'
+                  const isCarromSport = sport.name.toLowerCase().includes('carrom')
+                  const isTeamless = sport.type === 'solo' || sport.type === 'free_for_all' || sport.type === 'quad' || (isCarromSport && sport.type !== 'duo') || sport.name.toLowerCase() === 'chess'
                   const teamCount = teams.filter((t) => t.sport_id === sport.id).length
                   const athleteCount = players.filter((p) => p.sport_id === sport.id || teams.some((t) => t.id === p.team_id && t.sport_id === sport.id)).length
 
@@ -2519,9 +2943,12 @@ END $$;`
 
             {(() => {
               const currentEnrollSport = sports.find((s) => s.id === playerEnrollSportId)
+              const isCurrentCarrom = currentEnrollSport?.name?.toLowerCase().includes('carrom')
               const isDirectTeamlessEnroll =
                 currentEnrollSport?.type === 'solo' ||
                 currentEnrollSport?.type === 'free_for_all' ||
+                currentEnrollSport?.type === 'quad' ||
+                (isCurrentCarrom && currentEnrollSport?.type !== 'duo') ||
                 currentEnrollSport?.name?.toLowerCase() === 'chess'
 
               if (!isDirectTeamlessEnroll && teamsInEnrollSport.length === 0) {
@@ -2719,9 +3146,10 @@ END $$;`
                   className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs font-medium"
                 >
                   <option value="team">Team Squad (Multi-player, e.g. Football)</option>
-                  <option value="duo">Doubles / Pairs (2v2, e.g. Badminton, Carrom)</option>
+                  <option value="duo">Doubles / Pairs (2v2, e.g. Badminton Doubles)</option>
                   <option value="solo">Solo (1v1 Single player, e.g. Chess)</option>
                   <option value="free_for_all">Free For All (All-Play / Mass Event e.g. Marathon, Battle Royale)</option>
+                  <option value="quad">Quad 1v1v1v1 (4-Player Solo Board, e.g. Carroms 1v1v1v1)</option>
                 </select>
               </div>
 
@@ -2853,6 +3281,24 @@ END $$;`
                         <p className="text-xs text-slate-600 mt-1 leading-relaxed line-clamp-2">
                           {meta.description}
                         </p>
+                        <div className="mt-2 flex items-center space-x-2">
+                          <span className="text-[10px] text-slate-500 font-semibold uppercase">Format:</span>
+                          <select
+                            value={sport.type}
+                            onChange={async (e) => {
+                              const newType = e.target.value as SportType
+                              await updateSport(sport.id, { type: newType })
+                              notify(`✅ Updated ${sport.name} format to ${newType.toUpperCase()}`)
+                            }}
+                            className="text-[11px] font-medium py-0.5 px-2 rounded border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-600"
+                          >
+                            <option value="quad">1v1v1v1 Quad (Direct Athlete Enrollment)</option>
+                            <option value="solo">Solo 1v1 (Direct Athlete Enrollment)</option>
+                            <option value="free_for_all">Free For All (Direct Athlete Enrollment)</option>
+                            <option value="duo">Doubles 2v2 (Pairs / Teams)</option>
+                            <option value="team">Team Squads (Multi-player)</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div className="space-y-2.5 pt-2 border-t border-slate-100">

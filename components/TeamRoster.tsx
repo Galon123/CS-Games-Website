@@ -70,7 +70,12 @@ export default function TeamRoster() {
     : []
 
   const selectedSportObj = sports.find((s) => s.id === selectedSportFilter)
-  const isDirectEnrollmentSport = selectedSportObj?.type === 'solo' || selectedSportObj?.type === 'free_for_all'
+  const isCarromRoster = selectedSportObj?.name?.toLowerCase().includes('carrom')
+  const isDirectEnrollmentSport =
+    selectedSportObj?.type === 'solo' ||
+    selectedSportObj?.type === 'free_for_all' ||
+    selectedSportObj?.type === 'quad' ||
+    (isCarromRoster && selectedSportObj?.type !== 'duo')
 
   return (
     <div className="space-y-6">

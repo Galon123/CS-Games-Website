@@ -270,6 +270,8 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 <th className="py-3 px-4">
                   {activeSport?.type === 'solo'
                     ? 'Competitor / Department'
+                    : activeSport?.type === 'quad' || (activeSport?.name?.toLowerCase().includes('carrom') && activeSport?.type !== 'duo')
+                    ? 'Contender / Department'
                     : activeSport?.type === 'duo'
                     ? 'Pair / Department'
                     : activeSport?.type === 'free_for_all'
@@ -282,7 +284,7 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 <th className="py-3 px-3 text-center text-rose-800">Lost</th>
                 <th className="py-3 px-4 text-center font-black text-[#1A1A1A]">Points</th>
                 <th className="py-3 px-4 text-right">
-                  {activeSport?.type === 'solo' || activeSport?.type === 'free_for_all' ? 'Profile' : 'Roster'}
+                  {activeSport?.type === 'solo' || activeSport?.type === 'free_for_all' || activeSport?.type === 'quad' || (activeSport?.name?.toLowerCase().includes('carrom') && activeSport?.type !== 'duo') ? 'Profile' : 'Roster'}
                 </th>
               </tr>
             </thead>

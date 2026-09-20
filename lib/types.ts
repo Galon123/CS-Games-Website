@@ -1,4 +1,4 @@
-export type SportType = 'team' | 'solo' | 'duo' | 'free_for_all'
+export type SportType = 'team' | 'solo' | 'duo' | 'free_for_all' | 'quad'
 
 export interface Sport {
   id: string
@@ -49,8 +49,12 @@ export interface Match {
   team_b_id?: string | null
   player_a_id?: string | null
   player_b_id?: string | null
+  player_c_id?: string | null
+  player_d_id?: string | null
   team_a_score?: number
   team_b_score?: number
+  player_c_score?: number
+  player_d_score?: number
   status: MatchStatus
   scheduled_at: string
   // Populated / joined properties
@@ -58,11 +62,14 @@ export interface Match {
   team_b?: Team
   player_a?: Player
   player_b?: Player
+  player_c?: Player
+  player_d?: Player
   sport?: Sport
   minute?: number
   venue?: string
-  // Free For All properties
+  // Free For All & Quad properties
   is_free_for_all?: boolean
+  is_quad?: boolean
   participants?: Team[]
 }
 
