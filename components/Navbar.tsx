@@ -1,67 +1,84 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTournament } from '@/context/TournamentContext'
-import { Trophy, Users, Shield, LayoutDashboard, Cpu, Menu, X, Flame, Crosshair } from 'lucide-react'
+import {
+  Trophy,
+  Users,
+  Shield,
+  Menu,
+  X,
+  Flame,
+  Crosshair,
+  Gamepad2,
+} from 'lucide-react'
 import CSBrandMark from '@/components/CSBrandMark'
+import { getSportMeta, getSportSlug, isCsCupFootball } from '@/lib/sports-theme'
 
 export default function Navbar() {
   const pathname = usePathname()
-  const { isAdmin } = useTournament()
+  const { isAdmin, sports } = useTournament()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
 
   const navItems = [
     { label: 'Overview', href: '/', icon: Flame },
+    { label: 'Games', href: '/games', icon: Gamepad2 },
     { label: 'Leaderboards', href: '/leaderboards', icon: Trophy },
     { label: 'Teams & Rosters', href: '/roster', icon: Users },
     { label: 'Formations', href: '/tactics', icon: Crosshair },
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b-2 border-[#1A1A1A]">
+    <header className="sticky top-0 z-50 bg-ink-900/95 backdrop-blur-md border-b border-white/10 shadow-subtle">
+      {/* Primary Navigation Row */}
       <nav aria-label="Main Navigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand Logo & Championship Crest */}
+        <div className="flex items-center justify-between h-16 sm:h-18">
+          {/* Brand Logo & Championship Lockup */}
           <Link href="/" className="flex items-center space-x-3 group select-none">
-            <CSBrandMark className="w-10 h-10 group-hover:scale-105 transition-transform duration-200 shadow-editorial-sm rounded-md" />
+            <CSBrandMark className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg transition-transform duration-200 group-hover:scale-105" />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-serif font-black text-lg tracking-tight text-[#1A1A1A]">
-                  CS GAMES
+                <span className="font-serif font-black text-lg sm:text-xl tracking-tight text-paper">
+                  CS Games.
                 </span>
-                <span className="font-serif font-black text-lg tracking-tight text-[#1E40AF]">
+                <span className="text-xs font-mono font-bold text-mist tracking-widest uppercase px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
                   2026
                 </span>
-                <span className="hidden sm:inline-flex items-center space-x-1 text-[10px] font-mono font-black px-2 py-0.5 rounded bg-[#F59E0B] text-[#1A1A1A] border border-[#1A1A1A] shadow-2xs">
-                  <span>★</span>
-                  <span>MEET</span>
-                </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-600 tracking-wide uppercase font-mono">
+              <p className="text-[10px] font-mono font-medium text-fog tracking-[0.14em] uppercase">
                 Dept. of Computer Science &amp; Engineering
               </p>
             </div>
           </Link>
 
           {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon
-              const isActive = pathname === item.href
+              const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
                     isActive
-                      ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-                      : 'text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-100 border-2 border-transparent'
+                      ? 'bg-white/10 text-paper border border-white/20 shadow-xs'
+                      : 'text-mist hover:text-paper hover:bg-white/5 border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                  <Icon
+                    className={`w-3.5 h-3.5 transition-colors ${
+                      isActive ? 'text-acid' : 'text-fog group-hover:text-mist'
+                    }`}
+                  />
                   <span>{item.label}</span>
                 </Link>
               )
@@ -72,24 +89,34 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-3">
             <Link
               href="/admin"
-              className={`flex items-center space-x-2 text-xs font-black px-3.5 py-1.5 rounded-md border-2 border-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)] transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
+              className={`flex items-center space-x-2 text-xs font-bold px-4 py-2 rounded-full transition-all duration-200 ${
                 pathname === '/admin'
-                  ? 'bg-[#1E40AF] text-white'
+                  ? 'bg-acid text-acid-ink shadow-[0_0_16px_rgba(215,242,43,0.35)]'
                   : isAdmin
-                  ? 'bg-[#10B981] text-[#1A1A1A]'
-                  : 'bg-[#F59E0B] hover:bg-[#D97706] text-[#1A1A1A]'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                  : 'bg-white/5 hover:bg-white/10 text-cream border border-white/15 hover:border-white/30'
               }`}
             >
-              <Shield className="w-3.5 h-3.5 text-[#1A1A1A]" />
-              <span>{isAdmin ? 'Admin (Active)' : 'Admin Portal'}</span>
+              <Shield
+                className={`w-3.5 h-3.5 ${
+                  pathname === '/admin'
+                    ? 'text-acid-ink'
+                    : isAdmin
+                    ? 'text-emerald-400'
+                    : 'text-mist'
+                }`}
+              />
+              <span className="tracking-wide">
+                {isAdmin ? 'Admin Console (Active)' : 'Admin Portal'}
+              </span>
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-800 hover:bg-slate-100 focus:outline-none border border-slate-300"
+              className="p-2 rounded-lg text-cream hover:text-paper hover:bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid"
               aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -98,35 +125,193 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-[#E5E0D8] bg-white px-4 pt-2 pb-4 space-y-1 shadow-md">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
+      {/* ─────────────────────────────────────────────────────────────
+          SECONDARY SPORTS STRIP (Instant 1-Click Game Switcher in Header)
+          Gives direct 1-click access to every game on every page
+          ───────────────────────────────────────────────────────────── */}
+      <div className="border-t border-white/5 bg-ink-950/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-1.5 overflow-x-auto no-scrollbar">
+        <div className="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-fog shrink-0 pr-1 flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-acid" />
+            <span>GAMES:</span>
+          </span>
+
+          <Link
+            href="/games"
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors shrink-0 ${
+              pathname === '/games'
+                ? 'bg-white/20 text-paper font-bold'
+                : 'text-mist hover:text-paper hover:bg-white/5'
+            }`}
+          >
+            All Disciplines ({sports.length})
+          </Link>
+
+          {sports.map((sport) => {
+            const slug = getSportSlug(sport)
+            const isCs = isCsCupFootball(sport.name)
+            const isCurrent = pathname === `/games/${slug}`
+
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                key={sport.id}
+                href={`/games/${slug}`}
+                className={`flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] transition-all shrink-0 ${
+                  isCurrent
+                    ? 'bg-acid text-acid-ink font-bold shadow-xs'
+                    : 'text-mist hover:text-paper hover:bg-white/5 border border-transparent'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
+                {isCs && <span className={isCurrent ? 'text-acid-ink' : 'text-acid'}>★</span>}
+                <span>{isCs ? 'CS Cup (Football)' : sport.name}</span>
               </Link>
             )
           })}
-          <div className="pt-2 border-t border-slate-100 mt-2">
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          MOBILE MENU DRAWER
+          Includes Overview, all individual games, standings, rosters, admin
+          ───────────────────────────────────────────────────────────── */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-b border-white/10 bg-ink-800/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-4 shadow-elevated max-h-[85vh] overflow-y-auto">
+          {/* Main Nav Links */}
+          <div className="space-y-1">
+            <Link
+              href="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
+                pathname === '/'
+                  ? 'bg-white/10 text-paper border border-white/20'
+                  : 'text-mist hover:text-paper hover:bg-white/5'
+              }`}
+            >
+              <Flame className={`w-4 h-4 ${pathname === '/' ? 'text-acid' : 'text-fog'}`} />
+              <span>Overview</span>
+            </Link>
+          </div>
+
+          {/* Dedicated Individual Games Section */}
+          <div className="pt-2 border-t border-white/10 space-y-2">
+            <div className="flex items-center justify-between px-3">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog">
+                Tournament Games ({sports.length})
+              </span>
+              <Link
+                href="/games"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-[10px] font-mono font-bold text-acid hover:underline"
+              >
+                Directory &rarr;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-1">
+              {sports.map((sport) => {
+                const slug = getSportSlug(sport)
+                const meta = getSportMeta(sport)
+                const isCs = isCsCupFootball(sport.name)
+                const isCurrent = pathname === `/games/${slug}`
+                const Icon = meta.icon
+
+                return (
+                  <Link
+                    key={sport.id}
+                    href={`/games/${slug}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs transition-colors ${
+                      isCurrent
+                        ? 'bg-acid text-acid-ink font-bold shadow-xs'
+                        : 'text-mist hover:text-paper hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Icon
+                        className={`w-4 h-4 ${
+                          isCurrent ? 'text-acid-ink' : isCs ? 'text-acid' : 'text-fog'
+                        }`}
+                      />
+                      <span className="font-medium">
+                        {isCs ? 'CS Cup (Football)' : sport.name}
+                      </span>
+                      {isCs && <span className="text-xs font-bold">★</span>}
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                        isCurrent ? 'bg-black/20 text-acid-ink font-bold' : 'bg-white/5 text-fog'
+                      }`}
+                    >
+                      {meta.badgeText}
+                    </span>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Secondary Hub Pages */}
+          <div className="pt-2 border-t border-white/10 space-y-1">
+            <Link
+              href="/leaderboards"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
+                pathname.startsWith('/leaderboards')
+                  ? 'bg-white/10 text-paper border border-white/20'
+                  : 'text-mist hover:text-paper hover:bg-white/5'
+              }`}
+            >
+              <Trophy
+                className={`w-4 h-4 ${
+                  pathname.startsWith('/leaderboards') ? 'text-acid' : 'text-fog'
+                }`}
+              />
+              <span>Tournament Standings</span>
+            </Link>
+
+            <Link
+              href="/roster"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
+                pathname.startsWith('/roster')
+                  ? 'bg-white/10 text-paper border border-white/20'
+                  : 'text-mist hover:text-paper hover:bg-white/5'
+              }`}
+            >
+              <Users
+                className={`w-4 h-4 ${
+                  pathname.startsWith('/roster') ? 'text-acid' : 'text-fog'
+                }`}
+              />
+              <span>Teams &amp; Rosters</span>
+            </Link>
+
+            <Link
+              href="/tactics"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
+                pathname.startsWith('/tactics')
+                  ? 'bg-white/10 text-paper border border-white/20'
+                  : 'text-mist hover:text-paper hover:bg-white/5'
+              }`}
+            >
+              <Crosshair
+                className={`w-4 h-4 ${
+                  pathname.startsWith('/tactics') ? 'text-acid' : 'text-fog'
+                }`}
+              />
+              <span>CS Cup Formations Studio</span>
+            </Link>
+          </div>
+
+          {/* Admin link */}
+          <div className="pt-3 border-t border-white/10">
             <Link
               href="/admin"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-white/5 text-paper border border-white/15 hover:bg-white/10"
             >
-              <Shield className="w-4 h-4 text-blue-600" />
+              <Shield className="w-4 h-4 text-acid" />
               <span>{isAdmin ? 'Admin Console (Active)' : 'Admin Login'}</span>
             </Link>
           </div>

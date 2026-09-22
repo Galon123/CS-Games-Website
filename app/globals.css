@@ -1,114 +1,185 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=JetBrains+Mono:wght@400..800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@400..800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --primary-bg: #FBF9F5;
-  --card-bg: #FFFFFF;
-  --brand-blue: #2563EB;
-  --ink-primary: #1A1A1A;
-  --ink-secondary: #64748B;
-  --border-subtle: #E5E0D8;
-  --pitch-green: #1F3A2B;
+  /* Noir Editorial Spine */
+  --ink-900: #06080A;
+  --ink-800: #0B0E11;
+  --ink-700: #11161A;
+  --ink-600: #1A2127;
+  --midnight-teal: #0E1A18;
+  --paper: #FFFFFF;
+  --cream: #ECE9E1;
+  --mist: rgba(255, 255, 255, 0.65);
+  --fog: rgba(255, 255, 255, 0.35);
+  --rule: rgba(255, 255, 255, 0.12);
+  --rule-strong: rgba(255, 255, 255, 0.22);
+
+  /* Editorial & Product Accents */
+  --acid: #D7F22B;
+  --acid-hot: #C8FF00;
+  --acid-ink: #0B0E11;
+  --sky-kit: #A9D6E5;
+  --europa-orange: #EE5A1F;
+
+  /* Surfaces */
+  --glass-fill: rgba(255, 255, 255, 0.05);
+  --glass-line: rgba(255, 255, 255, 0.12);
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 200ms;
+  --dur-mid: 350ms;
+  --dur-slow: 700ms;
 }
 
 body {
-  background-color: #FBF9F5;
-  background-image: radial-gradient(rgba(229, 224, 216, 0.7) 1px, transparent 1px);
-  background-size: 24px 24px;
-  color: #1A1A1A;
+  background-color: var(--ink-900);
+  color: var(--cream);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Clean Minimalist Light Scrollbars */
+/* Lining numerals for editorial and score displays */
+.font-lining {
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+/* Minimalist Dark Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #FBF9F5;
+  background: var(--ink-900);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #222B34;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #334150;
 }
 
-/* Football Tactical Pitch - Solid Vivid Turf (#153422) */
+/* Noir Glass Card */
+.noir-card {
+  background-color: var(--ink-800);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.noir-card:hover {
+  border-color: var(--rule-strong);
+}
+
+/* Glass Tile Module */
+.tile-glass {
+  border-radius: var(--r-lg);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Football Tactical Pitch - Atmospheric Dark Turf */
 .tactical-pitch {
-  background-color: #153422;
+  background: radial-gradient(circle at 50% 50%, #0D221A 0%, #07130E 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Physical Editorial Cards & Offset Shadows */
-.editorial-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E5E0D8;
-  box-shadow: 4px 4px 0px 0px rgba(26, 26, 26, 0.08);
+/* Meta Label Helper */
+.meta-label {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
 }
 
-.shadow-editorial-sm {
-  box-shadow: 3px 3px 0px 0px #1A1A1A;
+/* Electric Acid CTA Pill */
+.cta-acid {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85em 1.5em;
+  border-radius: var(--r-pill);
+  background: var(--acid);
+  color: var(--acid-ink);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  box-shadow: 0 0 20px -4px rgba(215, 242, 43, 0.25);
 }
 
-.shadow-editorial-md {
-  box-shadow: 5px 5px 0px 0px #1A1A1A;
+.cta-acid:hover {
+  background: var(--acid-hot);
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px -2px rgba(215, 242, 43, 0.45);
 }
 
-.shadow-editorial-lg {
-  box-shadow: 6px 6px 0px 0px #1A1A1A;
+.cta-acid:active {
+  transform: translateY(1px);
 }
 
-.shadow-editorial-amber {
-  box-shadow: 4px 4px 0px 0px #D97706;
+/* Outline CTA Pill */
+.cta-outline {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85em 1.5em;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--cream);
+  border: 1px solid var(--rule-strong);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
-.shadow-editorial-white {
-  box-shadow: 4px 4px 0px 0px #FFFFFF;
+.cta-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
 }
 
-/* Tactile Card Lift with Sharp Physical Border Highlight */
-.card-lift {
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  will-change: transform;
-}
-.card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 4px 4px 0px 0px #1A1A1A;
-  border-color: #1A1A1A;
+.cta-outline:active {
+  transform: translateY(1px);
 }
 
-/* Solid Editorial Button with Physical Click Response */
-.btn-fluid-hover {
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-.btn-fluid-hover:hover {
-  transform: translate(-1px, -1px);
-}
-.btn-fluid-hover:active {
-  transform: translate(2px, 2px);
+/* Arrow Translation on Hover */
+.arrow-hover {
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 
-/* Tactile Slide-In & Delay Utilities */
-.animation-delay-75 {
-  animation-delay: 75ms;
-}
-.animation-delay-150 {
-  animation-delay: 150ms;
-}
-.animation-delay-200 {
-  animation-delay: 200ms;
-}
-.animation-delay-300 {
-  animation-delay: 300ms;
+.group:hover .arrow-hover,
+button:hover .arrow-hover,
+a:hover .arrow-hover {
+  transform: translate(3px, -3px);
 }
 
 /* Marquee Pause on Hover */
@@ -127,3 +198,109 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   ADMIN NOIR EDITORIAL RETROFIT & SCOPED STYLES
+   Ensures all admin dashboard panels, forms, inputs, tables,
+   and modals seamlessly match the Noir Editorial dark canvas.
+   ───────────────────────────────────────────────────────────── */
+.admin-noir-theme {
+  color: var(--cream);
+}
+
+.admin-noir-theme .bg-white {
+  background-color: var(--ink-800) !important;
+  color: var(--cream) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-noir-theme .bg-slate-50,
+.admin-noir-theme .bg-slate-100 {
+  background-color: var(--ink-900) !important;
+  color: var(--cream) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-noir-theme .border-\[\#E5E0D8\],
+.admin-noir-theme .border-slate-200,
+.admin-noir-theme .border-slate-300 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-noir-theme .text-\[\#1A1A1A\],
+.admin-noir-theme .text-slate-900,
+.admin-noir-theme .text-slate-800 {
+  color: var(--paper) !important;
+}
+
+.admin-noir-theme .text-slate-700,
+.admin-noir-theme .text-slate-600 {
+  color: var(--mist) !important;
+}
+
+.admin-noir-theme .text-slate-500,
+.admin-noir-theme .text-slate-400 {
+  color: var(--fog) !important;
+}
+
+.admin-noir-theme input[type="text"],
+.admin-noir-theme input[type="email"],
+.admin-noir-theme input[type="password"],
+.admin-noir-theme input[type="number"],
+.admin-noir-theme input[type="date"],
+.admin-noir-theme input[type="time"],
+.admin-noir-theme select,
+.admin-noir-theme textarea {
+  background-color: var(--ink-900) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: var(--paper) !important;
+  border-radius: 10px !important;
+}
+
+.admin-noir-theme input:focus,
+.admin-noir-theme select:focus,
+.admin-noir-theme textarea:focus {
+  border-color: var(--acid) !important;
+  outline: none !important;
+  box-shadow: 0 0 10px rgba(215, 242, 43, 0.25) !important;
+}
+
+.admin-noir-theme table thead tr {
+  background-color: var(--ink-900) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-noir-theme table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.admin-noir-theme table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.025) !important;
+}
+
+.admin-noir-theme .bg-blue-600:not(:disabled) {
+  background-color: var(--acid) !important;
+  color: var(--acid-ink) !important;
+  font-weight: 700 !important;
+}
+
+.admin-noir-theme .bg-blue-600:not(:disabled):hover {
+  background-color: var(--acid-hot) !important;
+}
+
+.admin-noir-theme .bg-blue-50 {
+  background-color: rgba(215, 242, 43, 0.1) !important;
+  color: var(--acid) !important;
+  border-color: rgba(215, 242, 43, 0.3) !important;
+}
+
+.admin-noir-theme .text-blue-600,
+.admin-noir-theme .text-blue-700 {
+  color: var(--acid) !important;
+}
+
+.admin-noir-theme .shadow-editorial-md,
+.admin-noir-theme .shadow-editorial-sm {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+}
+

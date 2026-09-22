@@ -827,30 +827,30 @@ END $$;`
   // If Not Authenticated, show Login Screen
   if (!isAdmin) {
     return (
-      <div className="max-w-md mx-auto my-12">
-        <div className="bg-white border border-[#E5E0D8] rounded-lg p-8 space-y-6">
+      <div className="max-w-md mx-auto my-14 px-4">
+        <div className="bg-ink-800 border border-white/10 rounded-2xl p-8 space-y-6 shadow-card">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 mx-auto rounded-md bg-blue-50 border border-blue-200 flex items-center justify-center">
-              <Lock className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-ink-900 border border-white/15 flex items-center justify-center text-acid shadow-subtle">
+              <Lock className="w-6 h-6 text-acid" />
             </div>
-            <h1 className="text-2xl font-serif font-black text-[#1A1A1A] tracking-tight">
-              Admin Console Access
+            <h1 className="text-2xl font-serif font-black text-paper tracking-tight">
+              Admin Access.
             </h1>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-mist">
               Sign in to manage live fixtures, standings, team formations, and rosters.
             </p>
           </div>
 
           {authError && (
-            <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
               <span>{authError}</span>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block meta-label text-[10px] text-fog mb-1.5">
                 Admin Email
               </label>
               <input
@@ -859,12 +859,12 @@ END $$;`
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@yourdomain.edu"
                 required
-                className="w-full bg-white border border-slate-300 focus:border-blue-600 rounded-md px-3.5 py-2 text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 shadow-2xs"
+                className="w-full bg-ink-900 border border-white/15 focus:border-acid rounded-xl px-4 py-2.5 text-xs text-paper focus:outline-none placeholder:text-fog shadow-subtle transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block meta-label text-[10px] text-fog mb-1.5">
                 Password
               </label>
               <input
@@ -873,27 +873,27 @@ END $$;`
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
                 required
-                className="w-full bg-white border border-slate-300 focus:border-blue-600 rounded-md px-3.5 py-2 text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 shadow-2xs"
+                className="w-full bg-ink-900 border border-white/15 focus:border-acid rounded-xl px-4 py-2.5 text-xs text-paper focus:outline-none placeholder:text-fog shadow-subtle transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full h-11 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs tracking-wide shadow-sm transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="cta-acid w-full flex items-center justify-center space-x-2 disabled:opacity-50"
             >
-              <Unlock className="w-4 h-4" />
+              <Unlock className="w-4 h-4 text-acid-ink" />
               <span>{isAuthenticating ? 'Authenticating...' : 'Sign In to Admin Console'}</span>
             </button>
           </form>
 
           {/* Admin Access Notice */}
-          <div className="p-3 rounded-md bg-slate-50 border border-slate-200 text-xs space-y-1">
-            <span className="text-slate-800 font-semibold flex items-center space-x-1.5">
-              <Shield className="w-3.5 h-3.5 text-blue-600" />
+          <div className="p-3.5 rounded-xl bg-ink-900 border border-white/10 text-xs space-y-1">
+            <span className="text-paper font-bold flex items-center space-x-1.5 font-mono text-[10px] uppercase text-acid">
+              <Shield className="w-3.5 h-3.5 text-acid" />
               <span>Protected Tournament Administration</span>
             </span>
-            <p className="text-slate-600 text-[11px] leading-relaxed">
+            <p className="text-mist text-[11px] leading-relaxed">
               Authorized credentials allow updating live scores, calibrated points, official 6v6 squad formations, and athlete enrollments.
             </p>
           </div>
@@ -904,23 +904,23 @@ END $$;`
 
   // Authenticated Admin Dashboard
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 admin-noir-theme">
       {/* Admin Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-[#E5E0D8] p-5 rounded-lg">
-        <div className="flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-md bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center shadow-2xs">
-            <Shield className="w-5 h-5" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-ink-800 border border-white/10 p-6 rounded-2xl shadow-card">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-xl bg-ink-900 text-acid border border-white/15 flex items-center justify-center shadow-subtle">
+            <Shield className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-serif font-black text-[#1A1A1A] tracking-tight">
-                Administration Console
+            <div className="flex items-center space-x-2.5">
+              <h1 className="text-2xl font-serif font-black text-paper tracking-tight">
+                Administration Console.
               </h1>
-              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Active Session
               </span>
             </div>
-            <p className="text-xs text-slate-600 mt-0.5">
+            <p className="text-xs text-mist mt-0.5 font-mono">
               Tournament orchestration • {isSupabaseLive ? 'Supabase Realtime Sync' : 'Local State Mode'}
             </p>
           </div>
@@ -934,16 +934,16 @@ END $$;`
                 notify('Temporary data cleaned and state refreshed.')
               }
             }}
-            className="px-3 py-1.5 rounded-md bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 border border-slate-200 flex items-center space-x-1.5 transition-all shadow-2xs"
+            className="px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-xs font-semibold text-mist hover:text-paper border border-white/10 flex items-center space-x-2 transition-all"
             title="Clean temporary cache and reset to fresh data"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+            <RefreshCw className="w-3.5 h-3.5 text-fog" />
             <span>Reset Cache</span>
           </button>
 
           <button
             onClick={() => setIsAdmin(false)}
-            className="px-3 py-1.5 rounded-md bg-rose-50 hover:bg-rose-100 text-xs font-medium text-rose-700 border border-rose-200 flex items-center space-x-1.5 transition-all"
+            className="px-4 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-xs font-bold text-rose-300 border border-rose-500/30 flex items-center space-x-2 transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Log Out</span>
@@ -953,95 +953,95 @@ END $$;`
 
       {/* Realtime Notification Banner */}
       {statusMessage && (
-        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center space-x-2 animate-in fade-in">
-          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center space-x-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
           <span>{statusMessage}</span>
         </div>
       )}
 
       {/* Admin Tab Navigation */}
-      <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar border-b-2 border-[#1A1A1A] pb-3">
+      <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar border-b border-white/10 pb-3">
         <button
           onClick={() => setActiveTab('teams')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'teams'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Shield className={`w-3.5 h-3.5 ${activeTab === 'teams' ? 'text-white' : 'text-slate-400'}`} />
+          <Shield className={`w-3.5 h-3.5 ${activeTab === 'teams' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Teams & Squads ({teams.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('players')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'players'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Users className={`w-3.5 h-3.5 ${activeTab === 'players' ? 'text-white' : 'text-slate-400'}`} />
+          <Users className={`w-3.5 h-3.5 ${activeTab === 'players' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Player Roster ({players.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('matches')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'matches'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Radio className={`w-3.5 h-3.5 ${activeTab === 'matches' ? 'text-white' : 'text-slate-400'}`} />
+          <Radio className={`w-3.5 h-3.5 ${activeTab === 'matches' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Matches & Scores ({matches.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('leaderboards')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'leaderboards'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Trophy className={`w-3.5 h-3.5 ${activeTab === 'leaderboards' ? 'text-[#F59E0B]' : 'text-slate-400'}`} />
+          <Trophy className={`w-3.5 h-3.5 ${activeTab === 'leaderboards' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Leaderboard Points</span>
         </button>
 
         <button
           onClick={() => setActiveTab('tactics')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'tactics'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Crosshair className={`w-3.5 h-3.5 ${activeTab === 'tactics' ? 'text-white' : 'text-slate-400'}`} />
+          <Crosshair className={`w-3.5 h-3.5 ${activeTab === 'tactics' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Formation Studio</span>
         </button>
 
         <button
           onClick={() => setActiveTab('sports')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'sports'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Sparkles className={`w-3.5 h-3.5 ${activeTab === 'sports' ? 'text-[#F59E0B]' : 'text-slate-400'}`} />
+          <Sparkles className={`w-3.5 h-3.5 ${activeTab === 'sports' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Divisions & Venues ({sports.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('supabase')}
-          className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
             activeTab === 'supabase'
-              ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-              : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+              ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+              : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
           }`}
         >
-          <Database className={`w-3.5 h-3.5 ${activeTab === 'supabase' ? 'text-white' : 'text-slate-400'}`} />
+          <Database className={`w-3.5 h-3.5 ${activeTab === 'supabase' ? 'text-acid-ink' : 'text-fog'}`} />
           <span>Database & Migrations</span>
         </button>
       </div>
@@ -3421,10 +3421,18 @@ END $$;`
 
                         <div className="flex items-center space-x-2 pt-1">
                           <Link
+                            href={meta.link}
+                            className="flex-1 h-10 px-2 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs text-center transition-colors flex items-center justify-center space-x-1 font-medium border border-blue-200"
+                          >
+                            <span>Game Page</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+
+                          <Link
                             href={`/leaderboards?sport=${encodeURIComponent(sport.name)}`}
                             className="flex-1 h-10 px-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs text-center transition-colors flex items-center justify-center space-x-1 font-medium border border-slate-200"
                           >
-                            <span>Standings</span>
+                            <span>Table</span>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Link>
 

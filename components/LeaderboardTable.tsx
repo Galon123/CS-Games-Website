@@ -9,7 +9,6 @@ import {
   Minus,
   Search,
   Users,
-  Star,
   MapPin,
   Medal,
   Crown,
@@ -22,13 +21,13 @@ function getSportWatermark(sportName: string) {
   if (isCsCupFootball(sportName)) {
     return (
       <svg
-        className="absolute right-2 -bottom-8 w-64 h-64 text-slate-900 opacity-[0.035] pointer-events-none -rotate-6"
+        className="absolute right-2 -bottom-8 w-64 h-64 text-white opacity-[0.035] pointer-events-none -rotate-6"
         viewBox="0 0 200 200"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
       >
-        <rect x="20" y="20" width="160" height="160" rx="8" />
+        <rect x="20" y="20" width="160" height="160" rx="6" />
         <circle cx="100" cy="100" r="34" />
         <line x1="100" y1="20" x2="100" y2="180" strokeDasharray="4 4" />
         <path d="M70 20 L70 60 L130 60 L130 20" />
@@ -40,30 +39,28 @@ function getSportWatermark(sportName: string) {
   if (norm.includes('chess')) {
     return (
       <svg
-        className="absolute right-4 -bottom-6 w-56 h-56 text-slate-900 opacity-[0.04] pointer-events-none"
+        className="absolute right-4 -bottom-6 w-56 h-56 text-white opacity-[0.04] pointer-events-none"
         viewBox="0 0 100 100"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.5"
       >
         <path d="M48 10 L52 10 M50 8 L50 14" strokeWidth="2" strokeLinecap="round" />
         <path d="M42 20 Q50 15 58 20 Q65 30 50 35 Q35 30 42 20 Z" />
         <path d="M40 35 L60 35 L56 70 L44 70 Z" />
         <path d="M30 85 L70 85 L65 70 L35 70 Z" />
-        <path d="M25 90 L75 90" strokeWidth="2.5" strokeLinecap="round" />
-        <line x1="10" y1="40" x2="90" y2="40" strokeDasharray="2 4" strokeWidth="1" />
-        <line x1="10" y1="60" x2="90" y2="60" strokeDasharray="2 4" strokeWidth="1" />
+        <path d="M25 90 L75 90" strokeWidth="2" strokeLinecap="round" />
       </svg>
     )
   }
   if (norm.includes('badminton')) {
     return (
       <svg
-        className="absolute right-4 -bottom-6 w-56 h-56 text-slate-900 opacity-[0.04] pointer-events-none -rotate-12"
+        className="absolute right-4 -bottom-6 w-56 h-56 text-white opacity-[0.04] pointer-events-none -rotate-12"
         viewBox="0 0 100 100"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.5"
       >
         <circle cx="50" cy="75" r="8" fill="currentColor" fillOpacity="0.05" />
         <path d="M44 70 L32 30 L68 30 L56 70 Z" />
@@ -72,18 +69,17 @@ function getSportWatermark(sportName: string) {
         <line x1="38" y1="52" x2="62" y2="52" />
         <line x1="42" y1="30" x2="48" y2="70" />
         <line x1="58" y1="30" x2="52" y2="70" />
-        <path d="M10 90 Q30 20 85 25" strokeDasharray="3 3" strokeWidth="1.2" />
       </svg>
     )
   }
   if (norm.includes('carrom')) {
     return (
       <svg
-        className="absolute right-4 -bottom-6 w-56 h-56 text-slate-900 opacity-[0.04] pointer-events-none"
+        className="absolute right-4 -bottom-6 w-56 h-56 text-white opacity-[0.04] pointer-events-none"
         viewBox="0 0 100 100"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.5"
       >
         <rect x="15" y="15" width="70" height="70" rx="4" />
         <circle cx="50" cy="50" r="14" />
@@ -92,18 +88,16 @@ function getSportWatermark(sportName: string) {
         <circle cx="78" cy="22" r="5" />
         <circle cx="22" cy="78" r="5" />
         <circle cx="78" cy="78" r="5" />
-        <line x1="30" y1="30" x2="70" y2="70" strokeDasharray="2 3" strokeWidth="1" />
-        <line x1="70" y1="30" x2="30" y2="70" strokeDasharray="2 3" strokeWidth="1" />
       </svg>
     )
   }
   return (
     <svg
-      className="absolute right-4 -bottom-6 w-56 h-56 text-slate-900 opacity-[0.035] pointer-events-none"
+      className="absolute right-4 -bottom-6 w-56 h-56 text-white opacity-[0.035] pointer-events-none"
       viewBox="0 0 100 100"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="1.5"
     >
       <polygon points="50,15 85,35 85,75 50,95 15,75 15,35" />
       <polygon points="50,28 73,42 73,68 50,82 27,68 27,42" strokeDasharray="3 3" />
@@ -137,27 +131,32 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
     })
 
   return (
-    <div className="space-y-6">
-      {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
-            Tournament Standings
+    <div className="space-y-8 pb-12">
+      {/* Header & Search */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2.5">
+            <span className="meta-label text-acid">TOURNAMENT STANDINGS</span>
+            <span className="text-white/20">•</span>
+            <span className="meta-label text-fog">DIVISION POINTS</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-paper tracking-tight">
+            Standings.
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Realtime standings and division points across all {sports.length} events.
+          <p className="text-xs sm:text-sm text-mist max-w-xl">
+            Realtime standings and division points across all {sports.length} tournament events.
           </p>
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-fog" />
           <input
             type="text"
-            placeholder="Search teams or labs..."
+            placeholder="Search squad or lab..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-[#E5E0D8] focus:border-blue-500 rounded-md pl-9 pr-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-colors"
+            className="w-full bg-ink-800 border border-white/15 focus:border-acid rounded-full pl-10 pr-4 py-2 text-xs text-paper placeholder-fog focus:outline-none transition-colors shadow-subtle"
           />
         </div>
       </div>
@@ -174,28 +173,32 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
             <button
               key={sport.id}
               onClick={() => setSelectedSportId(sport.id)}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
                 isSelected
                   ? isCsCup
-                    ? 'bg-[#F59E0B] text-[#1A1A1A] border-2 border-[#1A1A1A] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)] font-black'
-                    : 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-                  : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+                    ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+                    : 'bg-white/15 text-paper border border-white/25 shadow-xs'
+                  : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isSelected ? (isCsCup ? 'text-[#1A1A1A]' : 'text-white') : 'text-slate-500'}`} />
+              <Icon
+                className={`w-3.5 h-3.5 ${
+                  isSelected ? (isCsCup ? 'text-acid-ink' : 'text-paper') : 'text-fog'
+                }`}
+              />
               <span>{isCsCup ? 'CS Cup (Football)' : sport.name}</span>
             </button>
           )
         })}
       </div>
 
-      {/* Active Division Feature Banner with Sport-Specific Vector Watermark */}
+      {/* Active Division Feature Banner */}
       {activeSport && (() => {
         const meta = getSportMeta(activeSport)
         const isCsCup = isCsCupFootball(activeSport.name)
         return (
-          <div className="relative rounded-xl overflow-hidden border-2 border-[#1A1A1A] bg-white shadow-editorial-md">
-            {/* Dynamic Sport-Specific Line-Art Watermark */}
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-ink-800 shadow-card">
+            {/* Dynamic Sport Line-Art Watermark */}
             {getSportWatermark(activeSport.name)}
 
             {meta.imageUrl && (
@@ -204,7 +207,7 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 <img
                   src={meta.imageUrl}
                   alt={activeSport.name}
-                  className="absolute inset-0 w-full h-full object-cover opacity-15"
+                  className="absolute inset-0 w-full h-full object-cover grayscale-[30%] contrast-[115%]"
                   onError={(e) => {
                     if (isCsCupFootball(activeSport.name)) {
                       if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
@@ -213,36 +216,43 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                     }
                   }}
                 />
-                <div className="absolute inset-0 bg-white/90" />
+                <div className="absolute inset-0 bg-gradient-to-r from-ink-900/95 via-ink-900/80 to-ink-900/45" />
               </>
             )}
-            <div className="relative z-10 flex items-center justify-between p-5 sm:p-6">
-              <div className="space-y-1.5">
-                <div className="flex items-center space-x-2">
-                  <span className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-md border ${
-                    isCsCup ? 'bg-[#153422] text-[#F59E0B] border-[#F59E0B]' : meta.bgBadgeClass
+            <div className="relative z-10 flex items-center justify-between p-6 sm:p-8">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2.5">
+                  <span className={`text-[10px] font-mono font-bold px-3 py-0.5 rounded-full border ${
+                    isCsCup ? 'bg-acid text-acid-ink border-acid' : 'bg-white/5 text-mist border-white/10'
                   }`}>
                     {isCsCup ? 'CS CUP TOURNAMENT' : meta.badgeText}
                   </span>
                   {activeSport.venue && (
-                    <span className="text-[11px] text-slate-700 font-mono flex items-center space-x-1 font-bold">
-                      <MapPin className="w-3 h-3 text-[#1E40AF]" />
+                    <span className="text-xs text-mist font-mono flex items-center space-x-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-acid" />
                       <span>{activeSport.venue}</span>
                     </span>
                   )}
                 </div>
-                <h2 className="text-xl sm:text-2xl font-serif font-black text-[#1A1A1A] tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-serif font-black text-paper tracking-tight">
                   {isCsCup ? 'CS Cup (Football)' : activeSport.name} Division
                 </h2>
-                <p className="text-xs text-slate-600 max-w-md line-clamp-1 font-medium">
+                <p className="text-xs text-mist max-w-lg line-clamp-1">
                   {meta.description}
                 </p>
               </div>
 
-              <div className="hidden sm:flex items-center space-x-3 text-right">
-                <div className="bg-white border-2 border-[#1A1A1A] rounded-lg px-4 py-2 shadow-editorial-sm">
-                  <span className="text-[10px] text-slate-600 uppercase block font-bold font-mono">Contenders</span>
-                  <span className="text-xl font-black text-[#1A1A1A] font-mono">{filteredEntries.length}</span>
+              <div className="flex items-center space-x-4">
+                <Link
+                  href={meta.link}
+                  className="hidden sm:inline-flex items-center space-x-2 px-4 py-2.5 rounded-full bg-acid text-acid-ink font-mono font-bold text-xs shadow-xs hover:bg-acid-hot transition-all"
+                >
+                  <span>Open Game Page</span>
+                  <span>→</span>
+                </Link>
+                <div className="hidden md:block bg-ink-900/80 border border-white/15 rounded-xl px-5 py-2.5 shadow-subtle backdrop-blur-sm text-right">
+                  <span className="meta-label text-[10px] text-fog block">Contenders</span>
+                  <span className="text-2xl font-serif font-black text-paper font-lining">{filteredEntries.length}</span>
                 </div>
               </div>
             </div>
@@ -251,12 +261,12 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
       })()}
 
       {/* Table Card */}
-      <div className="bg-white border-2 border-[#1A1A1A] rounded-xl overflow-hidden shadow-editorial-md">
-        <div className="px-5 py-3 border-b-2 border-[#1A1A1A] flex items-center justify-between bg-[#FBF9F5] text-xs">
-          <span className="font-serif font-black text-[#1A1A1A] uppercase tracking-wide">
-            {isCsCupFootball(activeSport?.name) ? 'CS Cup (Football)' : activeSport?.name} Division Standings
+      <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden shadow-card">
+        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-ink-900/60 text-xs">
+          <span className="font-serif font-black text-paper uppercase tracking-wider">
+            {isCsCupFootball(activeSport?.name) ? 'CS Cup (Football)' : activeSport?.name} Division Table
           </span>
-          <span className="text-slate-600 font-mono font-bold text-[11px]">
+          <span className="text-fog font-mono text-[11px]">
             3 PTS Win • 1 PT Draw
           </span>
         </div>
@@ -264,10 +274,10 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b-2 border-slate-200 bg-slate-50 text-xs font-mono font-black text-slate-700 tracking-wider uppercase">
-                <th className="py-3 px-4 w-14 text-center">Rank</th>
-                <th className="py-3 px-2 w-8 text-center">Δ</th>
-                <th className="py-3 px-4">
+              <tr className="border-b border-white/10 bg-ink-900 text-xs font-mono font-bold text-fog tracking-wider uppercase">
+                <th className="py-3.5 px-5 w-16 text-center">Rank</th>
+                <th className="py-3.5 px-2 w-10 text-center">Trend</th>
+                <th className="py-3.5 px-5">
                   {activeSport?.type === 'solo'
                     ? 'Competitor / Department'
                     : activeSport?.type === 'quad' || (activeSport?.name?.toLowerCase().includes('carrom') && activeSport?.type !== 'duo')
@@ -278,115 +288,116 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                     ? 'Contender / Department'
                     : 'Team / Laboratory'}
                 </th>
-                <th className="py-3 px-3 text-center">Played</th>
-                <th className="py-3 px-3 text-center text-emerald-800">Won</th>
-                <th className="py-3 px-3 text-center text-slate-700">Drawn</th>
-                <th className="py-3 px-3 text-center text-rose-800">Lost</th>
-                <th className="py-3 px-4 text-center font-black text-[#1A1A1A]">Points</th>
-                <th className="py-3 px-4 text-right">
+                <th className="py-3.5 px-3 text-center">Played</th>
+                <th className="py-3.5 px-3 text-center text-emerald-400">Won</th>
+                <th className="py-3.5 px-3 text-center text-mist">Drawn</th>
+                <th className="py-3.5 px-3 text-center text-rose-400">Lost</th>
+                <th className="py-3.5 px-5 text-center font-black text-paper">Points</th>
+                <th className="py-3.5 px-5 text-right">
                   {activeSport?.type === 'solo' || activeSport?.type === 'free_for_all' || activeSport?.type === 'quad' || (activeSport?.name?.toLowerCase().includes('carrom') && activeSport?.type !== 'duo') ? 'Profile' : 'Roster'}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/5">
               {filteredEntries.length > 0 ? (
                 filteredEntries.map((entry, index) => {
                   const rank = index + 1
                   const team = entry.team
-                  const isTop3 = rank <= 3
 
                   return (
                     <tr
                       key={entry.id}
-                      className="hover:bg-slate-50 transition-colors duration-150 group"
+                      className="hover:bg-white/[0.02] transition-colors duration-150 group"
                     >
                       {/* Rank: Distinct Gold, Silver, Bronze Badges */}
-                      <td className="py-3.5 px-4 text-center font-medium">
+                      <td className="py-4 px-5 text-center font-medium">
                         {rank === 1 ? (
                           <span
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-mono font-black text-amber-900 bg-amber-100/90 border border-amber-300 shadow-2xs ring-1 ring-amber-400/40"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-mono font-black text-acid-ink bg-acid shadow-[0_0_8px_rgba(215,242,43,0.35)]"
                             title="1st Place (Gold Leader)"
                           >
-                            <Crown className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
+                            <Crown className="w-3.5 h-3.5 fill-acid-ink text-acid-ink" />
                           </span>
                         ) : rank === 2 ? (
                           <span
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-mono font-bold text-slate-800 bg-slate-200/80 border border-slate-300 shadow-2xs ring-1 ring-slate-300/60"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-mono font-bold text-paper bg-white/15 border border-white/20"
                             title="2nd Place (Silver)"
                           >
-                            <Medal className="w-3.5 h-3.5 text-slate-600 fill-slate-400/30" />
+                            <Medal className="w-3.5 h-3.5 text-paper fill-white/30" />
                           </span>
                         ) : rank === 3 ? (
                           <span
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-mono font-bold text-amber-950 bg-amber-200/60 border border-amber-300 shadow-2xs ring-1 ring-amber-400/30"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-mono font-bold text-amber-300 bg-amber-600/20 border border-amber-600/30"
                             title="3rd Place (Bronze)"
                           >
-                            <Medal className="w-3.5 h-3.5 text-amber-700 fill-amber-600/30" />
+                            <Medal className="w-3.5 h-3.5 text-amber-400 fill-amber-600/30" />
                           </span>
                         ) : (
-                          <span className="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-mono text-slate-500 font-semibold">
+                          <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-mono text-fog font-semibold">
                             {rank}
                           </span>
                         )}
                       </td>
 
                       {/* Rank Movement */}
-                      <td className="py-3.5 px-2 text-center">
+                      <td className="py-4 px-2 text-center">
                         {entry.rankChange === 'up' ? (
-                          <span className="inline-flex text-emerald-600 font-bold">
-                            <ArrowUp className="w-3 h-3" />
+                          <span className="inline-flex text-emerald-400 font-bold">
+                            <ArrowUp className="w-3.5 h-3.5" />
                           </span>
                         ) : entry.rankChange === 'down' ? (
-                          <span className="inline-flex text-rose-600 font-bold">
-                            <ArrowDown className="w-3 h-3" />
+                          <span className="inline-flex text-rose-400 font-bold">
+                            <ArrowDown className="w-3.5 h-3.5" />
                           </span>
                         ) : (
-                          <span className="inline-flex text-slate-400">
+                          <span className="inline-flex text-fog">
                             <Minus className="w-3 h-3" />
                           </span>
                         )}
                       </td>
 
                       {/* Competitor / Team */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold font-mono text-slate-700 shrink-0 group-hover:border-blue-300 transition-colors">
+                      <td className="py-4 px-5">
+                        <div className="flex items-center space-x-3.5">
+                          <div className="w-9 h-9 rounded-xl bg-ink-900 border border-white/15 flex items-center justify-center text-xs font-bold font-mono text-paper shrink-0 group-hover:border-acid/40 transition-colors">
                             {(team?.name || entry.player?.name || '?').substring(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors flex items-center space-x-1.5">
-                              <span>{team?.name || entry.player?.name || '—'}</span>
+                            <div className="font-bold text-paper group-hover:text-acid transition-colors flex items-center space-x-2">
+                              <span>{team?.name || entry.player?.name || 'Unassigned'}</span>
                               {rank === 1 && (
-                                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 font-sans">
+                                <span className="text-[9px] font-mono font-bold text-acid-ink bg-acid px-1.5 py-0.2 rounded-full">
                                   LEADER
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-slate-500">{team?.department || entry.player?.department}</div>
+                            <div className="text-[11px] text-fog font-mono mt-0.5">
+                              {team?.department || entry.player?.department}
+                            </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Stats */}
-                      <td className="py-3.5 px-3 text-center font-mono text-slate-700">{entry.played}</td>
-                      <td className="py-3.5 px-3 text-center font-mono font-semibold text-emerald-700">{entry.won}</td>
-                      <td className="py-3.5 px-3 text-center font-mono text-slate-600">{entry.drawn}</td>
-                      <td className="py-3.5 px-3 text-center font-mono text-rose-700">{entry.lost}</td>
+                      <td className="py-4 px-3 text-center font-mono text-mist">{entry.played}</td>
+                      <td className="py-4 px-3 text-center font-mono font-bold text-emerald-400">{entry.won}</td>
+                      <td className="py-4 px-3 text-center font-mono text-fog">{entry.drawn}</td>
+                      <td className="py-4 px-3 text-center font-mono text-rose-400">{entry.lost}</td>
 
                       {/* Points */}
-                      <td className="py-3.5 px-4 text-center">
-                        <span className="font-mono font-bold text-sm text-slate-900 px-2.5 py-0.5 rounded bg-slate-100 border border-slate-200 transition-colors duration-200 group-hover:border-blue-300 group-hover:bg-blue-50/60 group-hover:text-blue-700">
+                      <td className="py-4 px-5 text-center">
+                        <span className="font-serif font-black text-sm text-paper px-3 py-1 rounded-full bg-white/5 border border-white/10 group-hover:border-acid/40 group-hover:text-acid font-lining transition-colors">
                           {entry.points}
                         </span>
                       </td>
 
                       {/* Roster Link */}
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-4 px-5 text-right">
                         <Link
                           href={`/roster?team=${team?.id}`}
-                          className="inline-flex items-center space-x-1.5 text-[11px] text-slate-700 hover:text-slate-900 font-medium py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 transition-colors border border-slate-200 shadow-2xs hover:border-slate-300"
+                          className="inline-flex items-center space-x-1.5 text-[11px] text-mist hover:text-paper font-semibold py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Users className="w-3 h-3 text-slate-500" />
+                          <Users className="w-3 h-3 text-fog" />
                           <span>{activeSport?.type === 'solo' ? 'Profile' : 'Roster'}</span>
                         </Link>
                       </td>
@@ -395,14 +406,14 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center space-y-2">
-                      <Trophy className="w-8 h-8 text-slate-400" />
-                      <span className="text-slate-800 font-semibold">
+                  <td colSpan={9} className="py-16 text-center text-mist">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <Trophy className="w-9 h-9 text-fog" />
+                      <span className="text-paper font-bold text-sm">
                         No standings recorded yet for {activeSport?.name || 'this'} division.
                       </span>
-                      <span className="text-[11px] text-slate-500">
-                        Matches or team enrollments will update standings automatically.
+                      <span className="text-xs text-fog max-w-xs leading-relaxed">
+                        Matches or squad enrollments in the Admin Console will update standings automatically.
                       </span>
                     </div>
                   </td>

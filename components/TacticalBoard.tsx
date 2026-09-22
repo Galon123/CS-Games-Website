@@ -7,22 +7,16 @@ import { Player, Team } from '@/lib/types'
 import {
   Crosshair,
   Shield,
-  Zap,
   Info,
-  Users,
-  RotateCcw,
-  Sliders,
-  ChevronRight,
-  Sparkles,
-  Trophy,
   Lock,
+  Sparkles,
 } from 'lucide-react'
 import { isCsCupFootball } from '@/lib/sports-theme'
 
 export default function TacticalBoard() {
   const { sports, teams, players, updateTeamFormation, updatePlayerPosition, isAdmin } = useTournament()
 
-  // Find genuine football / CS Cup sport dynamically (strictly excluding virtual e-football)
+  // Find genuine football / CS Cup sport dynamically
   const footballSport = sports.find((s) => isCsCupFootball(s.name)) || sports[0]
   const footballTeams = teams.filter((t) => t.sport_id === footballSport?.id)
   const [selectedTeamId, setSelectedTeamId] = useState<string>(footballTeams[0]?.id || '')
@@ -60,28 +54,32 @@ export default function TacticalBoard() {
   if (footballTeams.length === 0) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded-md bg-blue-50 border border-blue-200">
-            <Crosshair className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded-xl bg-ink-800 border border-white/15 text-acid">
+            <Crosshair className="w-5 h-5 text-acid" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
-            CS Cup • Formations Studio
-          </h1>
+          <div>
+            <span className="meta-label text-fog">TACTICAL STUDIO</span>
+            <h1 className="text-2xl sm:text-3xl font-serif font-black text-paper tracking-tight">
+              Formations.
+            </h1>
+          </div>
         </div>
 
-        <div className="bg-white border border-[#E5E0D8] rounded-lg p-10 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto my-10">
-          <div className="w-14 h-14 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center text-blue-600">
-            <Shield className="w-7 h-7 text-blue-600" />
+        <div className="bg-ink-800 border border-white/10 rounded-2xl p-10 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto my-12">
+          <div className="w-14 h-14 rounded-xl bg-ink-900 border border-white/15 flex items-center justify-center text-acid">
+            <Shield className="w-7 h-7 text-acid" />
           </div>
-          <h2 className="text-lg font-serif font-bold text-[#1A1A1A]">No CS Cup (Football) Teams Registered</h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
-            There are currently no squads enrolled under 6v6 Football. Enroll teams and set their official formations in the Admin Console.
+          <h2 className="text-xl font-serif font-bold text-paper">No CS Cup Teams Registered</h2>
+          <p className="text-xs sm:text-sm text-mist max-w-sm leading-relaxed">
+            There are currently no squads enrolled under 6v6 Football. Enroll teams and configure formations in the Admin Console.
           </p>
           <Link
             href="/admin"
-            className="mt-3 px-5 h-10 inline-flex items-center justify-center rounded-md bg-blue-600 text-white font-medium text-xs hover:bg-blue-700 transition-colors"
+            className="cta-acid mt-2"
           >
-            Go to Admin Console
+            <span>Open Admin Console</span>
+            <span className="arrow-hover ml-0.5">↗</span>
           </Link>
         </div>
       </div>
@@ -89,41 +87,34 @@ export default function TacticalBoard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Top Header & Team Switcher */}
-      <div className="relative overflow-hidden bg-white p-5 rounded-xl border-2 border-[#1A1A1A] flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-editorial-md animate-slide-in-down">
-        {/* Subtle Formations Pitch Vector Watermark */}
-        <svg
-          className="absolute right-2 -bottom-6 w-48 h-48 text-slate-900 opacity-[0.035] pointer-events-none -rotate-12"
-          viewBox="0 0 200 200"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="20" y="20" width="160" height="160" rx="8" />
-          <circle cx="100" cy="100" r="32" />
-          <path d="M100 20 L100 180" strokeDasharray="4 4" />
-          <path d="M60 20 L60 60 L140 60 L140 20" />
-          <path d="M60 180 L60 140 L140 140 L140 180" />
-          <path d="M40 90 L100 130 L160 90" strokeDasharray="2 2" />
-        </svg>
+      <div className="relative overflow-hidden bg-ink-800 p-6 sm:p-7 rounded-2xl border border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-card">
+        {/* Subtle Pitch Watermark */}
+        <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none -rotate-12 translate-x-10 translate-y-10">
+          <svg className="w-64 h-64 text-white" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="20" y="20" width="160" height="160" rx="6" />
+            <circle cx="100" cy="100" r="32" />
+            <path d="M100 20 L100 180" strokeDasharray="4 4" />
+          </svg>
+        </div>
 
-        <div className="relative z-10">
-          <div className="flex items-center space-x-2">
-            <div className="p-2 rounded-md bg-[#F59E0B] border-2 border-[#1A1A1A] shadow-2xs">
-              <Crosshair className="w-5 h-5 text-[#1A1A1A]" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
-              CS Cup • Formations Studio
-            </h1>
+        <div className="relative z-10 space-y-1">
+          <div className="flex items-center space-x-2.5">
+            <span className="meta-label text-acid">CS CUP • FOOTBALL</span>
+            <span className="text-white/20">•</span>
+            <span className="meta-label text-fog">TACTICAL STUDIO</span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
-            6v6 pitch layout, dynamic player coordinates, and live formation stances for the CS Cup football tournament.
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-paper tracking-tight">
+            Formations.
+          </h1>
+          <p className="text-xs sm:text-sm text-mist max-w-xl leading-relaxed">
+            6v6 turf pitch matrix, dynamic player coordinates, and live formation postures for the CS Cup football championship.
           </p>
         </div>
 
         {/* Team Selector Pills */}
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+        <div className="relative z-10 flex items-center space-x-2 overflow-x-auto no-scrollbar">
           {footballTeams.map((team) => (
             <button
               key={team.id}
@@ -131,10 +122,10 @@ export default function TacticalBoard() {
                 setSelectedTeamId(team.id)
                 setSelectedPlayer(null)
               }}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all shrink-0 hover:translate-y-[-1px] ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 ${
                 team.id === activeTeam?.id
-                  ? 'bg-[#1E40AF] text-white border-2 border-[#172554] shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]'
-                  : 'bg-white text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-50 border border-slate-300'
+                  ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+                  : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
               }`}
             >
               <span>{team.name}</span>
@@ -144,24 +135,24 @@ export default function TacticalBoard() {
       </div>
 
       {/* Main Formations Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Pitch Display (8 Cols) */}
-        <div className="lg:col-span-8 space-y-4 animate-slide-in-left">
+        <div className="lg:col-span-8 space-y-5 animate-slide-in-left">
           {/* Pitch Control Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border-2 border-[#1A1A1A] shadow-editorial-sm">
-            {/* Formation Display / Selectors */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-ink-800 p-4 rounded-xl border border-white/10 shadow-subtle">
+            {/* Formation Selector / Status */}
             {isAdmin ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-[#1E40AF] uppercase font-mono">Formation (Admin):</span>
-                <div className="flex flex-wrap items-center gap-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="text-xs font-mono font-bold text-acid uppercase tracking-wider">Formation:</span>
+                <div className="flex flex-wrap items-center gap-1.5">
                   {availableFormations.map((fmt) => (
                     <button
                       key={fmt}
                       onClick={() => handleFormationChange(fmt)}
-                      className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all ${
+                      className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all ${
                         activeTeam?.formation === fmt
-                          ? 'bg-[#F59E0B] text-[#1A1A1A] border border-[#1A1A1A] shadow-2xs font-black'
-                          : 'bg-slate-100 text-slate-700 hover:text-[#1A1A1A] hover:bg-slate-200 border border-slate-200'
+                          ? 'bg-acid text-acid-ink shadow-[0_0_8px_rgba(215,242,43,0.3)] font-black'
+                          : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
                       }`}
                     >
                       {fmt}
@@ -170,39 +161,38 @@ export default function TacticalBoard() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-slate-700 font-bold">Official Formation:</span>
-                <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-[#F59E0B] text-[#1A1A1A] font-mono font-black text-xs border border-[#1A1A1A]">
-                  <Lock className="w-3 h-3 text-[#1A1A1A]" />
-                  <span>{activeTeam?.formation || '2-2-1'}</span>
-                  <span className="text-[10px] text-black/60 ml-1">(Admin Locked)</span>
+              <div className="flex items-center space-x-2.5">
+                <span className="text-xs text-mist font-medium">Official Formation:</span>
+                <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/5 text-paper font-mono font-bold text-xs border border-white/15">
+                  <Lock className="w-3 h-3 text-acid" />
+                  <span className="text-acid font-lining">{activeTeam?.formation || '2-2-1'}</span>
+                  <span className="text-[10px] text-fog ml-1">(Admin Set)</span>
                 </div>
               </div>
             )}
 
             {/* Display Mode Switcher */}
-            <div className="flex items-center space-x-2 text-xs self-end sm:self-auto font-mono font-bold">
-              <span className="text-slate-500 uppercase text-[11px]">View:</span>
+            <div className="flex items-center space-x-1 text-xs self-end sm:self-auto font-mono bg-ink-900 p-1 rounded-full border border-white/10">
               <button
                 onClick={() => setTacticalViewMode('roles')}
-                className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
-                  tacticalViewMode === 'roles' ? 'bg-[#1A1A1A] text-white font-black' : 'text-slate-600 hover:text-[#1A1A1A] hover:bg-slate-100'
+                className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+                  tacticalViewMode === 'roles' ? 'bg-acid text-acid-ink' : 'text-mist hover:text-paper'
                 }`}
               >
                 Roles
               </button>
               <button
                 onClick={() => setTacticalViewMode('numbers')}
-                className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
-                  tacticalViewMode === 'numbers' ? 'bg-[#1A1A1A] text-white font-black' : 'text-slate-600 hover:text-[#1A1A1A] hover:bg-slate-100'
+                className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+                  tacticalViewMode === 'numbers' ? 'bg-acid text-acid-ink' : 'text-mist hover:text-paper'
                 }`}
               >
                 Jerseys
               </button>
               <button
                 onClick={() => setTacticalViewMode('positions')}
-                className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
-                  tacticalViewMode === 'positions' ? 'bg-[#1A1A1A] text-white font-black' : 'text-slate-600 hover:text-[#1A1A1A] hover:bg-slate-100'
+                className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+                  tacticalViewMode === 'positions' ? 'bg-acid text-acid-ink' : 'text-mist hover:text-paper'
                 }`}
               >
                 Coords
@@ -210,53 +200,53 @@ export default function TacticalBoard() {
             </div>
           </div>
 
-          {/* 2D Tactical Football Pitch Container (Mobile-optimized aspect-[4/5] sm:aspect-[16/11]) */}
+          {/* 2D Tactical Football Pitch Container */}
           <div
             onClick={handlePitchClick}
-            className={`relative w-full aspect-[4/5] sm:aspect-[16/11] min-h-[440px] sm:min-h-0 rounded-xl overflow-hidden border-2 border-[#1A1A1A] shadow-editorial-lg tactical-pitch select-none transition-all ${
-              isRepositioning ? 'cursor-crosshair ring-4 ring-[#F59E0B]' : 'cursor-default'
+            className={`relative w-full aspect-[4/5] sm:aspect-[16/11] min-h-[460px] sm:min-h-0 rounded-2xl overflow-hidden border border-white/15 shadow-elevated tactical-pitch select-none transition-all ${
+              isRepositioning ? 'cursor-crosshair ring-2 ring-acid shadow-[0_0_24px_rgba(215,242,43,0.3)]' : 'cursor-default'
             }`}
           >
             {/* Pitch Markings Overlay */}
-            <div className="absolute inset-3 sm:inset-4 border-2 border-white/25 rounded pointer-events-none">
+            <div className="absolute inset-4 sm:inset-5 border border-white/20 rounded pointer-events-none">
               {/* Halfway Line */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/25 -translate-y-1/2" />
+              <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20 -translate-y-1/2" />
               {/* Center Circle */}
-              <div className="absolute top-1/2 left-1/2 w-20 h-20 sm:w-28 sm:h-28 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/25 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+              <div className="absolute top-1/2 left-1/2 w-24 h-24 sm:w-32 sm:h-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Top Penalty Area (Opponent) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-b-2 border-x-2 border-white/25">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-b-2 border-x-2 border-white/25" />
-                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/40" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 sm:w-56 h-16 sm:h-24 border-b border-x border-white/20">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-8 sm:h-12 border-b border-x border-white/20" />
+                <div className="absolute bottom-2.5 sm:bottom-3.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Bottom Penalty Area (Our Goal) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-36 sm:w-48 h-14 sm:h-20 border-t-2 border-x-2 border-white/25">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-7 sm:h-10 border-t-2 border-x-2 border-white/25" />
-                <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/40" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 sm:w-56 h-16 sm:h-24 border-t border-x border-white/20">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-8 sm:h-12 border-t border-x border-white/20" />
+                <div className="absolute top-2.5 sm:top-3.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
               </div>
 
               {/* Corner Arcs */}
-              <div className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-b border-r border-white/20 rounded-br-full" />
-              <div className="absolute top-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-b border-l border-white/20 rounded-bl-full" />
-              <div className="absolute bottom-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t border-r border-white/20 rounded-tr-full" />
-              <div className="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-t border-l border-white/20 rounded-tl-full" />
+              <div className="absolute top-0 left-0 w-3.5 h-3.5 border-b border-r border-white/20 rounded-br-full" />
+              <div className="absolute top-0 right-0 w-3.5 h-3.5 border-b border-l border-white/20 rounded-bl-full" />
+              <div className="absolute bottom-0 left-0 w-3.5 h-3.5 border-t border-r border-white/20 rounded-tr-full" />
+              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 border-t border-l border-white/20 rounded-tl-full" />
             </div>
 
             {/* Pitch Orientation Labels */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-medium tracking-widest pointer-events-none">
-              Opposition Half (Attack)
+            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-mono font-medium tracking-[0.2em] pointer-events-none">
+              OPPOSITION HALF (ATTACK)
             </div>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-medium tracking-widest pointer-events-none">
-              Defensive Half (Goal)
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] uppercase text-white/30 font-mono font-medium tracking-[0.2em] pointer-events-none">
+              DEFENSIVE HALF (GOAL)
             </div>
 
-            {/* Repositioning Active Banner */}
+            {/* Repositioning Banner */}
             {isRepositioning && selectedPlayer && (
-              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md z-30 animate-pulse whitespace-nowrap">
-                Click anywhere on pitch to place {selectedPlayer.name}
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-acid text-acid-ink text-xs font-bold px-4 py-1.5 rounded-full shadow-glow z-30 animate-pulse whitespace-nowrap">
+                Click anywhere on turf to place {selectedPlayer.name}
               </div>
             )}
 
@@ -283,20 +273,14 @@ export default function TacticalBoard() {
                     isSelected ? 'scale-115 z-30' : 'hover:scale-110'
                   }`}
                 >
-                  {/* Floating Stats Tooltip Card on Hover */}
+                  {/* Floating Dossier Tooltip Card on Hover */}
                   <div
-                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 z-40 w-48 p-2.5 rounded-lg bg-white border border-[#E5E0D8] shadow-md text-slate-900 transition-all duration-150 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 ${
+                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 z-40 w-52 p-3 rounded-xl bg-ink-800/95 border border-white/20 shadow-elevated text-cream transition-all duration-150 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 backdrop-blur-md ${
                       showTooltipBelow ? 'top-full mt-3' : 'bottom-full mb-3'
                     }`}
                   >
-                    {/* Pointer Triangle */}
-                    <div
-                      className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-[#E5E0D8] rotate-45 ${
-                        showTooltipBelow ? '-top-1 border-r-0 border-b-0 border-l border-t' : '-bottom-1'
-                      }`}
-                    />
-                    <div className="flex items-center space-x-2.5">
-                      <div className="w-9 h-9 rounded-md overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center font-mono font-bold text-xs">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-ink-900 border border-white/15 shrink-0 flex items-center justify-center font-mono font-bold text-xs text-paper">
                         {player.photo_url ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img src={player.photo_url} alt={player.name} className="w-full h-full object-cover" />
@@ -305,40 +289,40 @@ export default function TacticalBoard() {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="font-bold text-xs text-[#1A1A1A] truncate flex items-center space-x-1">
+                        <div className="font-bold text-xs text-paper truncate flex items-center space-x-1">
                           <span className="truncate">{player.name}</span>
-                          {isIcon && <span className="text-amber-500 text-[10px]">⭐</span>}
+                          {isIcon && <span className="text-acid text-[10px]">★</span>}
                         </div>
-                        <div className="text-[10px] text-blue-600 font-medium truncate">
+                        <div className="text-[10px] text-acid font-medium truncate mt-0.5">
                           {player.role}
                         </div>
                       </div>
                     </div>
-                    <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
+                    <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-mist font-mono">
                       <span className="truncate">{activeTeam?.name}</span>
-                      <span className="font-mono font-bold text-slate-800 shrink-0">
+                      <span className="text-paper font-bold font-lining">
                         {isGK ? 'GK' : `POS (${Math.round(player.position_x)}, ${Math.round(player.position_y)})`}
                       </span>
                     </div>
                   </div>
 
-                  {/* Icon Player Gold Star Badge */}
+                  {/* Icon Athlete Gold Star Pill */}
                   {isIcon && (
-                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 text-slate-950 text-[9px] font-black flex items-center justify-center shadow-md border border-amber-200 z-30">
+                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-acid text-acid-ink text-[10px] font-black flex items-center justify-center shadow-subtle border border-ink-900 z-30">
                       ★
                     </div>
                   )}
 
-                  {/* Player Dot / Jersey */}
+                  {/* Player Disc Node with Large Serif Lining Number */}
                   <div
-                    className={`w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-full flex items-center justify-center font-mono font-black text-xs shadow-md transition-all ${
+                    className={`w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-full flex items-center justify-center font-serif font-black text-sm sm:text-base font-lining shadow-card transition-all duration-200 ${
                       isSelected
-                        ? 'bg-[#1E40AF] text-white ring-4 ring-white shadow-xl scale-110'
+                        ? 'bg-acid text-acid-ink ring-4 ring-acid/40 shadow-glow scale-110'
                         : isIcon
-                        ? 'bg-[#1A1A1A] text-[#F59E0B] ring-2 ring-[#D97706] border-2 border-[#F59E0B] shadow-lg'
+                        ? 'bg-ink-800 text-acid ring-2 ring-acid border border-acid/60'
                         : isGK
-                        ? 'bg-[#D97706] text-[#1A1A1A] ring-2 ring-white border border-[#1A1A1A] font-black'
-                        : 'bg-[#1A1A1A] text-white ring-1 ring-white/70 border border-[#1A1A1A]'
+                        ? 'bg-europa-orange text-paper ring-1 ring-white/40 border border-white/20'
+                        : 'bg-ink-800 text-paper ring-1 ring-white/30 border border-white/15'
                     }`}
                   >
                     {tacticalViewMode === 'numbers' ? (
@@ -350,80 +334,80 @@ export default function TacticalBoard() {
                     )}
                   </div>
 
-                  {/* Clean First Name Pill */}
+                  {/* Player Name Tag Beneath */}
                   <div
-                    className={`mt-1 px-1.5 py-0.5 rounded text-[10px] text-center whitespace-nowrap shadow-xs transition-colors flex items-center justify-center space-x-0.5 ${
+                    className={`mt-1 px-2 py-0.5 rounded-full text-[10px] text-center whitespace-nowrap shadow-subtle transition-colors flex items-center justify-center space-x-1 ${
                       isSelected
-                        ? 'bg-[#1E40AF] text-white font-bold'
+                        ? 'bg-acid text-acid-ink font-bold'
                         : isIcon
-                        ? 'bg-[#1A1A1A] text-[#F59E0B] border border-[#D97706] font-black'
-                        : 'bg-[#1A1A1A]/90 text-white border border-black/40 font-medium'
+                        ? 'bg-ink-800 text-acid border border-acid/40 font-bold'
+                        : 'bg-ink-900/90 text-cream border border-white/15 font-medium'
                     }`}
                   >
                     <span>{player.name.split(' ')[0]}</span>
-                    {isIcon && <span className="text-[#F59E0B] text-[9px]">★</span>}
+                    {isIcon && <span className="text-acid text-[9px]">★</span>}
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Pitch Legend & Instructions */}
-          <div className="flex flex-wrap items-center justify-between text-xs text-slate-700 px-1 gap-2 font-mono font-bold">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#1A1A1A] border border-white/60" />
+          {/* Pitch Legend */}
+          <div className="flex flex-wrap items-center justify-between text-xs text-mist px-1 gap-3 font-mono">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-ink-800 border border-white/30" />
                 <span>Outfield</span>
               </span>
-              <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#D97706] border border-[#1A1A1A]" />
+              <span className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-europa-orange" />
                 <span>Goalkeeper</span>
               </span>
-              <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#1A1A1A] ring-2 ring-[#D97706] border border-[#F59E0B]" />
-                <span className="text-[#D97706]">★ Icon Disc</span>
+              <span className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-ink-800 border border-acid" />
+                <span className="text-acid">★ Icon Disc</span>
               </span>
-              <span className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#1E40AF]" />
-                <span>Selected</span>
+              <span className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-acid" />
+                <span className="text-paper">Selected</span>
               </span>
             </div>
-            <span className="text-slate-500 font-sans font-medium">Click player to inspect details</span>
+            <span className="text-fog font-sans">Click athlete node to view dossier</span>
           </div>
         </div>
 
         {/* Formations Info & Player Inspector (4 Cols) */}
-        <div className="lg:col-span-4 space-y-4 animate-slide-in-right">
+        <div className="lg:col-span-4 space-y-5 animate-slide-in-right">
           {/* Selected Player Card or Default Overview */}
           {selectedPlayer ? (
-            <div key={selectedPlayer.id} className="bg-white rounded-xl p-5 space-y-4 border-2 border-[#1A1A1A] shadow-editorial-md animate-slide-in-up">
-              <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+            <div key={selectedPlayer.id} className="bg-ink-800 rounded-2xl p-6 space-y-5 border border-white/12 shadow-card animate-slide-in-up">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-[#D97706]' : 'text-[#1E40AF]'}`} />
-                  <span className={`text-xs font-serif font-black uppercase tracking-wide ${selectedPlayer.is_icon ? 'text-[#D97706]' : 'text-[#1A1A1A]'}`}>
-                    Player Dossier
+                  <Sparkles className={`w-4 h-4 ${selectedPlayer.is_icon ? 'text-acid' : 'text-paper'}`} />
+                  <span className={`text-xs font-serif font-black uppercase tracking-wider ${selectedPlayer.is_icon ? 'text-acid' : 'text-paper'}`}>
+                    Athlete Dossier
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedPlayer(null)}
-                  className="text-xs text-slate-500 hover:text-black font-bold"
+                  className="text-xs text-fog hover:text-paper font-mono"
                 >
-                  Close
+                  [Dismiss]
                 </button>
               </div>
 
-              {/* Icon Athlete Badge */}
+              {/* Icon Athlete Banner */}
               {selectedPlayer.is_icon && (
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Team Icon Athlete ⭐</span>
+                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-acid/10 border border-acid/30 text-acid text-xs font-bold">
+                  <Sparkles className="w-3.5 h-3.5 text-acid" />
+                  <span>Team Icon Athlete ★</span>
                 </div>
               )}
 
               {/* Player Identity */}
-              <div className="flex items-center space-x-3.5">
-                <div className={`w-12 h-12 rounded-md bg-slate-100 border overflow-hidden shrink-0 flex items-center justify-center font-mono font-bold text-sm shadow-2xs ${
-                  selectedPlayer.is_icon ? 'border-amber-300 text-amber-800' : 'border-slate-200 text-slate-700'
+              <div className="flex items-center space-x-4">
+                <div className={`w-14 h-14 rounded-xl bg-ink-900 border overflow-hidden shrink-0 flex items-center justify-center font-mono font-bold text-sm shadow-subtle ${
+                  selectedPlayer.is_icon ? 'border-acid/60 text-acid' : 'border-white/15 text-paper'
                 }`}>
                   {selectedPlayer.photo_url ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -437,30 +421,30 @@ export default function TacticalBoard() {
                   )}
                 </div>
                 <div>
-                  <div className="text-base font-serif font-bold text-[#1A1A1A] leading-tight flex items-center space-x-1.5">
+                  <div className="text-lg font-serif font-black text-paper leading-tight flex items-center space-x-1.5">
                     <span>{selectedPlayer.name}</span>
-                    {selectedPlayer.is_icon && <span className="text-amber-600 text-sm">⭐</span>}
+                    {selectedPlayer.is_icon && <span className="text-acid text-sm">★</span>}
                   </div>
-                  <div className="text-xs text-blue-600 font-medium mt-0.5">
+                  <div className="text-xs text-acid font-mono font-medium mt-0.5">
                     {selectedPlayer.role} • #{selectedPlayer.jersey_number}
                   </div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="text-xs text-fog mt-0.5">
                     {activeTeam.name}
                   </div>
                 </div>
               </div>
 
               {/* Player Tactical Details */}
-              <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-                <div className="bg-slate-50 p-2.5 rounded-md border border-slate-200">
-                  <div className="text-slate-500 text-[10px] uppercase font-medium">Position</div>
-                  <div className="text-sm font-semibold text-slate-900 truncate">
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="bg-ink-900 p-3 rounded-xl border border-white/10">
+                  <div className="meta-label text-[10px] text-fog">Position</div>
+                  <div className="text-sm font-bold text-paper truncate mt-1">
                     {selectedPlayer.role}
                   </div>
                 </div>
-                <div className="bg-slate-50 p-2.5 rounded-md border border-slate-200">
-                  <div className="text-slate-500 text-[10px] uppercase font-medium">Squad Number</div>
-                  <div className="text-sm font-bold font-mono text-slate-900">
+                <div className="bg-ink-900 p-3 rounded-xl border border-white/10">
+                  <div className="meta-label text-[10px] text-fog">Squad Number</div>
+                  <div className="text-sm font-bold font-serif text-acid mt-1 font-lining">
                     #{selectedPlayer.jersey_number}
                   </div>
                 </div>
@@ -471,88 +455,92 @@ export default function TacticalBoard() {
                 {isAdmin ? (
                   <button
                     onClick={() => setIsRepositioning(!isRepositioning)}
-                    className={`w-full h-11 px-4 rounded-md text-xs font-medium transition-all flex items-center justify-center space-x-2 ${
+                    className={`w-full h-11 px-4 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
                       isRepositioning
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs'
+                        ? 'bg-acid text-acid-ink shadow-glow'
+                        : 'bg-white/5 hover:bg-white/10 text-paper border border-white/15'
                     }`}
                   >
                     <Crosshair className="w-4 h-4" />
-                    <span>{isRepositioning ? 'Cancel Repositioning' : 'Reposition on Pitch (Admin)'}</span>
+                    <span>{isRepositioning ? 'Cancel Repositioning' : 'Reposition on Turf (Admin)'}</span>
                   </button>
                 ) : (
-                  <div className="text-center text-[11px] text-slate-600 bg-slate-50 p-2 rounded-md border border-slate-200 flex items-center justify-center space-x-1.5">
-                    <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span>Position set by Administrator</span>
+                  <div className="text-center text-[11px] text-fog bg-ink-900 p-3 rounded-xl border border-white/10 flex items-center justify-center space-x-2 font-mono">
+                    <Lock className="w-3.5 h-3.5 text-fog shrink-0" />
+                    <span>Position coordinates locked by Administrator</span>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            <div key="overview" className="bg-white border-2 border-[#1A1A1A] rounded-xl p-5 space-y-4 shadow-editorial-md animate-slide-in-up">
-              <div className="flex items-center space-x-2 text-slate-900">
-                <Shield className="w-4 h-4 text-[#1E40AF]" />
-                <h3 className="font-serif font-black text-sm tracking-tight text-[#1A1A1A]">
+            <div key="overview" className="bg-ink-800 border border-white/12 rounded-2xl p-6 space-y-5 shadow-card animate-slide-in-up">
+              <div className="flex items-center space-x-2 text-paper">
+                <Shield className="w-4 h-4 text-acid" />
+                <h3 className="font-serif font-black text-base tracking-tight text-paper">
                   {activeTeam.name} Overview
                 </h3>
               </div>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Current Shape</span>
-                  <span className="font-mono font-bold text-[#1A1A1A] text-xs flex items-center space-x-1">
-                    <Lock className="w-3 h-3 text-[#D97706]" />
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-mist font-medium">Tactical Shape</span>
+                  <span className="font-mono font-bold text-acid text-xs flex items-center space-x-1 font-lining">
+                    <Lock className="w-3 h-3 text-acid" />
                     <span>{activeTeam.formation || '2-2-1'}</span>
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Team Manager</span>
-                  <span className="text-slate-900 font-bold">
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-mist font-medium">Team Manager</span>
+                  <span className="text-paper font-bold">
                     {activeTeam.manager ? (
                       <span>👔 {activeTeam.manager}</span>
                     ) : (
-                      <span className="text-slate-400 italic font-normal">Not Assigned</span>
+                      <span className="text-fog italic font-normal">Not Assigned</span>
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Icon Athlete</span>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-mist font-medium">Icon Athlete</span>
                   <span>
                     {teamPlayers.find((p) => p.is_icon) ? (
-                      <span className="text-[#D97706] font-bold">⭐ {teamPlayers.find((p) => p.is_icon)?.name}</span>
+                      <span className="text-acid font-bold">★ {teamPlayers.find((p) => p.is_icon)?.name}</span>
                     ) : (
-                      <span className="text-slate-400 italic">None Assigned</span>
+                      <span className="text-fog italic">None Assigned</span>
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Department</span>
-                  <span className="text-slate-900 font-bold">{activeTeam.department}</span>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-mist font-medium">Department</span>
+                  <span className="text-paper font-bold">{activeTeam.department}</span>
                 </div>
-                <div className="flex justify-between items-center py-1.5">
-                  <span className="text-slate-500 font-medium">Starting Lineup</span>
-                  <span className="font-bold text-slate-900 font-mono">{starting6.length} / 6 Fielded</span>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-mist font-medium">Starting Lineup</span>
+                  <span className="font-bold text-paper font-mono font-lining">{starting6.length} / 6 Fielded</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-md bg-[#FBF9F5] border border-slate-200 text-xs text-slate-700 space-y-1">
-                <p className="font-bold text-[#1A1A1A] flex items-center space-x-1.5 font-mono text-[11px] uppercase">
-                  <Info className="w-3.5 h-3.5 text-[#1E40AF]" />
-                  <span>Interactive Pitch Tip</span>
+              <div className="p-3.5 rounded-xl bg-ink-900 border border-white/10 text-xs text-mist space-y-1">
+                <p className="font-bold text-paper flex items-center space-x-1.5 font-mono text-[10px] tracking-wider uppercase text-acid">
+                  <Info className="w-3.5 h-3.5 text-acid" />
+                  <span>Tactical Pitch Tip</span>
                 </p>
-                <p className="text-[11px]">Click on any athlete node on the turf pitch to view detailed formations &amp; player dossiers.</p>
+                <p className="text-[11px] leading-relaxed">
+                  Click on any athlete disc on the turf pitch to view detailed formations, position coordinates, and player dossiers.
+                </p>
               </div>
             </div>
           )}
 
-          {/* Roster & Reserves */}
-          <div className="bg-white border-2 border-[#1A1A1A] rounded-xl p-4 space-y-3 shadow-editorial-sm animate-slide-in-up animation-delay-150">
+          {/* Squad Roster & Reserves Rail */}
+          <div className="bg-ink-800 border border-white/12 rounded-2xl p-5 space-y-4 shadow-subtle animate-slide-in-up animation-delay-150">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-serif font-black text-slate-900 uppercase tracking-wide">6v6 Squad Roster</span>
-              <span className="text-slate-500 font-mono text-[11px]">{teamPlayers.length} Members ({starting6.length} Fielded)</span>
+              <span className="font-serif font-black text-paper uppercase tracking-wider">6v6 Squad Roster</span>
+              <span className="text-fog font-mono text-[11px] font-lining">
+                {teamPlayers.length} Members ({starting6.length} Fielded)
+              </span>
             </div>
 
-            <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {teamPlayers.map((p, idx) => {
                 const isSelected = selectedPlayer?.id === p.id
                 const isStarter = idx < 6
@@ -561,31 +549,39 @@ export default function TacticalBoard() {
                   <button
                     key={p.id}
                     onClick={() => setSelectedPlayer(p)}
-                    className={`w-full flex items-center justify-between p-2 rounded-md text-xs transition-all duration-150 text-left hover:translate-x-1 ${
+                    className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs transition-all duration-150 text-left hover:translate-x-1 ${
                       isSelected
-                        ? 'bg-blue-50 text-blue-900 border border-blue-300'
+                        ? 'bg-acid text-acid-ink font-bold'
                         : isIcon
-                        ? 'bg-amber-50/70 hover:bg-amber-50 text-amber-900 border border-amber-200'
-                        : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80'
+                        ? 'bg-ink-900 hover:bg-ink-900/80 text-cream border border-acid/40'
+                        : 'bg-ink-900 hover:bg-ink-900/80 text-cream border border-white/10'
                     }`}
                   >
-                    <div className="flex items-center space-x-2 truncate">
-                      <span className="text-slate-500 font-mono text-xs w-5">#{p.jersey_number}</span>
-                      <span className="truncate font-medium">{p.name}</span>
-                      {isIcon && <span className="text-amber-600 text-xs shrink-0">⭐</span>}
+                    <div className="flex items-center space-x-2.5 truncate">
+                      <span className={`font-mono text-xs w-6 ${isSelected ? 'text-acid-ink' : 'text-fog'}`}>
+                        #{p.jersey_number}
+                      </span>
+                      <span className="truncate font-semibold">{p.name}</span>
+                      {isIcon && <span className={`text-xs shrink-0 ${isSelected ? 'text-acid-ink' : 'text-acid'}`}>★</span>}
                     </div>
                     <div className="flex items-center space-x-2 shrink-0">
-                      <span className="text-[10px] text-slate-500">{p.role}</span>
+                      <span className={`text-[10px] ${isSelected ? 'text-acid-ink/80' : 'text-fog'}`}>{p.role}</span>
                       {isIcon && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800 border border-amber-300">
+                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                          isSelected ? 'bg-ink-900 text-acid' : 'bg-acid/15 text-acid border border-acid/30'
+                        }`}>
                           ICON
                         </span>
                       )}
                       <span
-                        className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                        className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-bold ${
                           isStarter
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-slate-100 text-slate-600 border border-slate-200'
+                            ? isSelected
+                              ? 'bg-ink-900 text-paper'
+                              : 'bg-white/10 text-paper border border-white/15'
+                            : isSelected
+                            ? 'bg-ink-900/60 text-cream'
+                            : 'bg-white/5 text-fog border border-white/10'
                         }`}
                       >
                         {isStarter ? 'START 6' : 'BENCH'}

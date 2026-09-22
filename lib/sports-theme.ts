@@ -178,10 +178,85 @@ const DYNAMIC_PALETTES = [
   },
 ]
 
+/**
+ * Generates a clean, URL-friendly slug for a sport.
+ */
+export function getSportSlug(sportOrName: Sport | string): string {
+  const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
+  if (!name) return ''
+  const norm = name.trim().toLowerCase()
+
+  if (isCsCupFootball(name)) {
+    return 'football'
+  }
+  if (norm === 'badminton' || norm.includes('badminton')) {
+    return 'badminton'
+  }
+  if (norm === 'chess' || norm.includes('chess')) {
+    return 'chess'
+  }
+  if (norm === 'carrom' || norm === 'carroms' || norm.includes('carrom')) {
+    return 'carrom'
+  }
+
+  const slugified = norm
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return slugified || (typeof sportOrName === 'object' && sportOrName.id ? sportOrName.id : 'game')
+}
+
+/**
+ * Resolves a sport from an array of sports using a slug or ID.
+ */
+export function findSportBySlugOrId(sports: Sport[], slugOrId: string): Sport | undefined {
+  if (!slugOrId || !sports || sports.length === 0) return undefined
+  const norm = decodeURIComponent(slugOrId).trim().toLowerCase()
+
+  // 1. Direct ID match
+  const byId = sports.find((s) => s.id.toLowerCase() === norm)
+  if (byId) return byId
+
+  // 2. Football / CS Cup match
+  if (norm === 'football' || norm === 'cs-cup' || norm === 'the-cs-cup' || norm === 'soccer') {
+    const csCup = sports.find((s) => isCsCupFootball(s.name))
+    if (csCup) return csCup
+  }
+
+  // 3. Known sport slugs
+  if (norm === 'badminton') {
+    const s = sports.find((sp) => sp.name.toLowerCase().includes('badminton'))
+    if (s) return s
+  }
+  if (norm === 'chess') {
+    const s = sports.find((sp) => sp.name.toLowerCase().includes('chess'))
+    if (s) return s
+  }
+  if (norm === 'carrom' || norm === 'carroms') {
+    const s = sports.find((sp) => sp.name.toLowerCase().includes('carrom'))
+    if (s) return s
+  }
+
+  // 4. Slugified match
+  const bySlug = sports.find((s) => getSportSlug(s) === norm)
+  if (bySlug) return bySlug
+
+  // 5. Name match
+  const byName = sports.find(
+    (s) =>
+      s.name.toLowerCase() === norm ||
+      s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === norm
+  )
+  if (byName) return byName
+
+  return undefined
+}
+
 export function getSportMeta(sportOrName: Sport | string, sportType?: SportType): SportMeta {
   const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
   const type = typeof sportOrName === 'object' && sportOrName.type ? sportOrName.type : sportType || 'team'
   const normalized = name.trim().toLowerCase()
+  const slug = getSportSlug(sportOrName)
 
   const isAllowed = isSportWithImage(name)
   const defaultImg = getSportDisplayImage(name, type)
@@ -217,8 +292,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-[#1F3A2B] text-white font-mono font-bold',
       borderHoverClass: 'hover:border-blue-600',
       description: 'The marquee 6v6 football championship of CS Games 2026 with interactive tactical pitch tracking.',
-      link: '/tactics',
-      actionLabel: 'CS Cup Tactical Pitch',
+      link: '/games/football',
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -234,8 +309,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-amber-100 text-amber-900 border-amber-300 font-mono font-bold',
       borderHoverClass: 'hover:border-amber-400',
       description: `Open-field mass championship for ${name}. All registered participants compete simultaneously in the event match.`,
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View FFA Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -251,8 +326,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-violet-100 text-violet-900 border-violet-300 font-mono font-bold',
       borderHoverClass: 'hover:border-violet-400',
       description: `4-Player 1v1v1v1 board championship for ${name}. Four solo contenders face off on a single board simultaneously.`,
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -274,8 +349,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
       borderHoverClass: 'hover:border-indigo-400',
       description: 'Department esports console tournament. Virtual stadium 1v1 and 2v2 showdowns.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Esports Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -290,8 +365,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
       borderHoverClass: 'hover:border-sky-300',
       description: 'Indoor doubles rally. 21-point knockout tournament.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: '/games/badminton',
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -306,8 +381,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
       borderHoverClass: 'hover:border-amber-300',
       description: 'Departmental strategic chess championship.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: '/games/chess',
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -322,9 +397,9 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       colorClass: 'text-violet-700',
       bgBadgeClass: isCarromDuo ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-violet-100 text-violet-900 border-violet-300 font-mono font-bold',
       borderHoverClass: 'hover:border-violet-300',
-      description: isCarromDuo ? 'Doubles tournament board play and points standings.' : '4-Player 1v1v1v1 Carrom showdown — solo contenders face off on a single board simultaneously.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      description: isCarromDuo ? 'Doubles tournament board play and points standings.' : '4-Player 1v1v1v1 Carrom showdown: solo contenders face off on a single board simultaneously.',
+      link: '/games/carrom',
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -338,8 +413,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
       borderHoverClass: 'hover:border-rose-300',
       description: 'Paddle table tennis tournament fixtures and standings.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -360,8 +435,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
       borderHoverClass: 'hover:border-indigo-300',
       description: 'Competitive esports division featuring departmental gaming squads.',
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -375,8 +450,8 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       bgBadgeClass: 'bg-teal-50 text-teal-700 border-teal-200',
       borderHoverClass: 'hover:border-teal-300',
       description: `Departmental ${name} championship division.`,
-      link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-      actionLabel: 'View Standings',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
     }
   }
 
@@ -396,7 +471,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
     bgBadgeClass: palette.bgBadgeClass,
     borderHoverClass: palette.borderHoverClass,
     description: `Department championship division for ${name}. Fixtures, points, and standings.`,
-    link: `/leaderboards?sport=${encodeURIComponent(name)}`,
-    actionLabel: 'View Standings',
+    link: `/games/${slug}`,
+    actionLabel: 'Enter Game Hub',
   }
 }
