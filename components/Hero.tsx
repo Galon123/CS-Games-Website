@@ -119,7 +119,7 @@ export default function Hero() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="bg-[#F59E0B] text-[#1A1A1A] font-mono font-black px-2.5 py-1 rounded shadow-editorial-sm border border-[#1A1A1A] tracking-wider uppercase">
-                    SEPTEMBER 21–25, 2026
+                    SEPTEMBER 22–25, 2026
                   </span>
                   <span className="text-white/40">•</span>
                   <span className="text-blue-100 font-mono font-bold tracking-wider uppercase text-[11px]">
