@@ -29,7 +29,7 @@ export interface SportMeta {
   actionLabel: string
 }
 
-// Curated sport-specific display images strictly for the 4 allowed sports
+// Curated sport-specific display images
 export const SPORT_SPECIFIC_IMAGES: Record<string, string> = {
   football: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop',
   soccer: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop',
@@ -37,6 +37,12 @@ export const SPORT_SPECIFIC_IMAGES: Record<string, string> = {
   chess: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop',
   carrom: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop',
   carroms: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop',
+  'e-football': 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1665460/5a730c921132b664412149cb3fa9da491fb01b0d/page_bg_raw.jpg?t=1788505213',
+  efootball: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1665460/5a730c921132b664412149cb3fa9da491fb01b0d/page_bg_raw.jpg?t=1788505213',
+  'mini-militia': 'https://wallpaperaccess.com/full/2683336.png',
+  'mini-miltia': 'https://wallpaperaccess.com/full/2683336.png',
+  'mini militia': 'https://wallpaperaccess.com/full/2683336.png',
+  'mini miltia': 'https://wallpaperaccess.com/full/2683336.png',
 }
 
 /**
@@ -74,8 +80,8 @@ export function isCsCupFootball(sportOrName?: Sport | string | null): boolean {
 }
 
 /**
- * Checks if a sport is one of the 4 designated sports that have images:
- * Football, Badminton, Chess, or Carrom / Carroms.
+ * Checks if a sport is one of the designated sports that have images:
+ * Football, Badminton, Chess, Carrom, E-Football, or Mini Militia.
  */
 export function isSportWithImage(sportOrName: Sport | string): boolean {
   const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
@@ -85,9 +91,19 @@ export function isSportWithImage(sportOrName: Sport | string): boolean {
     return true
   }
 
-  // Virtual sports never get real pitch imagery
+  // E-Football gaming division
   if (normalized.includes('e-football') || normalized.includes('efootball') || normalized.includes('e football')) {
-    return false
+    return true
+  }
+
+  // Mini Militia gaming division
+  if (
+    normalized.includes('mini militia') ||
+    normalized.includes('mini miltia') ||
+    normalized.includes('mini-militia') ||
+    normalized.includes('mini-miltia')
+  ) {
+    return true
   }
 
   return (
@@ -103,8 +119,6 @@ export function isSportWithImage(sportOrName: Sport | string): boolean {
 
 /**
  * Resolves a sport-related display image.
- * STRICT RULE: Only Football, Badminton, Chess, and Carroms provide images.
- * For all other sports, returns undefined.
  */
 export function getSportDisplayImage(sportOrName: Sport | string, sportType?: SportType): string | undefined {
   const name = typeof sportOrName === 'string' ? sportOrName : sportOrName.name
@@ -115,7 +129,16 @@ export function getSportDisplayImage(sportOrName: Sport | string, sportType?: Sp
   }
 
   if (normalized.includes('e-football') || normalized.includes('efootball') || normalized.includes('e football')) {
-    return undefined
+    return SPORT_SPECIFIC_IMAGES['e-football']
+  }
+
+  if (
+    normalized.includes('mini militia') ||
+    normalized.includes('mini miltia') ||
+    normalized.includes('mini-militia') ||
+    normalized.includes('mini-miltia')
+  ) {
+    return SPORT_SPECIFIC_IMAGES['mini-militia']
   }
 
   if (normalized === 'badminton' || normalized.includes('badminton')) {
@@ -297,6 +320,29 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
     }
   }
 
+  // Pre-configured Mini Militia / Mini Miltia (Multiplayer Action Shooter)
+  if (
+    normalized.includes('mini militia') ||
+    normalized.includes('mini miltia') ||
+    normalized.includes('mini-militia') ||
+    normalized.includes('mini-miltia')
+  ) {
+    const militiaImg = customImg || SPORT_SPECIFIC_IMAGES['mini-militia']
+    return {
+      name,
+      type: type || 'free_for_all',
+      icon: Swords,
+      imageUrl: militiaImg,
+      badgeText: 'FREE FOR ALL',
+      colorClass: 'text-amber-800',
+      bgBadgeClass: 'bg-amber-100 text-amber-900 border-amber-300 font-mono font-bold',
+      borderHoverClass: 'hover:border-amber-400',
+      description: 'Departmental combat operations and multiplayer action shooter championship.',
+      link: `/games/${slug}`,
+      actionLabel: 'Enter Game Hub',
+    }
+  }
+
   // Free For All category events (Mass / All-Play showdowns)
   if (type === 'free_for_all') {
     return {
@@ -343,7 +389,7 @@ export function getSportMeta(sportOrName: Sport | string, sportType?: SportType)
       name,
       type: type || 'solo',
       icon: Gamepad2,
-      imageUrl: undefined, // Virtual gaming never displays turf photo
+      imageUrl: imageUrl || SPORT_SPECIFIC_IMAGES['e-football'],
       badgeText: type === 'duo' ? 'ESPORTS 2v2' : 'ESPORTS 1v1',
       colorClass: 'text-indigo-600',
       bgBadgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',

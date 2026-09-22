@@ -213,6 +213,23 @@ export default function LeaderboardTable({ initialSportName }: LeaderboardTableP
                       if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
                         e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
                       }
+                    } else if (
+                      activeSport.name.toLowerCase().includes('e-football') ||
+                      activeSport.name.toLowerCase().includes('efootball') ||
+                      activeSport.name.toLowerCase().includes('e football')
+                    ) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['e-football']) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES['e-football']
+                      }
+                    } else if (
+                      activeSport.name.toLowerCase().includes('mini militia') ||
+                      activeSport.name.toLowerCase().includes('mini miltia') ||
+                      activeSport.name.toLowerCase().includes('mini-militia') ||
+                      activeSport.name.toLowerCase().includes('mini-miltia')
+                    ) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['mini-militia']) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES['mini-militia']
+                      }
                     }
                   }}
                 />

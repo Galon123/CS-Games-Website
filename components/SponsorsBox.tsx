@@ -259,7 +259,7 @@ export default function SponsorsBox() {
                     <img
                       src={sponsor.logoUrl}
                       alt={sponsor.name}
-                      className="w-full h-full object-contain filter brightness-100"
+                      className="w-full h-full object-contain filter brightness-100 sponsor-logo-img"
                       onError={() => handleImageError(sponsor.id)}
                     />
                   ) : (

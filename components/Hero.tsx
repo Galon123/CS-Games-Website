@@ -41,7 +41,7 @@ export default function Hero() {
         {/* Grounded Pitch Line-Art Geometry (Hairline Chalk Outlines) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-0 opacity-25">
           <svg
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1280px] h-[860px] text-white/20 pointer-events-none"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1280px] h-[860px] text-white/20 pointer-events-none hero-pitch-svg"
             viewBox="0 0 1200 800"
             fill="none"
             stroke="currentColor"
@@ -473,6 +473,23 @@ export default function Hero() {
                           if (isCsCupFootball(sport.name)) {
                             if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
                               e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
+                            }
+                          } else if (
+                            sport.name.toLowerCase().includes('e-football') ||
+                            sport.name.toLowerCase().includes('efootball') ||
+                            sport.name.toLowerCase().includes('e football')
+                          ) {
+                            if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['e-football']) {
+                              e.currentTarget.src = SPORT_SPECIFIC_IMAGES['e-football']
+                            }
+                          } else if (
+                            sport.name.toLowerCase().includes('mini militia') ||
+                            sport.name.toLowerCase().includes('mini miltia') ||
+                            sport.name.toLowerCase().includes('mini-militia') ||
+                            sport.name.toLowerCase().includes('mini-miltia')
+                          ) {
+                            if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['mini-militia']) {
+                              e.currentTarget.src = SPORT_SPECIFIC_IMAGES['mini-militia']
                             }
                           }
                         }}

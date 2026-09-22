@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { ThemeProvider } from '@/context/ThemeContext'
 import { TournamentProvider } from '@/context/TournamentContext'
 import Navbar from '@/components/Navbar'
 import LiveTicker from '@/components/LiveTicker'
@@ -16,12 +17,38 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-canvas text-cream min-h-screen flex flex-col antialiased selection:bg-acid selection:text-acid-ink font-sans">
-        <TournamentProvider>
-          <LiveTicker />
-          <Navbar />
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+              try {
+                var storedTheme = localStorage.getItem('cs-games-theme');
+                if (storedTheme === 'light') {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('light');
+                  document.documentElement.style.colorScheme = 'light';
+                } else if (storedTheme === 'dark') {
+                  document.documentElement.classList.remove('light');
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                  // Keep dark default unless explicit light preference or chosen
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {}
+            })()`,
+          }}
+        />
+      </head>
+      <body className="bg-canvas text-cream min-h-screen flex flex-col antialiased selection:bg-acid selection:text-acid-ink font-sans transition-colors duration-200">
+        <ThemeProvider>
+          <TournamentProvider>
+            <LiveTicker />
+            <Navbar />
+            <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
             {children}
           </main>
           <footer className="border-t border-white/10 bg-ink-900 py-10 text-xs text-mist">
@@ -59,7 +86,8 @@ export default function RootLayout({
             </div>
           </footer>
         </TournamentProvider>
-      </body>
-    </html>
+      </ThemeProvider>
+    </body>
+  </html>
   )
 }

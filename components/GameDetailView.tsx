@@ -269,6 +269,23 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                   if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
                     e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
                   }
+                } else if (
+                  sport.name.toLowerCase().includes('e-football') ||
+                  sport.name.toLowerCase().includes('efootball') ||
+                  sport.name.toLowerCase().includes('e football')
+                ) {
+                  if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['e-football']) {
+                    e.currentTarget.src = SPORT_SPECIFIC_IMAGES['e-football']
+                  }
+                } else if (
+                  sport.name.toLowerCase().includes('mini militia') ||
+                  sport.name.toLowerCase().includes('mini miltia') ||
+                  sport.name.toLowerCase().includes('mini-militia') ||
+                  sport.name.toLowerCase().includes('mini-miltia')
+                ) {
+                  if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['mini-militia']) {
+                    e.currentTarget.src = SPORT_SPECIFIC_IMAGES['mini-militia']
+                  }
                 }
               }}
             />

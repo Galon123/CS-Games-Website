@@ -257,7 +257,7 @@ export default function SeptemberEvents() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 shadow-card bg-gradient-to-b from-[#060B0E] via-[#091116] to-[#05080A]">
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 shadow-card bg-gradient-to-b from-ink-900 via-ink-800 to-ink-900">
       {/* ─────────────────────────────────────────────────────────────
           CINEMATIC AUDITORIUM ATMOSPHERE BACKGROUND
           Dark stadium / theater seats with teal ambient light gradient
@@ -267,11 +267,11 @@ export default function SeptemberEvents() {
         <img
           src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1600&auto=format&fit=crop"
           alt="Cinematic auditorium atmosphere"
-          className="w-full h-full object-cover grayscale-[35%] contrast-[130%] brightness-[60%]"
+          className="w-full h-full object-cover grayscale-[35%] contrast-[130%] brightness-[60%] events-bg-img"
         />
-        {/* Dark Scrim Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05080A] via-[#070D11]/70 to-[#05080A]/95" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-900/20 via-transparent to-black/80" />
+        {/* Scrim Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/70 to-ink-900/95" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-900/20 via-transparent to-black/80 events-radial-scrim" />
       </div>
 
       <div className="relative z-10 px-5 sm:px-8 lg:px-12 py-10 sm:py-14 space-y-10">
@@ -467,7 +467,7 @@ export default function SeptemberEvents() {
                 Directly inspired by the badge in the reference image
                 ───────────────────────────────────────────────────────────── */}
             <div className="pt-4 flex items-center justify-center">
-              <div className="relative inline-flex items-center space-x-1.5 bg-black px-4 py-1.5 rounded-full border border-white/10 shadow-elevated">
+              <div className="relative inline-flex items-center space-x-1.5 bg-ink-900 px-4 py-1.5 rounded-full border border-white/10 shadow-elevated">
                 <span className="text-[11px] font-mono font-black tracking-widest text-paper uppercase">
                   START
                 </span>

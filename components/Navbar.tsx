@@ -15,6 +15,7 @@ import {
   Gamepad2,
 } from 'lucide-react'
 import CSBrandMark from '@/components/CSBrandMark'
+import ThemeToggle from '@/components/ThemeToggle'
 import { getSportMeta, getSportSlug, isCsCupFootball } from '@/lib/sports-theme'
 
 export default function Navbar() {
@@ -85,8 +86,10 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Right: Admin Button */}
-          <div className="hidden md:flex items-center space-x-3">
+          {/* Right: Theme Switcher & Admin Button */}
+          <div className="hidden md:flex items-center space-x-2.5">
+            <ThemeToggle variant="icon" />
+
             <Link
               href="/admin"
               className={`flex items-center space-x-2 text-xs font-bold px-4 py-2 rounded-full transition-all duration-200 ${
@@ -112,8 +115,9 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Right: Theme Switcher & Menu Toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle variant="icon" />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-lg text-cream hover:text-paper hover:bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid"
@@ -304,8 +308,13 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Admin link */}
+          {/* Theme Mode Selector in Mobile Drawer */}
           <div className="pt-3 border-t border-white/10">
+            <ThemeToggle variant="row" />
+          </div>
+
+          {/* Admin link */}
+          <div className="pt-2">
             <Link
               href="/admin"
               onClick={() => setIsMobileMenuOpen(false)}

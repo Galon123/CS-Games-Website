@@ -132,6 +132,23 @@ export default function TeamRoster() {
                       if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
                         e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
                       }
+                    } else if (
+                      selectedSportObj.name.toLowerCase().includes('e-football') ||
+                      selectedSportObj.name.toLowerCase().includes('efootball') ||
+                      selectedSportObj.name.toLowerCase().includes('e football')
+                    ) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['e-football']) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES['e-football']
+                      }
+                    } else if (
+                      selectedSportObj.name.toLowerCase().includes('mini militia') ||
+                      selectedSportObj.name.toLowerCase().includes('mini miltia') ||
+                      selectedSportObj.name.toLowerCase().includes('mini-militia') ||
+                      selectedSportObj.name.toLowerCase().includes('mini-miltia')
+                    ) {
+                      if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['mini-militia']) {
+                        e.currentTarget.src = SPORT_SPECIFIC_IMAGES['mini-militia']
+                      }
                     }
                   }}
                 />
