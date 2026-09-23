@@ -3,7 +3,6 @@ import './globals.css'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { TournamentProvider } from '@/context/TournamentContext'
 import Navbar from '@/components/Navbar'
-import LiveTicker from '@/components/LiveTicker'
 
 export const metadata: Metadata = {
   title: 'CS Games 2026 | Department Championship',
@@ -46,7 +45,6 @@ export default function RootLayout({
       <body className="bg-canvas text-cream min-h-screen flex flex-col antialiased selection:bg-acid selection:text-acid-ink font-sans transition-colors duration-200" suppressHydrationWarning>
         <ThemeProvider>
           <TournamentProvider>
-            <LiveTicker />
             <Navbar />
             <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
             {children}

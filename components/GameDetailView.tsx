@@ -31,6 +31,7 @@ import { Team, Player, Match, LeaderboardEntry } from '@/lib/types'
 import { PlayerCard } from '@/components/PlayerCard'
 import TacticalBoard from '@/components/TacticalBoard'
 import BadmintonHeroCarousel from '@/components/BadmintonHeroCarousel'
+import FootballHeroCarousel from '@/components/FootballHeroCarousel'
 import BadmintonBlurredBackground from '@/components/BadmintonBlurredBackground'
 import BadmintonBracketSection from '@/components/BadmintonBracketSection'
 
@@ -236,179 +237,18 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
           </div>
         </div>
 
-        {/* Quick Game Switcher Bar */}
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog shrink-0 pr-1">
-            Jump to:
-          </span>
-          {sports.map((s) => {
-            const sSlug = getSportSlug(s)
-            const isCurrent = s.id === sport.id
-            const isCs = isCsCupFootball(s.name)
-            const label = isCs ? 'CS Cup (Football)' : s.name
 
-            return (
-              <Link
-                key={s.id}
-                href={`/games/${sSlug}`}
-                className={`px-3.5 py-1 rounded-full text-xs font-mono font-medium transition-all shrink-0 ${
-                  isCurrent
-                    ? 'bg-acid text-acid-ink font-bold shadow-xs'
-                    : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
-                }`}
-              >
-                {label}
-              </Link>
-            )
-          })}
-        </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION FOR THIS DEDICATED GAME
           For Badminton: Hero Presentation Carousel
           ───────────────────────────────────────────────────────────── */}
-      {isBadminton ? (
+      {isBadminton && (
         <BadmintonHeroCarousel />
-      ) : (
-        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 shadow-card">
-          {/* Cinematic Imagery Background (if available) */}
-          {sportMeta?.imageUrl && (
-            <div className="absolute inset-0 pointer-events-none select-none opacity-30 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={sportMeta.imageUrl}
-                alt={sport.name}
-                className="w-full h-full object-cover grayscale-[25%] contrast-[115%]"
-                onError={(e) => {
-                  if (isCsCup) {
-                    if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES.football) {
-                      e.currentTarget.src = SPORT_SPECIFIC_IMAGES.football
-                    }
-                  } else if (
-                    sport.name.toLowerCase().includes('e-football') ||
-                    sport.name.toLowerCase().includes('efootball') ||
-                    sport.name.toLowerCase().includes('e football')
-                  ) {
-                    if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['e-football']) {
-                      e.currentTarget.src = SPORT_SPECIFIC_IMAGES['e-football']
-                    }
-                  } else if (
-                    sport.name.toLowerCase().includes('mini militia') ||
-                    sport.name.toLowerCase().includes('mini miltia') ||
-                    sport.name.toLowerCase().includes('mini-militia') ||
-                    sport.name.toLowerCase().includes('mini-miltia')
-                  ) {
-                    if (e.currentTarget.src !== SPORT_SPECIFIC_IMAGES['mini-militia']) {
-                      e.currentTarget.src = SPORT_SPECIFIC_IMAGES['mini-militia']
-                    }
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/80 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/50 to-transparent" />
-            </div>
-          )}
-
-          {/* Tactical Pitch Lines Watermark (if Football) */}
-          {isCsCup && (
-            <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none opacity-10 select-none overflow-hidden hidden sm:block">
-              <svg className="w-full h-full text-white" viewBox="0 0 600 400" fill="none" stroke="currentColor">
-                <rect x="50" y="30" width="500" height="340" strokeWidth="1.5" />
-                <line x1="300" y1="30" x2="300" y2="370" strokeWidth="1.5" strokeDasharray="6 6" />
-                <circle cx="300" cy="200" r="60" strokeWidth="1.5" />
-                <rect x="50" y="120" width="120" height="160" strokeWidth="1.5" />
-                <rect x="430" y="120" width="120" height="160" strokeWidth="1.5" />
-              </svg>
-            </div>
-          )}
-
-          {/* Content Layer */}
-          <div className="relative z-10 p-6 sm:p-8 lg:p-10 space-y-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <span
-                className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border ${
-                  isCsCup
-                    ? 'bg-acid text-acid-ink border-acid shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
-                    : 'bg-white/10 text-paper border-white/20'
-                }`}
-              >
-                {isCsCup ? 'MARQUEE CHAMPIONSHIP' : sportMeta?.badgeText}
-              </span>
-
-              {liveMatchesCount > 0 && (
-                <span className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-black border border-emerald-500/40 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>{liveMatchesCount} MATCH IN PLAY</span>
-                </span>
-              )}
-
-              {sport.venue && (
-                <div className="flex items-center space-x-1.5 text-xs text-mist font-mono">
-                  <MapPin className="w-3.5 h-3.5 text-acid shrink-0" />
-                  <span>{sport.venue}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3 max-w-3xl">
-              <div className="flex items-center space-x-3">
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black text-paper tracking-tight leading-[1.05]">
-                  {isCsCup ? 'The CS Cup.' : `${sport.name}.`}
-                </h1>
-                {isCsCup && <span className="text-acid text-2xl font-black">★</span>}
-              </div>
-              <p className="text-sm sm:text-base text-cream/90 leading-relaxed font-sans">
-                {isCsCup
-                  ? 'The premier 6v6 football championship of CS Games 2026. Battled on the regulation synthetic turf pitch with live formation tracking and player telemetry.'
-                  : sportMeta?.description}
-              </p>
-            </div>
-
-            {/* Quick Metrics Ticker */}
-            <div className="pt-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl">
-              <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
-                <span className="text-[10px] font-mono uppercase text-fog block">Registered Teams</span>
-                <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
-                  {sportTeams.length}
-                </span>
-                <span className="text-[10px] font-mono text-mist">Competing squads</span>
-              </div>
-
-              <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
-                <span className="text-[10px] font-mono uppercase text-fog block">Active Athletes</span>
-                <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
-                  {sportPlayers.length}
-                </span>
-                <span className="text-[10px] font-mono text-mist">Rostered players</span>
-              </div>
-
-              <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
-                <span className="text-[10px] font-mono uppercase text-fog block">Total Fixtures</span>
-                <span className="font-serif font-black text-2xl text-acid mt-0.5 block font-lining">
-                  {sportMatches.length}
-                </span>
-                <span className="text-[10px] font-mono text-mist">
-                  {completedMatchesCount} finished
-                </span>
-              </div>
-
-              <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
-                <span className="text-[10px] font-mono uppercase text-fog block">Tournament Type</span>
-                <span className="font-mono font-bold text-sm text-paper mt-1 block uppercase">
-                  {sport.type === 'team'
-                    ? 'Squad 6v6'
-                    : sport.type === 'duo'
-                    ? 'Doubles'
-                    : sport.type === 'solo'
-                    ? '1v1 Solo'
-                    : '1v1v1v1'}
-                </span>
-                <span className="text-[10px] font-mono text-mist">Official bracket</span>
-              </div>
-            </div>
-          </div>
-        </section>
+      )}
+      {isCsCup && (
+        <FootballHeroCarousel />
       )}
 
       {/* ─────────────────────────────────────────────────────────────

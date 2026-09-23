@@ -1,5 +1,14 @@
 import { Sport, Team, Player, Match, LeaderboardEntry } from './types'
 
+
+export const DEFAULT_FOOTBALL_CAROUSEL_IMAGES: string[] = [
+  'https://images.unsplash.com/photo-1574629810360-7efbb6b490f0?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1518605368461-1b606c4b9d03?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1510566337590-2fc1f21d0faa?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1551280857-2b9bbe5204f6?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1508344928928-7137b67de192?w=2000&auto=format&fit=crop&q=85',
+]
+
 export const DEFAULT_BADMINTON_CAROUSEL_IMAGES: string[] = [
   'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=2000&auto=format&fit=crop&q=85',
   'https://images.unsplash.com/photo-1626926938421-90124a4b83fa?w=2000&auto=format&fit=crop&q=85',
