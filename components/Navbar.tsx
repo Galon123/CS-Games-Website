@@ -30,7 +30,7 @@ export default function Navbar() {
 
   const navItems = [
     { label: 'HOME', href: '/', icon: Flame },
-    { label: 'EVENTS', href: '/events', icon: Gamepad2 },
+    { label: 'EVENTS', href: '/games', icon: Gamepad2 },
     { label: 'SCHEDULE', href: '/schedule', icon: Trophy },
     { label: 'ABOUT', href: '/about', icon: Users },
   ]
@@ -122,46 +122,6 @@ export default function Navbar() {
           SECONDARY SPORTS STRIP (Instant 1-Click Game Switcher in Header)
           Gives direct 1-click access to every game on every page
           ───────────────────────────────────────────────────────────── */}
-      <div className="border-t border-white/5 bg-ink-950/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-1.5 overflow-x-auto no-scrollbar">
-        <div className="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-fog shrink-0 pr-1 flex items-center space-x-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-acid" />
-            <span>GAMES:</span>
-          </span>
-
-          <Link
-            href="/games"
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors shrink-0 ${
-              pathname === '/games'
-                ? 'bg-white/20 text-paper font-bold'
-                : 'text-mist hover:text-paper hover:bg-white/5'
-            }`}
-          >
-            All Disciplines ({sports.length})
-          </Link>
-
-          {sports.map((sport) => {
-            const slug = getSportSlug(sport)
-            const isCs = isCsCupFootball(sport.name)
-            const isCurrent = pathname === `/games/${slug}`
-
-            return (
-              <Link
-                key={sport.id}
-                href={`/games/${slug}`}
-                className={`flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] transition-all shrink-0 ${
-                  isCurrent
-                    ? 'bg-acid text-acid-ink font-bold shadow-xs'
-                    : 'text-mist hover:text-paper hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                {isCs && <span className={isCurrent ? 'text-acid-ink' : 'text-acid'}>★</span>}
-                <span>{isCs ? 'CS Cup (Football)' : sport.name}</span>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
 
       {/* ─────────────────────────────────────────────────────────────
           MOBILE MENU DRAWER
