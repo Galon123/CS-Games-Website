@@ -43,7 +43,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-canvas text-cream min-h-screen flex flex-col antialiased selection:bg-acid selection:text-acid-ink font-sans transition-colors duration-200">
+      <body className="bg-canvas text-cream min-h-screen flex flex-col antialiased selection:bg-acid selection:text-acid-ink font-sans transition-colors duration-200" suppressHydrationWarning>
         <ThemeProvider>
           <TournamentProvider>
             <LiveTicker />

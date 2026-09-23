@@ -83,16 +83,18 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [leaderboards, setLeaderboards] = useState<LeaderboardEntry[]>(initialLeaderboards)
   const [selectedSportId, setSelectedSportId] = useState<string>(initialSports[0].id)
 
-  const [isAdmin, setIsAdminState] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        return localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === 'true'
-      } catch (e) {
-        return false
+  const [isAdmin, setIsAdminState] = useState<boolean>(false)
+
+  // Hydration-safe initial admin state sync from localStorage
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === 'true') {
+        setIsAdminState(true)
       }
+    } catch (e) {
+      // ignore
     }
-    return false
-  })
+  }, [])
 
   const setIsAdmin = useCallback((val: boolean) => {
     setIsAdminState(val)
@@ -110,17 +112,6 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [])
 
   const [badmintonCarouselImages, setBadmintonCarouselImages] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(BADMINTON_CAROUSEL_STORAGE_KEY)
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
     const found = initialSports.find((s) => s.name.toLowerCase().includes('badminton'))
     return found?.carousel_images && found.carousel_images.length > 0
       ? found.carousel_images
@@ -144,6 +135,22 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       ? found.carousel_images
       : DEFAULT_FOOTBALL_CAROUSEL_IMAGES
   })
+  // Hydration-safe initial badminton carousel images sync from localStorage
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(BADMINTON_CAROUSEL_STORAGE_KEY)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setBadmintonCarouselImages(parsed)
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [])
 
   const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(false)
   const [supabaseConnected, setSupabaseConnected] = useState<boolean>(false)
@@ -443,6 +450,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       playerCScore?: number,
       playerDScore?: number
     ) => {
+      if (!isAdmin) {
+        console.warn('Unauthorized: Match scores can only be modified by an Admin.')
+        return
+      }
+
       // 1. Optimistic local state update
       setMatches((prev) =>
         prev.map((m) => {
@@ -490,11 +502,16 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       }
     },
-    []
+    [isAdmin]
   )
 
   const updateMatchSchedule = useCallback(
     async (matchId: string, scheduled_at: string, venue?: string) => {
+      if (!isAdmin) {
+        console.warn('Unauthorized: Match schedules can only be modified by an Admin.')
+        return
+      }
+
       // 1. Optimistic local state update
       setMatches((prev) =>
         prev.map((m) => {
@@ -530,7 +547,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       }
     },
-    []
+    [isAdmin]
   )
 
   const updateLeaderboard = useCallback(
@@ -1165,6 +1182,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const addMatch = useCallback(
     async (matchData: Omit<Match, 'id'>): Promise<Match | null> => {
+      if (!isAdmin) {
+        console.warn('Unauthorized: Match fixtures can only be added by an Admin.')
+        return null
+      }
+
       const tempId = 'm_' + Math.random().toString(36).substring(2, 9)
       const newMatch: Match = {
         ...matchData,
@@ -1225,11 +1247,16 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
       return newMatch
     },
-    []
+    [isAdmin]
   )
 
   const removeMatch = useCallback(
     async (matchId: string) => {
+      if (!isAdmin) {
+        console.warn('Unauthorized: Match fixtures can only be removed by an Admin.')
+        return
+      }
+
       setMatches((prev) => prev.filter((m) => m.id !== matchId))
 
       if (isSupabaseConfigured() && supabase) {
@@ -1243,7 +1270,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       }
     },
-    []
+    [isAdmin]
   )
 
   const resetToDefaultData = useCallback(() => {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
+import Link from 'next/link'
 import {
   Calendar,
   Clock,
@@ -679,6 +680,16 @@ export default function SeptemberEvents() {
                   <Share2 className="w-3.5 h-3.5" />
                   <span>{copiedId === activeEventModal.id ? 'Copied Details!' : 'Copy Info'}</span>
                 </button>
+
+                {(activeEventModal.category?.toLowerCase().includes('badminton') ||
+                  activeEventModal.title?.toLowerCase().includes('badminton')) && (
+                  <Link
+                    href="/games/badminton#badminton-doubles-tournament"
+                    className="px-3.5 py-1.5 rounded-full bg-acid text-acid-ink hover:bg-acid-hot text-xs font-mono font-bold transition-colors flex items-center space-x-1.5 shadow-xs"
+                  >
+                    <span>View Doubles Draw &rarr;</span>
+                  </Link>
+                )}
 
                 {isAdmin && (
                   <button

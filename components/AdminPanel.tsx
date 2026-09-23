@@ -1100,6 +1100,37 @@ END $$;`
       {/* TAB: LIVE MATCHES CONTROLLER */}
       {activeTab === 'matches' && (
         <div className="space-y-6">
+          {/* Badminton Doubles Tournament Quick Manager Card */}
+          <div className="bg-slate-900 border border-slate-800 text-white rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-3.5">
+              <div className="w-10 h-10 rounded-xl bg-acid text-acid-ink font-black flex items-center justify-center text-lg shrink-0">
+                🏸
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-acid bg-acid/10 px-2 py-0.5 rounded-full border border-acid/20">
+                    CS Games 2026 Draw
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">Men&apos;s &amp; Women&apos;s Doubles</span>
+                </div>
+                <h4 className="font-serif font-bold text-base text-white mt-0.5">
+                  Badminton Doubles Official Knockout Bracket
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5 font-sans">
+                  Manage all 26 official matches, scores, court schedules, and real-time winner advancement.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/games/badminton#badminton-doubles-tournament"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-acid text-acid-ink hover:bg-acid-hot text-xs font-mono font-bold shrink-0 transition-all shadow-xs"
+            >
+              <span>Open Bracket Manager</span>
+              <span>&rarr;</span>
+            </Link>
+          </div>
+
           {/* Schedule Match Card */}
           <div className="bg-white border border-[#E5E0D8] rounded-lg p-5 space-y-4">
             {(() => {
@@ -1978,7 +2009,7 @@ END $$;`
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-1.5 text-slate-700 font-mono text-[11px]">
                             <Calendar className="w-3.5 h-3.5 text-[#D97706]" />
-                            <span className="font-bold">
+                            <span className="font-bold" suppressHydrationWarning>
                               {new Date(match.scheduled_at).toLocaleDateString('en-US', {
                                 weekday: 'short',
                                 month: 'short',
@@ -1987,7 +2018,7 @@ END $$;`
                             </span>
                             <span className="text-slate-300">•</span>
                             <Clock className="w-3.5 h-3.5 text-blue-600" />
-                            <span>
+                            <span suppressHydrationWarning>
                               {new Date(match.scheduled_at).toLocaleTimeString('en-US', {
                                 hour: '2-digit',
                                 minute: '2-digit',

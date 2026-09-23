@@ -1,7 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import GameDetailView from '@/components/GameDetailView'
-import BadmintonBlurredBackground from '@/components/BadmintonBlurredBackground'
 
 export const metadata: Metadata = {
   title: 'Badminton Doubles Championship | CS Games 2026',
@@ -10,13 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default function BadmintonGamePage() {
-  return (
-    <div className="relative w-full">
-      <BadmintonBlurredBackground />
-      <div className="relative z-10">
-        <GameDetailView sportSlug="badminton" />
-      </div>
-    </div>
-  )
+  return <GameDetailView sportSlug="badminton" />
 }
 

@@ -33,6 +33,7 @@ import TacticalBoard from '@/components/TacticalBoard'
 import BadmintonHeroCarousel from '@/components/BadmintonHeroCarousel'
 import FootballHeroCarousel from '@/components/FootballHeroCarousel'
 import BadmintonBlurredBackground from '@/components/BadmintonBlurredBackground'
+import BadmintonBracketSection from '@/components/BadmintonBracketSection'
 
 interface GameDetailViewProps {
   sportSlug?: string
@@ -43,7 +44,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
   const rawSlug = sportSlug || (typeof params?.slug === 'string' ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : '')
   const slug = rawSlug || ''
 
-  const { sports, teams, players, matches, leaderboards, badmintonCarouselImages } = useTournament()
+  const { sports, teams, players, matches, leaderboards, badmintonCarouselImages, isAdmin } = useTournament()
 
   // Find sport by slug or id
   const sport = useMemo(() => {
@@ -358,10 +359,10 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                 <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
                   <span className="text-[10px] font-mono uppercase text-fog block">Total Fixtures</span>
                   <span className="font-serif font-black text-2xl text-acid mt-0.5 block font-lining">
-                    {sportMatches.length}
+                    {sportMatches.length > 0 ? sportMatches.length : 26}
                   </span>
                   <span className="text-[10px] font-mono text-mist">
-                    {completedMatchesCount} finished
+                    {completedMatchesCount > 0 ? `${completedMatchesCount} finished` : 'Official Knockout Draw'}
                   </span>
                 </div>
 
@@ -628,8 +629,8 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
           {[
             {
               key: 'fixtures',
-              label: 'Fixtures & Matches',
-              count: sportMatches.length,
+              label: isBadminton ? 'Fixtures & Doubles Draw' : 'Fixtures & Matches',
+              count: isBadminton ? 26 : sportMatches.length,
               icon: Calendar,
             },
             {
@@ -702,6 +703,205 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
           ───────────────────────────────────────────────────────────── */}
       {activeTab === 'fixtures' && (
         <div className="space-y-6 animate-fade-in-up">
+          {isBadminton ? (
+            <div className="space-y-8">
+              {/* Dedicated Badminton Doubles Tournament Knockout Section */}
+              <BadmintonBracketSection />
+
+              {/* Supplementary registered matches if any exist in the database */}
+              {sportMatches.length > 0 && (
+                <div className="pt-8 border-t border-white/10 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-serif font-black text-paper tracking-tight">
+                        Additional Scheduled Matches.
+                      </h3>
+                      <p className="text-xs text-mist mt-0.5">
+                        Supplementary departmental exhibition fixtures
+                      </p>
+                    </div>
+
+                    {/* Sub-filter chips & Admin Action */}
+                    <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+                      <div className="flex items-center space-x-1.5">
+                        {[
+                          { key: 'all', label: `All (${sportMatches.length})` },
+                          { key: 'live', label: `Live (${liveMatchesCount})` },
+                          { key: 'upcoming', label: `Upcoming (${upcomingMatchesCount})` },
+                          { key: 'completed', label: `Final (${completedMatchesCount})` },
+                        ].map((f) => (
+                          <button
+                            key={f.key}
+                            onClick={() => setFixturesFilter(f.key as any)}
+                            className={`px-3 py-1 rounded-full text-xs font-mono transition-colors ${
+                              fixturesFilter === f.key
+                                ? 'bg-acid text-acid-ink font-bold'
+                                : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+                            }`}
+                          >
+                            {f.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium transition-colors shrink-0"
+                          title="Open Admin Console to edit fixtures and live scores"
+                        >
+                          <Shield className="w-3 h-3 text-emerald-400" />
+                          <span>Admin Edit</span>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+
+                  {filteredMatches.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredMatches.map((match) => {
+                        const isLive = match.status === 'live'
+                        const isUpcoming = match.status === 'upcoming'
+
+                        const teamA = match.team_a || teams.find((t) => t.id === match.team_a_id)
+                        const teamB = match.team_b || teams.find((t) => t.id === match.team_b_id)
+
+                        const playerA = match.player_a || players.find((p) => p.id === match.player_a_id)
+                        const playerB = match.player_b || players.find((p) => p.id === match.player_b_id)
+
+                        const nameA = teamA?.name || playerA?.name || 'Contender A'
+                        const nameB = teamB?.name || playerB?.name || 'Contender B'
+                        const deptA = teamA?.department || playerA?.department || 'CS Lab'
+                        const deptB = teamB?.department || playerB?.department || 'CS Lab'
+
+                        return (
+                          <div
+                            key={match.id}
+                            className={`bg-ink-800 rounded-2xl border p-5 transition-all duration-200 flex flex-col justify-between ${
+                              isLive
+                                ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.12)] ring-1 ring-emerald-500/30'
+                                : 'border-white/10 hover:border-white/20'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10">
+                                <div className="flex items-center space-x-2">
+                                  {isLive ? (
+                                    <span className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-black border border-emerald-500/30 animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                      <span>{match.minute ? `${match.minute}' LIVE` : 'LIVE IN PLAY'}</span>
+                                    </span>
+                                  ) : isUpcoming ? (
+                                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-mist font-mono text-[10px] font-bold border border-white/10 uppercase">
+                                      UPCOMING
+                                    </span>
+                                  ) : (
+                                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-fog font-mono text-[10px] font-bold border border-white/10 uppercase">
+                                      FINAL RESULT
+                                    </span>
+                                  )}
+                                </div>
+
+                                {match.venue && (
+                                  <div className="flex items-center space-x-1 text-[11px] font-mono text-mist">
+                                    <MapPin className="w-3 h-3 text-acid shrink-0" />
+                                    <span className="truncate max-w-[140px]">{match.venue}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-2">
+                                <div className="flex flex-col items-center text-center min-w-0">
+                                  <div className="w-11 h-11 rounded-xl bg-ink-900 border border-white/15 mb-2 flex items-center justify-center font-mono font-black text-xs text-paper shadow-subtle">
+                                    {nameA.substring(0, 2).toUpperCase()}
+                                  </div>
+                                  <span className="font-bold text-xs text-paper truncate max-w-full block" title={nameA}>
+                                    {nameA}
+                                  </span>
+                                  <span className="text-[10px] text-mist truncate max-w-full block mt-0.5 font-mono">
+                                    {deptA}
+                                  </span>
+                                </div>
+
+                                <div className="flex flex-col items-center justify-center shrink-0 px-2">
+                                  {isUpcoming ? (
+                                    <div className="w-10 h-8 rounded-lg bg-ink-900 border border-white/15 flex items-center justify-center">
+                                      <span className="font-mono font-black text-acid text-xs tracking-wider">
+                                        VS
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center space-x-2">
+                                      <span
+                                        className={`font-serif font-black text-2xl font-lining ${
+                                          (match.team_a_score ?? 0) > (match.team_b_score ?? 0)
+                                            ? 'text-acid'
+                                            : 'text-paper'
+                                        }`}
+                                      >
+                                        {match.team_a_score ?? 0}
+                                      </span>
+                                      <span className="text-fog font-mono font-bold">:</span>
+                                      <span
+                                        className={`font-serif font-black text-2xl font-lining ${
+                                          (match.team_b_score ?? 0) > (match.team_a_score ?? 0)
+                                            ? 'text-acid'
+                                            : 'text-paper'
+                                        }`}
+                                      >
+                                        {match.team_b_score ?? 0}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-col items-center text-center min-w-0">
+                                  <div className="w-11 h-11 rounded-xl bg-ink-900 border border-white/15 mb-2 flex items-center justify-center font-mono font-black text-xs text-paper shadow-subtle">
+                                    {nameB.substring(0, 2).toUpperCase()}
+                                  </div>
+                                  <span className="font-bold text-xs text-paper truncate max-w-full block" title={nameB}>
+                                    {nameB}
+                                  </span>
+                                  <span className="text-[10px] text-mist truncate max-w-full block mt-0.5 font-mono">
+                                    {deptB}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {match.scheduled_at && (
+                              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-mist">
+                                <div className="flex items-center space-x-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-acid shrink-0" />
+                                  <span suppressHydrationWarning>
+                                    {new Date(match.scheduled_at).toLocaleDateString('en-US', {
+                                      weekday: 'short',
+                                      month: 'short',
+                                      day: 'numeric',
+                                    })}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1.5">
+                                  <Clock className="w-3.5 h-3.5 text-acid shrink-0" />
+                                  <span suppressHydrationWarning>
+                                    {new Date(match.scheduled_at).toLocaleTimeString('en-US', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-serif font-black text-paper tracking-tight">
@@ -712,26 +912,39 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
               </p>
             </div>
 
-            {/* Sub-filter chips */}
-            <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar">
-              {[
-                { key: 'all', label: `All (${sportMatches.length})` },
-                { key: 'live', label: `Live (${liveMatchesCount})` },
-                { key: 'upcoming', label: `Upcoming (${upcomingMatchesCount})` },
-                { key: 'completed', label: `Final (${completedMatchesCount})` },
-              ].map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setFixturesFilter(f.key as any)}
-                  className={`px-3 py-1 rounded-full text-xs font-mono transition-colors ${
-                    fixturesFilter === f.key
-                      ? 'bg-acid text-acid-ink font-bold'
-                      : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
-                  }`}
+            {/* Sub-filter chips & Admin Action */}
+            <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+              <div className="flex items-center space-x-1.5">
+                {[
+                  { key: 'all', label: `All (${sportMatches.length})` },
+                  { key: 'live', label: `Live (${liveMatchesCount})` },
+                  { key: 'upcoming', label: `Upcoming (${upcomingMatchesCount})` },
+                  { key: 'completed', label: `Final (${completedMatchesCount})` },
+                ].map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setFixturesFilter(f.key as any)}
+                    className={`px-3 py-1 rounded-full text-xs font-mono transition-colors ${
+                      fixturesFilter === f.key
+                        ? 'bg-acid text-acid-ink font-bold'
+                        : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium transition-colors shrink-0"
+                  title="Open Admin Console to edit fixtures and live scores"
                 >
-                  {f.label}
-                </button>
-              ))}
+                  <Shield className="w-3 h-3 text-emerald-400" />
+                  <span>Admin Edit</span>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -886,7 +1099,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                       <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-mist">
                         <div className="flex items-center space-x-1.5">
                           <Calendar className="w-3.5 h-3.5 text-acid shrink-0" />
-                          <span>
+                          <span suppressHydrationWarning>
                             {new Date(match.scheduled_at).toLocaleDateString('en-US', {
                               weekday: 'short',
                               month: 'short',
@@ -896,7 +1109,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                         </div>
                         <div className="flex items-center space-x-1.5">
                           <Clock className="w-3.5 h-3.5 text-acid shrink-0" />
-                          <span>
+                          <span suppressHydrationWarning>
                             {new Date(match.scheduled_at).toLocaleTimeString('en-US', {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -924,6 +1137,8 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
               </Link>
             </div>
           )}
+          </>
+        )}
         </div>
       )}
 
