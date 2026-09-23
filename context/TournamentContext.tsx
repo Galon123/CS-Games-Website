@@ -2,7 +2,17 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import { Sport, Team, Player, Match, LeaderboardEntry, MatchStatus } from '@/lib/types'
-import { initialSports, initialTeams, initialPlayers, initialMatches, initialLeaderboards, FORMATION_PRESETS, generateTacticalCoordinates, TacticalOptions } from '@/lib/mock-data'
+import {
+  initialSports,
+  initialTeams,
+  initialPlayers,
+  initialMatches,
+  initialLeaderboards,
+  FORMATION_PRESETS,
+  generateTacticalCoordinates,
+  TacticalOptions,
+  DEFAULT_BADMINTON_CAROUSEL_IMAGES,
+} from '@/lib/mock-data'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 interface TournamentContextType {
@@ -18,6 +28,9 @@ interface TournamentContextType {
   isSupabaseLive: boolean
   supabaseConnected: boolean
   supabaseError: string | null
+  badmintonCarouselImages: string[]
+  updateBadmintonCarouselImages: (images: string[]) => Promise<void>
+  resetBadmintonCarouselImages: () => Promise<void>
   refreshSupabaseData: () => Promise<void>
   updateMatchScore: (
     matchId: string,
@@ -54,6 +67,8 @@ interface TournamentContextType {
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined)
 
 const LOCAL_STORAGE_KEY = 'cs_sports_gaming_clean_v2'
+const BADMINTON_CAROUSEL_STORAGE_KEY = 'cs_badminton_carousel_images_v1'
+const ADMIN_AUTH_STORAGE_KEY = 'cs_sports_is_admin_v1'
 
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sports, setSports] = useState<Sport[]>(initialSports)
@@ -62,7 +77,51 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [matches, setMatches] = useState<Match[]>(initialMatches)
   const [leaderboards, setLeaderboards] = useState<LeaderboardEntry[]>(initialLeaderboards)
   const [selectedSportId, setSelectedSportId] = useState<string>(initialSports[0].id)
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
+
+  const [isAdmin, setIsAdminState] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === 'true'
+      } catch (e) {
+        return false
+      }
+    }
+    return false
+  })
+
+  const setIsAdmin = useCallback((val: boolean) => {
+    setIsAdminState(val)
+    if (typeof window !== 'undefined') {
+      try {
+        if (val) {
+          localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, 'true')
+        } else {
+          localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY)
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [])
+
+  const [badmintonCarouselImages, setBadmintonCarouselImages] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(BADMINTON_CAROUSEL_STORAGE_KEY)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    const found = initialSports.find((s) => s.name.toLowerCase().includes('badminton'))
+    return found?.carousel_images && found.carousel_images.length > 0
+      ? found.carousel_images
+      : DEFAULT_BADMINTON_CAROUSEL_IMAGES
+  })
+
   const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(false)
   const [supabaseConnected, setSupabaseConnected] = useState<boolean>(false)
   const [supabaseError, setSupabaseError] = useState<string | null>(null)
@@ -604,8 +663,19 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     async (sportId: string, updates: Partial<Sport>) => {
       setSports((prev) => prev.map((s) => (s.id === sportId ? { ...s, ...updates } : s)))
 
+      if (updates.carousel_images && updates.name?.toLowerCase().includes('badminton')) {
+        setBadmintonCarouselImages(updates.carousel_images)
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem(BADMINTON_CAROUSEL_STORAGE_KEY, JSON.stringify(updates.carousel_images))
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
+
       if (isSupabaseConfigured() && supabase) {
-        const { icon, ...cleanUpdates } = updates as any
+        const { icon, carousel_images, ...cleanUpdates } = updates as any
         let { error } = await supabase.from('sports').update(cleanUpdates).eq('id', sportId)
         if (error && error.code === 'PGRST204' && cleanUpdates.venue !== undefined) {
           console.warn('⚠️ Supabase missing venue column on sports update, retrying without venue')
@@ -624,10 +694,57 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           console.log('✅ Supabase updateSport succeeded for id:', sportId)
           setSupabaseError(null)
         }
+
+        // Try syncing carousel_images if provided (won't throw fatal error if column missing)
+        if (carousel_images) {
+          try {
+            await supabase.from('sports').update({ carousel_images } as any).eq('id', sportId)
+          } catch (e) {
+            // column might not exist, silently ignore
+          }
+        }
       }
     },
     []
   )
+
+  const updateBadmintonCarouselImages = useCallback(
+    async (images: string[]) => {
+      setBadmintonCarouselImages(images)
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(BADMINTON_CAROUSEL_STORAGE_KEY, JSON.stringify(images))
+        } catch (e) {
+          console.warn('Failed saving badminton carousel images to localStorage', e)
+        }
+      }
+
+      setSports((prev) =>
+        prev.map((s) =>
+          s.name.toLowerCase().includes('badminton') ? { ...s, carousel_images: images } : s
+        )
+      )
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const badmintonSport = sports.find((s) => s.name.toLowerCase().includes('badminton'))
+          if (badmintonSport) {
+            await supabase
+              .from('sports')
+              .update({ carousel_images: images } as any)
+              .eq('id', badmintonSport.id)
+          }
+        } catch (e) {
+          // Ignore if column doesn't exist
+        }
+      }
+    },
+    [sports]
+  )
+
+  const resetBadmintonCarouselImages = useCallback(async () => {
+    await updateBadmintonCarouselImages(DEFAULT_BADMINTON_CAROUSEL_IMAGES)
+  }, [updateBadmintonCarouselImages])
 
   const updatePlayer = useCallback(
     async (playerId: string, updates: Partial<Player>) => {
@@ -1219,6 +1336,9 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isSupabaseLive,
     supabaseConnected,
     supabaseError,
+    badmintonCarouselImages,
+    updateBadmintonCarouselImages,
+    resetBadmintonCarouselImages,
     refreshSupabaseData: fetchSupabaseData,
     updateMatchScore,
     updateMatchSchedule,

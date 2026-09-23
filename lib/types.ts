@@ -7,6 +7,7 @@ export interface Sport {
   icon?: string
   image_url?: string
   venue?: string
+  carousel_images?: string[]
 }
 
 export interface Team {

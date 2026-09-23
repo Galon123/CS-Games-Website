@@ -1,8 +1,23 @@
 import { Sport, Team, Player, Match, LeaderboardEntry } from './types'
 
+export const DEFAULT_BADMINTON_CAROUSEL_IMAGES: string[] = [
+  'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1626926938421-90124a4b83fa?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1687597778602-624a9438fe0b?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1724941407869-f8fb46a3cc38?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=2000&auto=format&fit=crop&q=85',
+]
+
 export const initialSports: Sport[] = [
   { id: '11111111-1111-1111-1111-111111111111', name: 'Football', type: 'team', venue: 'Main Outdoor Turf Stadium', image_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop' },
-  { id: '22222222-2222-2222-2222-222222222222', name: 'Badminton', type: 'duo', venue: 'Indoor Badminton Arena (Court 1)', image_url: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&auto=format&fit=crop' },
+  {
+    id: '22222222-2222-2222-2222-222222222222',
+    name: 'Badminton',
+    type: 'duo',
+    venue: 'Indoor Badminton Arena (Court 1)',
+    image_url: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&auto=format&fit=crop',
+    carousel_images: DEFAULT_BADMINTON_CAROUSEL_IMAGES,
+  },
   { id: '33333333-3333-3333-3333-333333333333', name: 'Chess', type: 'solo', venue: 'Seminar Hall A', image_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop' },
   { id: '44444444-4444-4444-4444-444444444444', name: 'Carrom', type: 'quad', venue: 'Student Activity Center', image_url: 'https://images.unsplash.com/photo-1767619834318-63184920c4b1?w=800&auto=format&fit=crop' },
   { id: '31e7f54d-5b26-4c60-abdc-48928b28a661', name: 'E-Football', type: 'solo', venue: 'Esports Arena (Gaming Lab)', image_url: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1665460/5a730c921132b664412149cb3fa9da491fb01b0d/page_bg_raw.jpg?t=1788505213' },

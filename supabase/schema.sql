@@ -20,6 +20,7 @@ CREATE TABLE sports (
     type TEXT NOT NULL CHECK (type IN ('team', 'solo', 'duo', 'free_for_all')),
     venue TEXT,
     image_url TEXT,
+    carousel_images JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

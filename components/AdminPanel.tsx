@@ -53,6 +53,9 @@ export default function AdminPanel() {
     isSupabaseLive,
     supabaseConnected,
     supabaseError,
+    badmintonCarouselImages,
+    updateBadmintonCarouselImages,
+    resetBadmintonCarouselImages,
     refreshSupabaseData,
     updateMatchScore,
     updateMatchSchedule,
@@ -87,6 +90,11 @@ export default function AdminPanel() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [sqlCopied, setSqlCopied] = useState(false)
   const [fixSqlCopied, setFixSqlCopied] = useState(false)
+
+  // Badminton Carousel Admin State
+  const [isEditingBadmintonCarousel, setIsEditingBadmintonCarousel] = useState(false)
+  const [adminDraftBadmintonImages, setAdminDraftBadmintonImages] = useState<string[]>(badmintonCarouselImages || [])
+  const [adminNewBadmintonImage, setAdminNewBadmintonImage] = useState('')
 
   // Scalable Football Formation Studio State (Dynamic sport lookup)
   const footballSport = sports.find((s) => s.name.toLowerCase() === 'football') || sports[0]
@@ -3407,6 +3415,190 @@ END $$;`
                             </div>
                           )}
                         </div>
+
+                        {/* Badminton Hero Presentation Carousel Management Slot */}
+                        {sport.name.toLowerCase().includes('badminton') && (
+                          <div className="p-2.5 rounded-md bg-amber-50/70 border border-amber-200 space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="flex items-center space-x-1.5 text-amber-900 font-bold text-[11px]">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                                <span>HERO CAROUSEL ({badmintonCarouselImages?.length || 0} Slides)</span>
+                              </span>
+                              <div className="flex items-center space-x-2">
+                                <Link
+                                  href="/games/badminton"
+                                  target="_blank"
+                                  className="text-[10px] text-amber-700 hover:text-amber-950 underline flex items-center space-x-0.5"
+                                >
+                                  <span>View Page</span>
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </Link>
+                                <button
+                                  onClick={() => {
+                                    setAdminDraftBadmintonImages([...(badmintonCarouselImages || [])])
+                                    setIsEditingBadmintonCarousel(!isEditingBadmintonCarousel)
+                                  }}
+                                  className="text-[10px] font-semibold text-amber-800 hover:text-amber-950 underline"
+                                >
+                                  {isEditingBadmintonCarousel ? 'Hide' : 'Manage Slides'}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Thumbnail strip of current carousel images */}
+                            {!isEditingBadmintonCarousel && (
+                              <div className="flex items-center space-x-1.5 overflow-x-auto py-0.5">
+                                {(badmintonCarouselImages || []).map((imgUrl, i) => (
+                                  <div
+                                    key={i}
+                                    className="w-12 h-8 rounded border border-amber-200 bg-white overflow-hidden shrink-0 relative group"
+                                    title={`Slide ${i + 1}`}
+                                  >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={imgUrl} alt={`Slide ${i + 1}`} className="w-full h-full object-cover" />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Expanded Carousel Editor */}
+                            {isEditingBadmintonCarousel && (
+                              <div className="space-y-2 pt-1 animate-in fade-in duration-200">
+                                <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                                  {adminDraftBadmintonImages.map((url, sIdx) => (
+                                    <div
+                                      key={sIdx}
+                                      className="flex items-center space-x-1.5 bg-white p-1 rounded border border-slate-200 text-xs"
+                                    >
+                                      <span className="font-mono text-[10px] text-slate-500 w-3">{sIdx + 1}.</span>
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={url}
+                                        alt={`Slide ${sIdx + 1}`}
+                                        className="w-7 h-5 object-cover rounded shrink-0 bg-slate-100"
+                                      />
+                                      <input
+                                        type="url"
+                                        value={url}
+                                        onChange={(e) => {
+                                          const val = e.target.value
+                                          setAdminDraftBadmintonImages((prev) => {
+                                            const copy = [...prev]
+                                            copy[sIdx] = val
+                                            return copy
+                                          })
+                                        }}
+                                        className="flex-1 text-[11px] border border-slate-200 rounded px-1.5 py-0.5 text-slate-800 focus:outline-none focus:border-amber-500"
+                                      />
+                                      <button
+                                        onClick={() => {
+                                          if (sIdx > 0) {
+                                            setAdminDraftBadmintonImages((prev) => {
+                                              const copy = [...prev]
+                                              const temp = copy[sIdx]
+                                              copy[sIdx] = copy[sIdx - 1]
+                                              copy[sIdx - 1] = temp
+                                              return copy
+                                            })
+                                          }
+                                        }}
+                                        disabled={sIdx === 0}
+                                        className="text-slate-400 hover:text-slate-700 disabled:opacity-30 text-[10px] px-0.5"
+                                        title="Move up"
+                                      >
+                                        ▲
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          if (sIdx < adminDraftBadmintonImages.length - 1) {
+                                            setAdminDraftBadmintonImages((prev) => {
+                                              const copy = [...prev]
+                                              const temp = copy[sIdx]
+                                              copy[sIdx] = copy[sIdx + 1]
+                                              copy[sIdx + 1] = temp
+                                              return copy
+                                            })
+                                          }
+                                        }}
+                                        disabled={sIdx === adminDraftBadmintonImages.length - 1}
+                                        className="text-slate-400 hover:text-slate-700 disabled:opacity-30 text-[10px] px-0.5"
+                                        title="Move down"
+                                      >
+                                        ▼
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          if (adminDraftBadmintonImages.length <= 1) {
+                                            alert('Must keep at least 1 image.')
+                                            return
+                                          }
+                                          setAdminDraftBadmintonImages((prev) => prev.filter((_, i) => i !== sIdx))
+                                        }}
+                                        className="text-rose-500 hover:text-rose-700 text-[11px] px-1"
+                                        title="Delete slide"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Add slide row */}
+                                <div className="flex items-center space-x-1.5 pt-1">
+                                  <input
+                                    type="url"
+                                    value={adminNewBadmintonImage}
+                                    onChange={(e) => setAdminNewBadmintonImage(e.target.value)}
+                                    placeholder="Add image URL (https://...)"
+                                    className="flex-1 text-[11px] border border-slate-300 rounded px-2 py-0.5 text-slate-800 focus:outline-none focus:border-amber-500 bg-white"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      if (!adminNewBadmintonImage.trim()) return
+                                      setAdminDraftBadmintonImages((prev) => [...prev, adminNewBadmintonImage.trim()])
+                                      setAdminNewBadmintonImage('')
+                                    }}
+                                    className="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-medium"
+                                  >
+                                    + Add
+                                  </button>
+                                </div>
+
+                                {/* Save / Reset buttons */}
+                                <div className="flex items-center justify-between pt-1 border-t border-amber-200/60">
+                                  <button
+                                    onClick={async () => {
+                                      if (confirm('Reset to default badminton photos?')) {
+                                        await resetBadmintonCarouselImages()
+                                        notify('✅ Reset badminton carousel to default photos!')
+                                        setIsEditingBadmintonCarousel(false)
+                                      }
+                                    }}
+                                    className="text-[10px] text-slate-500 hover:text-slate-800 underline"
+                                  >
+                                    Reset Defaults
+                                  </button>
+
+                                  <button
+                                    onClick={async () => {
+                                      const clean = adminDraftBadmintonImages.map((u) => u.trim()).filter(Boolean)
+                                      if (clean.length === 0) {
+                                        alert('Please enter at least 1 valid image URL')
+                                        return
+                                      }
+                                      await updateBadmintonCarouselImages(clean)
+                                      notify('✅ Updated Badminton Hero Carousel images successfully!')
+                                      setIsEditingBadmintonCarousel(false)
+                                    }}
+                                    className="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold shadow-xs transition-colors"
+                                  >
+                                    Save Carousel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <div className="grid grid-cols-2 gap-2 text-center text-xs">
                           <div className="bg-slate-100/70 p-1.5 rounded-md border border-slate-200">
