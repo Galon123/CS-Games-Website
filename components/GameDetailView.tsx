@@ -339,34 +339,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
           </div>
         </div>
 
-        {/* Quick Game Switcher Bar */}
-        {!isCsCup && (
-          <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog shrink-0 pr-1">
-              Jump to:
-            </span>
-            {sports.map((s) => {
-              const sSlug = getSportSlug(s)
-              const isCurrent = s.id === sport.id
-              const isCs = isCsCupFootball(s.name)
-              const label = isCs ? 'CS Cup (Football)' : s.name
 
-              return (
-                <Link
-                  key={s.id}
-                  href={`/games/${sSlug}`}
-                  className={`px-3.5 py-1 rounded-full text-xs font-mono font-medium transition-all shrink-0 ${
-                    isCurrent
-                      ? 'bg-acid text-acid-ink font-bold shadow-xs'
-                      : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
-                  }`}
-                >
-                  {label}
-                </Link>
-              )
-            })}
-          </div>
-        )}
       </div>
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
