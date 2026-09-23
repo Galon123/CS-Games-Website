@@ -32,6 +32,7 @@ import { Team, Player, Match, LeaderboardEntry } from '@/lib/types'
 import { PlayerCard } from '@/components/PlayerCard'
 import TacticalBoard from '@/components/TacticalBoard'
 import BadmintonHeroCarousel from '@/components/BadmintonHeroCarousel'
+import FootballHeroCarousel from '@/components/FootballHeroCarousel'
 import BadmintonBlurredBackground from '@/components/BadmintonBlurredBackground'
 import BadmintonBracketSection from '@/components/BadmintonBracketSection'
 
@@ -44,7 +45,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
   const rawSlug = sportSlug || (typeof params?.slug === 'string' ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : '')
   const slug = rawSlug || ''
 
-  const { sports, teams, players, matches, leaderboards, isAdmin } = useTournament()
+  const { sports, teams, players, matches, leaderboards, badmintonCarouselImages, isAdmin } = useTournament()
 
   // Find sport by slug or id
   const sport = useMemo(() => {
@@ -370,10 +371,219 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           2. HERO SECTION FOR THIS DEDICATED GAME
-          For Badminton: Hero Presentation Carousel
-          ───────────────────────────────────────────────────────────── */}
+          For Badminton: Hero Presentation Carousel (copied from home page,
+          without names/sentences, admin editable) + Division Meta.
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {isBadminton ? (
-        <BadmintonHeroCarousel />
+        <div className="space-y-6">
+          {/* Badminton Hero Presentation Carousel */}
+          <BadmintonHeroCarousel />
+
+          {/* Badminton Division Details & Tournament Metrics Card */}
+          <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 shadow-card p-6 sm:p-8 lg:p-10 space-y-6">
+            {/* Interior Blurred Badminton Court Atmosphere */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={
+                  (badmintonCarouselImages && badmintonCarouselImages[0]) ||
+                  'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=1600&auto=format&fit=crop&q=80'
+                }
+                alt="Badminton Arena Backdrop"
+                className="w-full h-full object-cover object-center filter blur-md opacity-35 dark:opacity-30 scale-105 contrast-[115%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-ink-900/95 via-ink-900/80 to-ink-900/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-cyan-500/10 blur-[90px]" />
+              <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-emerald-500/10 blur-[80px]" />
+
+              {/* Badminton Court Net & Service Box Watermark */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
+                <svg className="w-96 h-64 text-white" viewBox="0 0 400 260" fill="none" stroke="currentColor">
+                  <rect x="10" y="10" width="380" height="240" strokeWidth="2" />
+                  <line x1="200" y1="10" x2="200" y2="250" strokeWidth="3" />
+                  <line x1="80" y1="10" x2="80" y2="250" strokeWidth="1.5" strokeDasharray="4 4" />
+                  <line x1="320" y1="10" x2="320" y2="250" strokeWidth="1.5" strokeDasharray="4 4" />
+                  <line x1="10" y1="130" x2="390" y2="130" strokeWidth="1.5" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="relative z-10 space-y-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border bg-white/10 text-paper border-white/20">
+                  {sportMeta?.badgeText || 'BADMINTON CHAMPIONSHIP'}
+                </span>
+
+                {liveMatchesCount > 0 && (
+                  <span className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-black border border-emerald-500/40 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span>{liveMatchesCount} MATCH IN PLAY</span>
+                  </span>
+                )}
+
+                {sport.venue && (
+                  <div className="flex items-center space-x-1.5 text-xs text-mist font-mono">
+                    <MapPin className="w-3.5 h-3.5 text-acid shrink-0" />
+                    <span>{sport.venue}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3 max-w-3xl">
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black text-paper tracking-tight leading-[1.05]">
+                    {sport.name}.
+                  </h1>
+                </div>
+                <p className="text-sm sm:text-base text-cream/90 leading-relaxed font-sans">
+                  {sportMeta?.description ||
+                    'Indoor doubles rally championship at Indoor Badminton Arena. 21-point knockout brackets, live fixtures, and squad standings.'}
+                </p>
+              </div>
+
+              {/* Quick Metrics Ticker */}
+              <div className="pt-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl">
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Registered Teams</span>
+                  <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
+                    {sportTeams.length}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Competing squads</span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Active Athletes</span>
+                  <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
+                    {sportPlayers.length}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Rostered players</span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Total Fixtures</span>
+                  <span className="font-serif font-black text-2xl text-acid mt-0.5 block font-lining">
+                    {sportMatches.length > 0 ? sportMatches.length : 26}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">
+                    {completedMatchesCount > 0 ? `${completedMatchesCount} finished` : 'Official Knockout Draw'}
+                  </span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Tournament Type</span>
+                  <span className="font-mono font-bold text-sm text-paper mt-1 block uppercase">
+                    {sport.type === 'team'
+                      ? 'Squad 6v6'
+                      : sport.type === 'duo'
+                      ? 'Doubles'
+                      : sport.type === 'solo'
+                      ? '1v1 Solo'
+                      : '1v1v1v1'}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Official bracket</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : isCsCup ? (
+        <div className="space-y-6">
+          {renderTabsNav()}
+          <FootballHeroCarousel />
+          
+          <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 shadow-card p-6 sm:p-8 lg:p-10 space-y-6">
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1600&auto=format&fit=crop&q=80"
+                alt="Football Pitch Backdrop"
+                className="w-full h-full object-cover object-center filter blur-md opacity-35 dark:opacity-30 scale-105 contrast-[115%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-ink-900/95 via-ink-900/80 to-ink-900/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-cyan-500/10 blur-[90px]" />
+              <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-acid/10 blur-[80px]" />
+            </div>
+
+            <div className="relative z-10 space-y-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border bg-white/10 text-paper border-white/20">
+                  {sportMeta?.badgeText || 'FOOTBALL CHAMPIONSHIP'}
+                </span>
+
+                {liveMatchesCount > 0 && (
+                  <span className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-black border border-emerald-500/40 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span>{liveMatchesCount} MATCH IN PLAY</span>
+                  </span>
+                )}
+
+                {sport.venue && (
+                  <div className="flex items-center space-x-1.5 text-xs text-mist font-mono">
+                    <MapPin className="w-3.5 h-3.5 text-acid shrink-0" />
+                    <span>{sport.venue}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3 max-w-3xl">
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black text-paper tracking-tight leading-[1.05]">
+                    {sport.name}.
+                  </h1>
+                </div>
+                <p className="text-sm sm:text-base text-cream/90 leading-relaxed font-sans">
+                  {sportMeta?.description ||
+                    'Main outdoor 6v6 football tournament at the Turf Stadium.'}
+                </p>
+              </div>
+
+              {/* Quick Metrics Ticker */}
+              <div className="pt-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl">
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Registered Teams</span>
+                  <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
+                    {sportTeams.length}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Competing squads</span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Active Athletes</span>
+                  <span className="font-serif font-black text-2xl text-paper mt-0.5 block font-lining">
+                    {sportPlayers.length}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Rostered players</span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Total Fixtures</span>
+                  <span className="font-serif font-black text-2xl text-acid mt-0.5 block font-lining">
+                    {sportMatches.length}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">
+                    {completedMatchesCount} finished
+                  </span>
+                </div>
+
+                <div className="bg-ink-900/60 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono uppercase text-fog block">Tournament Type</span>
+                  <span className="font-mono font-bold text-sm text-paper mt-1 block uppercase">
+                    {sport.type === 'team'
+                      ? 'Squad 6v6'
+                      : sport.type === 'duo'
+                      ? 'Doubles'
+                      : sport.type === 'solo'
+                      ? '1v1 Solo'
+                      : '1v1v1v1'}
+                  </span>
+                  <span className="text-[10px] font-mono text-mist">Official bracket</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       ) : (
         <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 shadow-card">
           {/* Cinematic Imagery Background (if available) */}
@@ -517,88 +727,139 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           3. INTERACTIVE SECTION TABS NAVIGATION
-          Sticky, accessible tabs with counter badges (hidden for Badminton)
-          ───────────────────────────────────────────────────────────── */}
-      {!isBadminton && (
-        <div className="sticky top-16 sm:top-18 z-30 bg-ink-900/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-white/10">
-          <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
-            {[
-              {
-                key: 'fixtures',
-                label: 'Fixtures & Matches',
-                count: sportMatches.length,
-                icon: Calendar,
-              },
-              {
-                key: 'standings',
-                label: 'Points Table',
-                count: sportLeaderboards.length,
-                icon: Trophy,
-              },
-              {
-                key: 'squads',
-                label: 'Squads & Rosters',
-                count: sportTeams.length > 0 ? sportTeams.length : sportPlayers.length,
-                icon: Users,
-              },
-              ...(isCsCup
-                ? [
-                    {
-                      key: 'tactics',
-                      label: 'CS Cup Pitch Formations',
-                      count: undefined,
-                      icon: Crosshair,
-                    },
-                  ]
-                : []),
-              {
-                key: 'rules',
-                label: 'Regulations & Venue',
-                count: undefined,
-                icon: BookOpen,
-              },
-            ].map((tab) => {
-              const Icon = tab.icon
-              const isSelected = activeTab === tab.key
+          Sticky, accessible tabs with counter badges
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <div className="sticky top-16 sm:top-18 z-30 bg-ink-900/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-white/10">
+        {!isCsCup && (
+        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+          {(isCsCup ? [
+            {
+              key: 'home',
+              label: 'Home',
+              count: undefined,
+              icon: Home,
+            },
+            {
+              key: 'matches',
+              label: 'Matches',
+              count: sportMatches.length,
+              icon: Calendar,
+            },
+            {
+              key: 'table',
+              label: 'Table',
+              count: sportLeaderboards.length,
+              icon: Trophy,
+            },
+            {
+              key: 'stats',
+              label: 'Stats',
+              count: sportPlayers.length,
+              icon: Activity,
+            }
+          ] : [
+            {
+              key: 'fixtures',
+              label: isBadminton ? 'Fixtures & Doubles Draw' : 'Fixtures & Matches',
+              count: isBadminton ? 26 : sportMatches.length,
+              icon: Calendar,
+            },
+            {
+              key: 'standings',
+              label: 'Points Table',
+              count: sportLeaderboards.length,
+              icon: Trophy,
+            },
+            {
+              key: 'squads',
+              label: 'Squads & Rosters',
+              count: sportTeams.length > 0 ? sportTeams.length : sportPlayers.length,
+              icon: Users,
+            },
+            {
+              key: 'rules',
+              label: 'Regulations & Venue',
+              count: undefined,
+              icon: BookOpen,
+            },
+          ]).map((tab) => {
+            const Icon = tab.icon
+            const isSelected = activeTab === tab.key
 
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as any)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                    isSelected
-                      ? isCsCup && tab.key === 'tactics'
-                        ? 'bg-acid text-acid-ink font-black shadow-[0_0_12px_rgba(215,242,43,0.3)]'
-                        : 'bg-white/15 text-paper border border-white/25 shadow-xs font-bold'
-                      : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as any)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? isCsCup && tab.key === 'tactics'
+                      ? 'bg-acid text-acid-ink font-black shadow-[0_0_12px_rgba(215,242,43,0.3)]'
+                      : 'bg-white/15 text-paper border border-white/25 shadow-xs font-bold'
+                    : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+                }`}
+              >
+                <Icon
+                  className={`w-3.5 h-3.5 ${
+                    isSelected ? (isCsCup && tab.key === 'tactics' ? 'text-acid-ink' : 'text-acid') : 'text-fog'
                   }`}
-                >
-                  <Icon
-                    className={`w-3.5 h-3.5 ${
-                      isSelected ? (isCsCup && tab.key === 'tactics' ? 'text-acid-ink' : 'text-acid') : 'text-fog'
+                />
+                <span>{tab.label}</span>
+                {typeof tab.count === 'number' && (
+                  <span
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      isSelected ? 'bg-white/20 text-paper font-bold' : 'bg-white/10 text-mist'
                     }`}
-                  />
-                  <span>{tab.label}</span>
-                  {typeof tab.count === 'number' && (
-                    <span
-                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                        isSelected ? 'bg-white/20 text-paper font-bold' : 'bg-white/10 text-mist'
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
         </div>
-      )}
+        )}
+      </div>
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           4. TAB CONTENT 1: FIXTURES & LIVE MATCHES
-          ───────────────────────────────────────────────────────────── */}
-      {(isBadminton || activeTab === 'fixtures') && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {activeTab === 'home' && (
+        <div className="space-y-6 animate-fade-in-up">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-4 shadow-card">
+            <h2 className="text-xl sm:text-2xl font-serif font-black text-paper tracking-tight">
+              Welcome to CS Cup 2026.
+            </h2>
+            <p className="text-sm text-mist leading-relaxed font-sans">
+              The grand departmental football showdown is here. Explore the Matches, check the latest Points Table, and view detailed player Stats using the navigation tabs above.
+            </p>
+          </div>
+
+          {/* Upcoming Matches Box */}
+          <div 
+            className="bg-ink-800 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-card flex items-center justify-between group cursor-pointer hover:border-white/20 transition-all" 
+            onClick={() => setActiveTab('matches')}
+          >
+            <div>
+              <h3 className="font-serif font-bold text-lg text-paper flex items-center space-x-2">
+                <Calendar className="w-5 h-5 text-acid" />
+                <span>Upcoming Matches</span>
+              </h3>
+              <p className="text-sm text-mist mt-1">
+                {upcomingMatchesCount > 0 
+                  ? `${upcomingMatchesCount} matches scheduled. Next: ${nextMatch?.team_a?.name || 'TBD'} vs ${nextMatch?.team_b?.name || 'TBD'}`
+                  : 'No upcoming matches currently scheduled.'}
+              </p>
+            </div>
+            <div className="p-3 bg-white/5 rounded-full group-hover:bg-acid group-hover:text-acid-ink text-acid transition-colors">
+              <ArrowLeft className="w-5 h-5 rotate-180" />
+            </div>
+          </div>
+          
+          <TacticalBoard />
+        </div>
+      )}
+
+      {(activeTab === 'fixtures' || activeTab === 'matches') && (
         <div className="space-y-6 animate-fade-in-up">
           {isBadminton ? (
             <div className="space-y-8">
@@ -1041,8 +1302,8 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           5. TAB CONTENT 2: STANDINGS & POINTS TABLE
-          ───────────────────────────────────────────────────────────── */}
-      {!isBadminton && activeTab === 'standings' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {(activeTab === 'standings' || activeTab === 'table') && (
         <div className="space-y-6 animate-fade-in-up">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -1147,8 +1408,8 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           6. TAB CONTENT 3: SQUADS & ATHLETE ROSTERS
-          ───────────────────────────────────────────────────────────── */}
-      {!isBadminton && activeTab === 'squads' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {(activeTab === 'squads' || activeTab === 'stats') && (
         <div className="space-y-6 animate-fade-in-up">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -1304,8 +1565,8 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           8. TAB CONTENT 5: REGULATIONS & VENUE GUIDELINES
-          ───────────────────────────────────────────────────────────── */}
-      {!isBadminton && activeTab === 'rules' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {activeTab === 'rules' && (
         <div className="space-y-8 animate-fade-in-up">
           <div className="space-y-2">
             <h2 className="text-xl sm:text-2xl font-serif font-black text-paper tracking-tight">

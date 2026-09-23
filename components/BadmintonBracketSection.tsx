@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Sparkles,
   ArrowRight,
+  Filter,
   Check,
   X,
   AlertCircle,
@@ -43,6 +44,9 @@ export default function BadmintonBracketSection() {
   const [mounted, setMounted] = useState(false)
   const [matches, setMatches] = useState<BadmintonDoublesMatch[]>(() => resolveBracketProgression(INITIAL_BADMINTON_MATCHES))
   const [category, setCategory] = useState<BadmintonCategory>('mens')
+  const [viewMode, setViewMode] = useState<'bracket' | 'cards'>('bracket')
+  const [selectedRoundFilter, setSelectedRoundFilter] = useState<string>('all')
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('all')
   const [editingMatch, setEditingMatch] = useState<BadmintonDoublesMatch | null>(null)
   const [saveToast, setSaveToast] = useState<string | null>(null)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
@@ -246,6 +250,15 @@ export default function BadmintonBracketSection() {
   // Stats calculation
   const totalMatchesCount = categoryMatches.length
   const completedMatchesCount = categoryMatches.filter((m) => m.status === 'completed').length
+
+  // Filtered matches for Cards View
+  const filteredCardMatches = useMemo(() => {
+    return categoryMatches.filter((m) => {
+      const matchRound = selectedRoundFilter === 'all' || m.round === selectedRoundFilter
+      const matchStatus = selectedStatusFilter === 'all' || m.status === selectedStatusFilter
+      return matchRound && matchStatus
+    })
+  }, [categoryMatches, selectedRoundFilter, selectedStatusFilter])
 
   // Open Edit Modal (Admins only)
   const openEditModal = (match: BadmintonDoublesMatch) => {
@@ -674,11 +687,12 @@ export default function BadmintonBracketSection() {
             </div>
 
             <h2 className="font-serif font-black text-2xl sm:text-4xl text-paper tracking-tight">
-              BADMINTON DOUBLES
+              Doubles Knockout Bracket.
             </h2>
 
             <p className="text-xs sm:text-sm text-mist leading-relaxed font-sans">
-              Official tournament knockout draw and match progression across all championship rounds.
+              Official draw faithfully recreated from the CS Games tournament director.
+              Follow athlete advancement across all preliminary, quarter, semifinal and championship rounds with connected progression paths.
             </p>
           </div>
 
@@ -720,18 +734,19 @@ export default function BadmintonBracketSection() {
         </div>
 
         {/* ─────────────────────────────────────────────────────────────
-            2. CATEGORY SWITCHER (FULL WIDTH)
+            2. CATEGORY SWITCHER & VIEW CONTROLS
             ───────────────────────────────────────────────────────────── */}
-        <div className="mt-6 pt-6 border-t border-white/10 w-full">
+        <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Men's vs Women's Doubles Tab Switcher */}
-          <div className="w-full grid grid-cols-2 gap-2 bg-ink-900/80 p-1.5 rounded-xl border border-white/10">
+          <div className="flex items-center space-x-2 bg-ink-900/80 p-1 rounded-xl border border-white/10 max-w-fit">
             <button
               onClick={() => {
                 setCategory('mens')
+                setSelectedRoundFilter('all')
                 setSelectedMatchId(null)
                 setHoveredMatchId(null)
               }}
-              className={`w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-mono font-bold transition-all ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all ${
                 category === 'mens'
                   ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
                   : 'text-mist hover:text-paper hover:bg-white/5'
@@ -739,7 +754,7 @@ export default function BadmintonBracketSection() {
             >
               <span>Men&apos;s Doubles</span>
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
                   category === 'mens' ? 'bg-black/20 text-acid-ink' : 'bg-white/10 text-fog'
                 }`}
               >
@@ -750,10 +765,11 @@ export default function BadmintonBracketSection() {
             <button
               onClick={() => {
                 setCategory('womens')
+                setSelectedRoundFilter('all')
                 setSelectedMatchId(null)
                 setHoveredMatchId(null)
               }}
-              className={`w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-mono font-bold transition-all ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all ${
                 category === 'womens'
                   ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
                   : 'text-mist hover:text-paper hover:bg-white/5'
@@ -761,13 +777,39 @@ export default function BadmintonBracketSection() {
             >
               <span>Women&apos;s Doubles</span>
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
                   category === 'womens' ? 'bg-black/20 text-acid-ink' : 'bg-white/10 text-fog'
                 }`}
               >
                 8 Matches
               </span>
             </button>
+          </div>
+
+          {/* View Mode Toggle: Interactive Bracket vs Match Cards */}
+          <div className="flex items-center space-x-2 self-start sm:self-auto">
+            <div className="flex items-center bg-ink-900/80 p-1 rounded-xl border border-white/10 text-xs font-mono">
+              <button
+                onClick={() => setViewMode('bracket')}
+                className={`px-3.5 py-1.5 rounded-lg transition-all ${
+                  viewMode === 'bracket'
+                    ? 'bg-white/15 text-paper font-bold shadow-xs'
+                    : 'text-mist hover:text-paper'
+                }`}
+              >
+                Bracket Tree
+              </button>
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3.5 py-1.5 rounded-lg transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-white/15 text-paper font-bold shadow-xs'
+                    : 'text-mist hover:text-paper'
+                }`}
+              >
+                Round Cards
+              </button>
+            </div>
           </div>
         </div>
 
@@ -811,9 +853,10 @@ export default function BadmintonBracketSection() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          3. INTERACTIVE TOURNAMENT BRACKET TREE
+          3. VIEW MODE A: INTERACTIVE TOURNAMENT BRACKET TREE WITH VISIBLE PATH LINES
           ───────────────────────────────────────────────────────────── */}
-      <section className="bg-ink-800/80 border border-white/10 rounded-2xl p-4 sm:p-6 backdrop-blur-md shadow-card space-y-6">
+      {viewMode === 'bracket' && (
+        <div className="space-y-4">
           {/* Active Path Tracing & Legend Bar */}
           <div className="p-3 sm:p-4 rounded-xl bg-ink-900/80 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs font-mono">
             {activeFocusMatchId ? (
@@ -899,7 +942,7 @@ export default function BadmintonBracketSection() {
               ───────────────────────────────────────────────────────────── */}
           <div
             ref={bracketScrollRef}
-            className="overflow-x-auto no-scrollbar pb-6 pt-4 rounded-xl border border-white/10 bg-ink-900/50 px-2 sm:px-4"
+            className="overflow-x-auto no-scrollbar pb-8 pt-4 -mx-2 px-2 sm:mx-0 sm:px-0"
           >
             {category === 'mens' ? (
               /* =========================================================
@@ -1597,7 +1640,223 @@ export default function BadmintonBracketSection() {
               </div>
             )}
           </div>
-      </section>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          4. VIEW MODE B: ROUND-BY-ROUND FIXTURES CARDS
+          ───────────────────────────────────────────────────────────── */}
+      {viewMode === 'cards' && (
+        <div className="space-y-6">
+          {/* Card Filters: Round + Status */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-ink-800/60 p-3.5 rounded-xl border border-white/10">
+            {/* Round Filter */}
+            <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar">
+              <span className="text-[10px] font-mono uppercase text-fog pr-1">Round:</span>
+              <button
+                onClick={() => setSelectedRoundFilter('all')}
+                className={`px-2.5 py-1 rounded-full text-xs font-mono transition-colors ${
+                  selectedRoundFilter === 'all'
+                    ? 'bg-acid text-acid-ink font-bold'
+                    : 'bg-white/5 text-mist hover:text-paper'
+                }`}
+              >
+                All
+              </button>
+              {currentRounds.map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => setSelectedRoundFilter(r.key)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-mono transition-colors whitespace-nowrap ${
+                    selectedRoundFilter === r.key
+                      ? 'bg-acid text-acid-ink font-bold'
+                      : 'bg-white/5 text-mist hover:text-paper'
+                  }`}
+                >
+                  {r.short}
+                </button>
+              ))}
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex items-center space-x-1.5">
+              <span className="text-[10px] font-mono uppercase text-fog pr-1">Status:</span>
+              {[
+                { key: 'all', label: 'All' },
+                { key: 'upcoming', label: 'Upcoming' },
+                { key: 'live', label: 'Live' },
+                { key: 'completed', label: 'Final' },
+              ].map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setSelectedStatusFilter(s.key)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-mono transition-colors ${
+                    selectedStatusFilter === s.key
+                      ? 'bg-white/20 text-paper font-bold'
+                      : 'bg-white/5 text-mist hover:text-paper'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cards Grid */}
+          {filteredCardMatches.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCardMatches.map((match) => {
+                const isLive = match.status === 'live'
+                const isCompleted = match.status === 'completed'
+                const team1Won = match.winnerTeam === 1
+                const team2Won = match.winnerTeam === 2
+
+                return (
+                  <div
+                    key={match.id}
+                    className={`bg-ink-800 rounded-2xl border p-5 transition-all duration-200 flex flex-col justify-between ${
+                      isLive
+                        ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.12)] ring-1 ring-emerald-500/30'
+                        : 'border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    <div>
+                      {/* Card Header */}
+                      <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+                        <div className="flex items-center space-x-2">
+                          <span className="px-2 py-0.5 rounded-md bg-white/10 text-paper font-mono font-black text-xs border border-white/15">
+                            {match.matchCode}
+                          </span>
+                          <span className="text-xs font-mono text-mist font-semibold">
+                            {match.roundTitle}
+                          </span>
+                        </div>
+
+                        {isLive ? (
+                          <span className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-black border border-emerald-500/30 animate-pulse">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span>LIVE</span>
+                          </span>
+                        ) : isCompleted ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-fog font-mono text-[10px] font-bold border border-white/10">
+                            FINAL RESULT
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-mist font-mono text-[10px] font-bold border border-white/10">
+                            UPCOMING
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Head-to-Head */}
+                      <div className="space-y-2 py-1">
+                        {/* Contender 1 */}
+                        <div
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
+                            team1Won
+                              ? 'bg-acid/15 border-acid/40 text-paper font-bold'
+                              : 'bg-ink-900 border-white/5 text-mist'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                            <div
+                              className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-black text-xs shrink-0 ${
+                                team1Won
+                                  ? 'bg-acid text-acid-ink'
+                                  : 'bg-ink-800 border border-white/10 text-fog'
+                              }`}
+                            >
+                              {team1Won ? '👑' : 'A'}
+                            </div>
+                            <span
+                              className={`text-sm truncate ${
+                                match.team1.isPlaceholder ? 'italic text-fog' : 'text-paper'
+                              }`}
+                            >
+                              {match.team1.name}
+                            </span>
+                          </div>
+
+                          <div className="font-mono font-black text-lg text-paper">
+                            {typeof match.team1.score === 'number' ? match.team1.score : '-'}
+                          </div>
+                        </div>
+
+                        {/* Contender 2 */}
+                        <div
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
+                            team2Won
+                              ? 'bg-acid/15 border-acid/40 text-paper font-bold'
+                              : 'bg-ink-900 border-white/5 text-mist'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                            <div
+                              className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-black text-xs shrink-0 ${
+                                team2Won
+                                  ? 'bg-acid text-acid-ink'
+                                  : 'bg-ink-800 border border-white/10 text-fog'
+                              }`}
+                            >
+                              {team2Won ? '👑' : 'B'}
+                            </div>
+                            <span
+                              className={`text-sm truncate ${
+                                match.team2.isPlaceholder ? 'italic text-fog' : 'text-paper'
+                              }`}
+                            >
+                              {match.team2.name}
+                            </span>
+                          </div>
+
+                          <div className="font-mono font-black text-lg text-paper">
+                            {typeof match.team2.score === 'number' ? match.team2.score : '-'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Actions & Footer */}
+                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                      <div className="text-[11px] font-mono text-mist space-y-0.5">
+                        <div className="flex items-center space-x-1.5">
+                          <Calendar className="w-3 h-3 text-acid" />
+                          <span>{match.date}</span>
+                          <span>•</span>
+                          <Clock className="w-3 h-3 text-acid" />
+                          <span>{match.time}</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-fog text-[10px]">
+                          <MapPin className="w-3 h-3 text-mist" />
+                          <span>{match.venue} ({match.court || 'Court 1'})</span>
+                        </div>
+                      </div>
+
+                      {isAdmin && (
+                        <button
+                          onClick={() => openEditModal(match)}
+                          className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-acid/40 text-xs font-mono font-bold text-paper hover:text-acid transition-all flex items-center space-x-1"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Update</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="p-10 rounded-2xl bg-ink-800/60 border border-dashed border-white/10 text-center space-y-2">
+              <Filter className="w-6 h-6 text-fog mx-auto" />
+              <p className="font-serif font-bold text-paper text-sm">No matches in this view</p>
+              <p className="text-xs text-mist font-mono">
+                Try selecting &ldquo;All&rdquo; rounds or status to display fixtures.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────
           5. MATCH EDIT & SCORE UPDATE MODAL (ACCESSIBLE & ESC-DISMISSIBLE)

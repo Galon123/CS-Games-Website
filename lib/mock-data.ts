@@ -8,6 +8,14 @@ export const DEFAULT_BADMINTON_CAROUSEL_IMAGES: string[] = [
   'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=2000&auto=format&fit=crop&q=85',
 ]
 
+export const DEFAULT_FOOTBALL_CAROUSEL_IMAGES: string[] = [
+  'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1518605368461-1eb767ac16ab?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1553775282-20af80779df7?w=2000&auto=format&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1516422452136-168798e12467?w=2000&auto=format&fit=crop&q=85',
+]
+
 export const initialSports: Sport[] = [
   { id: '11111111-1111-1111-1111-111111111111', name: 'Football', type: 'team', venue: 'Main Outdoor Turf Stadium', image_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop' },
   {
