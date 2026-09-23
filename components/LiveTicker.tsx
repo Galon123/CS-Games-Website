@@ -9,7 +9,6 @@ export default function LiveTicker() {
   const { matches, isSupabaseLive, sports } = useTournament()
 
   const liveMatches = matches.filter((m) => m.status === 'live')
-  const upcomingMatches = matches.filter((m) => m.status === 'upcoming')
 
   const marqueeItems = [
     ...liveMatches.map((m) => ({
@@ -24,27 +23,31 @@ export default function LiveTicker() {
     })),
     {
       type: 'announcement' as const,
-      id: 'flagship-announcement',
-      sport: 'CS CUP',
-      text: 'ANNUAL 6v6 FOOTBALL TOURNAMENT | OFFICIAL TURF ACTIVE',
-      minute: 'FLAGSHIP',
-    },
-    ...upcomingMatches.slice(0, 3).map((m) => ({
-      type: 'upcoming' as const,
-      id: m.id,
-      sport: m.sport?.name || 'Fixture',
-      text:
-        m.is_free_for_all || m.sport?.type === 'free_for_all'
-          ? `Free For All Championship | All ${m.participants?.length || 'Enrolled'} Competitors Participating`
-          : `${m.team_a?.name || 'Team A'} vs ${m.team_b?.name || 'Team B'}`,
+      id: 'sched-1',
+      sport: 'SCHEDULE',
+      text: '22/09 CS CUP DAY 1',
       minute: 'UPCOMING',
-    })),
+    },
     {
-      type: 'event' as const,
-      id: 'tourney-info',
-      sport: 'CS GAMES 2026',
-      text: `${sports.length} DIVISIONS ACTIVE | PERPETUAL TROPHY ON THE LINE`,
-      minute: 'OFFICIAL',
+      type: 'announcement' as const,
+      id: 'sched-2',
+      sport: 'SCHEDULE',
+      text: '23/09 BADMINTON DOUBLES',
+      minute: 'UPCOMING',
+    },
+    {
+      type: 'announcement' as const,
+      id: 'sched-3',
+      sport: 'SCHEDULE',
+      text: '24/09 CS CUP DAY2',
+      minute: 'UPCOMING',
+    },
+    {
+      type: 'announcement' as const,
+      id: 'sched-4',
+      sport: 'SCHEDULE',
+      text: '25/09 CHESS CARROMS MINI MILITIA',
+      minute: 'UPCOMING',
     },
   ]
 
@@ -91,7 +94,7 @@ export default function LiveTicker() {
                       {item.text}
                     </span>
                   </Link>
-                ) : item.type === 'announcement' ? (
+                ) : (
                   <div className="inline-flex items-center space-x-2 bg-white/[0.04] text-paper px-2.5 py-0.5 rounded-full border border-white/10">
                     <Trophy className="w-3 h-3 text-acid" />
                     <span className="text-acid font-bold text-[10px] uppercase tracking-wider">
@@ -101,20 +104,6 @@ export default function LiveTicker() {
                     <span className="text-[11px] text-mist tracking-wide">
                       {item.text}
                     </span>
-                  </div>
-                ) : item.type === 'upcoming' ? (
-                  <div className="inline-flex items-center space-x-1.5 text-mist px-2 py-0.5">
-                    <span className="text-[10px] font-bold text-fog uppercase tracking-wider">
-                      UPCOMING:
-                    </span>
-                    <span className="text-paper text-[11px] font-medium">
-                      {item.sport} &bull; {item.text}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="inline-flex items-center space-x-2 text-mist font-medium text-[11px]">
-                    <span className="text-acid">★</span>
-                    <span className="text-cream">{item.text}</span>
                   </div>
                 )}
                 <span className="text-white/15 select-none font-bold">|</span>

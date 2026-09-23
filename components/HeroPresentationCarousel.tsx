@@ -222,17 +222,13 @@ export default function HeroPresentationCarousel() {
                   ───────────────────────────────────────────────────────────── */}
               <div className="relative z-10 h-full flex flex-col justify-end p-6 sm:p-10 lg:p-14 max-w-7xl mx-auto pointer-events-none">
                 <div className="pointer-events-auto max-w-fit pb-1 sm:pb-3 space-y-1 sm:space-y-1.5">
-                  <Link
-                    href={slide.href}
+                  <div
                     className="group/title inline-flex items-center gap-2.5 sm:gap-3.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid rounded-xl"
                   >
-                    <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-paper tracking-tight leading-[1.0] drop-shadow-sm group-hover/title:text-acid transition-colors duration-200">
+                    <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-paper tracking-tight leading-[1.0] drop-shadow-sm transition-colors duration-200">
                       {slide.title}
                     </h1>
-                    <span className="text-2xl sm:text-3xl lg:text-4xl text-acid font-sans font-light transition-transform duration-200 group-hover/title:translate-x-1.5 group-hover/title:-translate-y-1.5 select-none">
-                      ↗
-                    </span>
-                  </Link>
+                  </div>
                   <p className="text-[10px] sm:text-[11px] md:text-xs text-mist/75 font-light tracking-wide">
                     {slide.subtitle}
                   </p>
@@ -247,24 +243,7 @@ export default function HeroPresentationCarousel() {
           3. CAROUSEL CONTROLS & PAGINATION
           Previous/Next Arrow Buttons, Pill Indicators, and Play/Pause
           ───────────────────────────────────────────────────────────── */}
-      {/* Floating Prev & Next Arrows */}
-      <div className="absolute right-4 sm:right-8 bottom-6 sm:bottom-10 z-20 flex items-center space-x-2">
-        <button
-          onClick={goToPrev}
-          aria-label="Previous Slide"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/15 bg-ink-900/80 backdrop-blur-md text-paper hover:bg-ink-800 hover:border-acid/60 hover:text-acid transition-all duration-200 flex items-center justify-center shadow-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-acid active:scale-95"
-        >
-          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-
-        <button
-          onClick={goToNext}
-          aria-label="Next Slide"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/15 bg-ink-900/80 backdrop-blur-md text-paper hover:bg-ink-800 hover:border-acid/60 hover:text-acid transition-all duration-200 flex items-center justify-center shadow-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-acid active:scale-95"
-        >
-          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-      </div>
+      {/* Floating Prev & Next Arrows removed */}
 
       {/* Slide Pagination Pills & Autoplay Toggle */}
       <div className="absolute left-6 sm:left-10 lg:left-14 bottom-6 sm:bottom-10 z-20 flex items-center space-x-3">

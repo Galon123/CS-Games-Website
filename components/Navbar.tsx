@@ -29,11 +29,10 @@ export default function Navbar() {
   }, [pathname])
 
   const navItems = [
-    { label: 'Overview', href: '/', icon: Flame },
-    { label: 'Games', href: '/games', icon: Gamepad2 },
-    { label: 'Leaderboards', href: '/leaderboards', icon: Trophy },
-    { label: 'Teams & Rosters', href: '/roster', icon: Users },
-    { label: 'Formations', href: '/tactics', icon: Crosshair },
+    { label: 'HOME', href: '/', icon: Flame },
+    { label: 'EVENTS', href: '/events', icon: Gamepad2 },
+    { label: 'SCHEDULE', href: '/schedule', icon: Trophy },
+    { label: 'ABOUT', href: '/about', icon: Users },
   ]
 
   return (
@@ -43,19 +42,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Brand Logo & Championship Lockup */}
           <Link href="/" className="flex items-center space-x-3 group select-none">
-            <CSBrandMark className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg transition-transform duration-200 group-hover:scale-105" />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-serif font-black text-lg sm:text-xl tracking-tight text-paper">
-                  CS Games.
-                </span>
-                <span className="text-xs font-mono font-bold text-mist tracking-widest uppercase px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
-                  2026
+                <span className="font-black text-3xl tracking-tight text-paper" style={{ fontFamily: 'Impact, sans-serif' }}>
+                  CS GAMES 2026
                 </span>
               </div>
-              <p className="text-[10px] font-mono font-medium text-fog tracking-[0.14em] uppercase">
-                Dept. of Computer Science &amp; Engineering
-              </p>
             </div>
           </Link>
 
@@ -86,10 +78,8 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Right: Theme Switcher & Admin Button */}
+          {/* Right: Admin Button */}
           <div className="hidden md:flex items-center space-x-2.5">
-            <ThemeToggle variant="icon" />
-
             <Link
               href="/admin"
               className={`flex items-center space-x-2 text-xs font-bold px-4 py-2 rounded-full transition-all duration-200 ${
@@ -115,9 +105,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Right: Theme Switcher & Menu Toggle */}
+          {/* Mobile Right: Menu Toggle */}
           <div className="md:hidden flex items-center space-x-2">
-            <ThemeToggle variant="icon" />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-lg text-cream hover:text-paper hover:bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid"
