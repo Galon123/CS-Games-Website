@@ -12,6 +12,7 @@ import {
   generateTacticalCoordinates,
   TacticalOptions,
   DEFAULT_BADMINTON_CAROUSEL_IMAGES,
+  DEFAULT_FOOTBALL_CAROUSEL_IMAGES,
 } from '@/lib/mock-data'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
@@ -31,6 +32,9 @@ interface TournamentContextType {
   badmintonCarouselImages: string[]
   updateBadmintonCarouselImages: (images: string[]) => Promise<void>
   resetBadmintonCarouselImages: () => Promise<void>
+  footballCarouselImages: string[]
+  updateFootballCarouselImages: (images: string[]) => Promise<void>
+  resetFootballCarouselImages: () => Promise<void>
   refreshSupabaseData: () => Promise<void>
   updateMatchScore: (
     matchId: string,
@@ -68,6 +72,7 @@ const TournamentContext = createContext<TournamentContextType | undefined>(undef
 
 const LOCAL_STORAGE_KEY = 'cs_sports_gaming_clean_v2'
 const BADMINTON_CAROUSEL_STORAGE_KEY = 'cs_badminton_carousel_images_v1'
+const FOOTBALL_CAROUSEL_STORAGE_KEY = 'cs_football_carousel_images_v1'
 const ADMIN_AUTH_STORAGE_KEY = 'cs_sports_is_admin_v1'
 
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -120,6 +125,24 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return found?.carousel_images && found.carousel_images.length > 0
       ? found.carousel_images
       : DEFAULT_BADMINTON_CAROUSEL_IMAGES
+  })
+
+  const [footballCarouselImages, setFootballCarouselImages] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(FOOTBALL_CAROUSEL_STORAGE_KEY)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    const found = initialSports.find((s) => s.name.toLowerCase().includes('football'))
+    return found?.carousel_images && found.carousel_images.length > 0
+      ? found.carousel_images
+      : DEFAULT_FOOTBALL_CAROUSEL_IMAGES
   })
 
   const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(false)
@@ -746,6 +769,44 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     await updateBadmintonCarouselImages(DEFAULT_BADMINTON_CAROUSEL_IMAGES)
   }, [updateBadmintonCarouselImages])
 
+  const updateFootballCarouselImages = useCallback(
+    async (images: string[]) => {
+      setFootballCarouselImages(images)
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(FOOTBALL_CAROUSEL_STORAGE_KEY, JSON.stringify(images))
+        } catch (e) {
+          console.warn('Failed saving football carousel images to localStorage', e)
+        }
+      }
+
+      setSports((prev) =>
+        prev.map((s) =>
+          s.name.toLowerCase().includes('football') ? { ...s, carousel_images: images } : s
+        )
+      )
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const footballSport = sports.find((s) => s.name.toLowerCase().includes('football'))
+          if (footballSport) {
+            await supabase
+              .from('sports')
+              .update({ carousel_images: images } as any)
+              .eq('id', footballSport.id)
+          }
+        } catch (e) {
+          // Ignore if column doesn't exist
+        }
+      }
+    },
+    [sports]
+  )
+
+  const resetFootballCarouselImages = useCallback(async () => {
+    await updateFootballCarouselImages(DEFAULT_FOOTBALL_CAROUSEL_IMAGES)
+  }, [updateFootballCarouselImages])
+
   const updatePlayer = useCallback(
     async (playerId: string, updates: Partial<Player>) => {
       setPlayers((prev) => prev.map((p) => (p.id === playerId ? { ...p, ...updates } : p)))
@@ -1339,6 +1400,9 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     badmintonCarouselImages,
     updateBadmintonCarouselImages,
     resetBadmintonCarouselImages,
+    footballCarouselImages,
+    updateFootballCarouselImages,
+    resetFootballCarouselImages,
     refreshSupabaseData: fetchSupabaseData,
     updateMatchScore,
     updateMatchSchedule,
