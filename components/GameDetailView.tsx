@@ -14,6 +14,7 @@ import {
   Crosshair,
   Shield,
   Activity,
+  Home,
   AlertCircle,
   X,
   BookOpen,
@@ -58,7 +59,15 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
   const sportMeta = sport ? getSportMeta(sport) : null
 
   // Active tab state
-  const [activeTab, setActiveTab] = useState<'fixtures' | 'standings' | 'squads' | 'tactics' | 'rules'>('fixtures')
+  const [activeTab, setActiveTab] = useState<string>('fixtures')
+
+  useEffect(() => {
+    if (isCsCup && !['home', 'matches', 'table', 'stats'].includes(activeTab)) {
+      setActiveTab('home')
+    } else if (!isCsCup && !['fixtures', 'standings', 'squads', 'tactics', 'rules'].includes(activeTab)) {
+      setActiveTab('fixtures')
+    }
+  }, [isCsCup, activeTab])
   const [fixturesFilter, setFixturesFilter] = useState<'all' | 'live' | 'upcoming' | 'completed'>('all')
   const [activeModalTeam, setActiveModalTeam] = useState<Team | null>(null)
   const [copiedLink, setCopiedLink] = useState(false)
@@ -116,7 +125,100 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
   }, [leaderboards, sport])
 
   const liveMatchesCount = sportMatches.filter((m) => m.status === 'live').length
-  const upcomingMatchesCount = sportMatches.filter((m) => m.status === 'upcoming').length
+  const upcomingMatches = sportMatches.filter((m) => m.status === 'upcoming')
+  const upcomingMatchesCount = upcomingMatches.length
+  const nextMatch = [...upcomingMatches].sort((a,b) => new Date(a.scheduled_at || 0).getTime() - new Date(b.scheduled_at || 0).getTime())[0]
+
+  const renderTabsNav = () => (
+    <div className="sticky top-16 sm:top-18 z-30 bg-ink-900/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-white/10 mb-6">
+      <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+        {(isCsCup ? [
+          {
+            key: 'home',
+            label: 'Home',
+            count: undefined,
+            icon: Home,
+          },
+          {
+            key: 'matches',
+            label: 'Matches',
+            count: sportMatches.length,
+            icon: Calendar,
+          },
+          {
+            key: 'table',
+            label: 'Table',
+            count: sportLeaderboards.length,
+            icon: Trophy,
+          },
+          {
+            key: 'stats',
+            label: 'Stats',
+            count: sportPlayers.length,
+            icon: Activity,
+          }
+        ] : [
+          {
+            key: 'fixtures',
+            label: 'Fixtures & Matches',
+            count: sportMatches.length,
+            icon: Calendar,
+          },
+          {
+            key: 'standings',
+            label: 'Points Table',
+            count: sportLeaderboards.length,
+            icon: Trophy,
+          },
+          {
+            key: 'squads',
+            label: 'Squads & Rosters',
+            count: sportTeams.length > 0 ? sportTeams.length : sportPlayers.length,
+            icon: Users,
+          },
+          {
+            key: 'rules',
+            label: 'Regulations & Venue',
+            count: undefined,
+            icon: BookOpen,
+          },
+        ]).map((tab) => {
+          const Icon = tab.icon
+          const isSelected = activeTab === tab.key
+
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as any)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                isSelected
+                  ? isCsCup && tab.key === 'tactics'
+                    ? 'bg-acid text-acid-ink font-black shadow-[0_0_12px_rgba(215,242,43,0.3)]'
+                    : 'bg-white/15 text-paper border border-white/25 shadow-xs font-bold'
+                  : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              <Icon
+                className={`w-3.5 h-3.5 ${
+                  isSelected ? (isCsCup && tab.key === 'tactics' ? 'text-acid-ink' : 'text-acid') : 'text-fog'
+                }`}
+              />
+              <span>{tab.label}</span>
+              {typeof tab.count === 'number' && (
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                    isSelected ? 'bg-white/20 text-paper font-bold' : 'bg-white/10 text-mist'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
   const completedMatchesCount = sportMatches.filter((m) => m.status === 'completed').length
 
   const handleShare = () => {
@@ -191,16 +293,16 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
   return (
     <div className="space-y-10 pb-20 relative">
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           ATMOSPHERIC BLURRED PROFESSIONAL BADMINTON ARENA BACKGROUND
           Fixed z-0 background, smoothly blurred, clearly visible
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {isBadminton && <BadmintonBlurredBackground />}
 
       <div className="relative z-10 space-y-10">
-        {/* ─────────────────────────────────────────────────────────────
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             1. BREADCRUMBS, BACK ACTION & QUICK GAME SWITCHER
-            ───────────────────────────────────────────────────────────── */}
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs font-mono text-fog">
@@ -238,38 +340,40 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
 
         {/* Quick Game Switcher Bar */}
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog shrink-0 pr-1">
-            Jump to:
-          </span>
-          {sports.map((s) => {
-            const sSlug = getSportSlug(s)
-            const isCurrent = s.id === sport.id
-            const isCs = isCsCupFootball(s.name)
-            const label = isCs ? 'CS Cup (Football)' : s.name
+        {!isCsCup && (
+          <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog shrink-0 pr-1">
+              Jump to:
+            </span>
+            {sports.map((s) => {
+              const sSlug = getSportSlug(s)
+              const isCurrent = s.id === sport.id
+              const isCs = isCsCupFootball(s.name)
+              const label = isCs ? 'CS Cup (Football)' : s.name
 
-            return (
-              <Link
-                key={s.id}
-                href={`/games/${sSlug}`}
-                className={`px-3.5 py-1 rounded-full text-xs font-mono font-medium transition-all shrink-0 ${
-                  isCurrent
-                    ? 'bg-acid text-acid-ink font-bold shadow-xs'
-                    : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
-                }`}
-              >
-                {label}
-              </Link>
-            )
-          })}
-        </div>
+              return (
+                <Link
+                  key={s.id}
+                  href={`/games/${sSlug}`}
+                  className={`px-3.5 py-1 rounded-full text-xs font-mono font-medium transition-all shrink-0 ${
+                    isCurrent
+                      ? 'bg-acid text-acid-ink font-bold shadow-xs'
+                      : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10 border border-white/10'
+                  }`}
+                >
+                  {label}
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           2. HERO SECTION FOR THIS DEDICATED GAME
           For Badminton: Hero Presentation Carousel (copied from home page,
           without names/sentences, admin editable) + Division Meta.
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {isBadminton ? (
         <div className="space-y-6">
           {/* Badminton Hero Presentation Carousel */}
@@ -385,6 +489,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
       ) : isCsCup ? (
         <div className="space-y-6">
+          {renderTabsNav()}
           <FootballHeroCarousel />
           
           <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 shadow-card p-6 sm:p-8 lg:p-10 space-y-6">
@@ -565,7 +670,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black text-paper tracking-tight leading-[1.05]">
                   {isCsCup ? 'The CS Cup.' : `${sport.name}.`}
                 </h1>
-                {isCsCup && <span className="text-acid text-2xl font-black">★</span>}
+                {isCsCup && <span className="text-acid text-2xl font-black">â˜…</span>}
               </div>
               <p className="text-sm sm:text-base text-cream/90 leading-relaxed font-sans">
                 {isCsCup
@@ -620,13 +725,39 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </section>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           3. INTERACTIVE SECTION TABS NAVIGATION
           Sticky, accessible tabs with counter badges
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="sticky top-16 sm:top-18 z-30 bg-ink-900/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-white/10">
+        {!isCsCup && (
         <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
-          {[
+          {(isCsCup ? [
+            {
+              key: 'home',
+              label: 'Home',
+              count: undefined,
+              icon: Home,
+            },
+            {
+              key: 'matches',
+              label: 'Matches',
+              count: sportMatches.length,
+              icon: Calendar,
+            },
+            {
+              key: 'table',
+              label: 'Table',
+              count: sportLeaderboards.length,
+              icon: Trophy,
+            },
+            {
+              key: 'stats',
+              label: 'Stats',
+              count: sportPlayers.length,
+              icon: Activity,
+            }
+          ] : [
             {
               key: 'fixtures',
               label: isBadminton ? 'Fixtures & Doubles Draw' : 'Fixtures & Matches',
@@ -645,23 +776,13 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
               count: sportTeams.length > 0 ? sportTeams.length : sportPlayers.length,
               icon: Users,
             },
-            ...(isCsCup
-              ? [
-                  {
-                    key: 'tactics',
-                    label: 'CS Cup Pitch Formations',
-                    count: undefined,
-                    icon: Crosshair,
-                  },
-                ]
-              : []),
             {
               key: 'rules',
               label: 'Regulations & Venue',
               count: undefined,
               icon: BookOpen,
             },
-          ].map((tab) => {
+          ]).map((tab) => {
             const Icon = tab.icon
             const isSelected = activeTab === tab.key
 
@@ -696,12 +817,49 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
             )
           })}
         </div>
+        )}
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           4. TAB CONTENT 1: FIXTURES & LIVE MATCHES
-          ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'fixtures' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {activeTab === 'home' && (
+        <div className="space-y-6 animate-fade-in-up">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-4 shadow-card">
+            <h2 className="text-xl sm:text-2xl font-serif font-black text-paper tracking-tight">
+              Welcome to CS Cup 2026.
+            </h2>
+            <p className="text-sm text-mist leading-relaxed font-sans">
+              The grand departmental football showdown is here. Explore the Matches, check the latest Points Table, and view detailed player Stats using the navigation tabs above.
+            </p>
+          </div>
+
+          {/* Upcoming Matches Box */}
+          <div 
+            className="bg-ink-800 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-card flex items-center justify-between group cursor-pointer hover:border-white/20 transition-all" 
+            onClick={() => setActiveTab('matches')}
+          >
+            <div>
+              <h3 className="font-serif font-bold text-lg text-paper flex items-center space-x-2">
+                <Calendar className="w-5 h-5 text-acid" />
+                <span>Upcoming Matches</span>
+              </h3>
+              <p className="text-sm text-mist mt-1">
+                {upcomingMatchesCount > 0 
+                  ? `${upcomingMatchesCount} matches scheduled. Next: ${nextMatch?.team_a?.name || 'TBD'} vs ${nextMatch?.team_b?.name || 'TBD'}`
+                  : 'No upcoming matches currently scheduled.'}
+              </p>
+            </div>
+            <div className="p-3 bg-white/5 rounded-full group-hover:bg-acid group-hover:text-acid-ink text-acid transition-colors">
+              <ArrowLeft className="w-5 h-5 rotate-180" />
+            </div>
+          </div>
+          
+          <TacticalBoard />
+        </div>
+      )}
+
+      {(activeTab === 'fixtures' || activeTab === 'matches') && (
         <div className="space-y-6 animate-fade-in-up">
           {isBadminton ? (
             <div className="space-y-8">
@@ -1142,10 +1300,10 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           5. TAB CONTENT 2: STANDINGS & POINTS TABLE
-          ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'standings' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {(activeTab === 'standings' || activeTab === 'table') && (
         <div className="space-y-6 animate-fade-in-up">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -1205,7 +1363,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                                   : 'text-fog'
                               }`}
                             >
-                              {rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}
+                              {rank === 1 ? 'ðŸ‘‘' : rank === 2 ? 'ðŸ¥ˆ' : rank === 3 ? 'ðŸ¥‰' : rank}
                             </span>
                           </td>
 
@@ -1248,10 +1406,10 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           6. TAB CONTENT 3: SQUADS & ATHLETE ROSTERS
-          ───────────────────────────────────────────────────────────── */}
-      {activeTab === 'squads' && (
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {(activeTab === 'squads' || activeTab === 'stats') && (
         <div className="space-y-6 animate-fade-in-up">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -1309,7 +1467,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                       {iconPlayer && (
                         <div className="bg-ink-900/80 p-2.5 rounded-xl border border-acid/25 flex items-center space-x-3">
                           <div className="w-7 h-7 rounded-full bg-acid text-acid-ink font-black text-xs flex items-center justify-center shrink-0">
-                            ★
+                            â˜…
                           </div>
                           <div className="min-w-0">
                             <span className="text-[9px] font-mono font-bold uppercase text-acid block">
@@ -1333,7 +1491,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                         onClick={() => setActiveModalTeam(team)}
                         className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono font-bold text-paper hover:text-acid transition-colors"
                       >
-                        Inspect Squad →
+                        Inspect Squad â†’
                       </button>
                     </div>
                   </div>
@@ -1372,16 +1530,16 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           7. TAB CONTENT 4: FORMATIONS STUDIO (CS CUP FOOTBALL ONLY)
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {isCsCup && activeTab === 'tactics' && (
         <div className="space-y-6 animate-fade-in-up">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2 mb-1">
                 <span className="meta-label text-acid">INTERACTIVE 6v6 PITCH</span>
-                <span className="text-white/20">•</span>
+                <span className="text-white/20">â€¢</span>
                 <span className="text-xs font-mono text-mist">The CS Cup Studio</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-serif font-black text-paper tracking-tight">
@@ -1405,9 +1563,9 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           8. TAB CONTENT 5: REGULATIONS & VENUE GUIDELINES
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {activeTab === 'rules' && (
         <div className="space-y-8 animate-fade-in-up">
           <div className="space-y-2">
@@ -1516,9 +1674,9 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           9. SQUAD ROSTER INSPECTOR MODAL (ACCESSIBLE, ESC-DISMISSIBLE)
-          ───────────────────────────────────────────────────────────── */}
+          â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {activeModalTeam && (
         <div
           role="dialog"
@@ -1548,7 +1706,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
                   {activeModalTeam.name}
                 </h3>
                 <p className="text-xs text-mist font-mono">
-                  {activeModalTeam.department} {activeModalTeam.manager ? `• Manager: ${activeModalTeam.manager}` : ''}
+                  {activeModalTeam.department} {activeModalTeam.manager ? `â€¢ Manager: ${activeModalTeam.manager}` : ''}
                 </p>
               </div>
 
@@ -1601,3 +1759,4 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
     </div>
   )
 }
+

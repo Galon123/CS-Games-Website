@@ -119,17 +119,6 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   })
 
   const [footballCarouselImages, setFootballCarouselImages] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(FOOTBALL_CAROUSEL_STORAGE_KEY)
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
     const found = initialSports.find((s) => s.name.toLowerCase().includes('football'))
     return found?.carousel_images && found.carousel_images.length > 0
       ? found.carousel_images
@@ -149,6 +138,26 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
     } catch (e) {
       // ignore
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const badmintonSaved = localStorage.getItem(BADMINTON_CAROUSEL_STORAGE_KEY)
+        if (badmintonSaved) {
+          const parsed = JSON.parse(badmintonSaved)
+          if (Array.isArray(parsed) && parsed.length > 0) setBadmintonCarouselImages(parsed)
+        }
+      } catch (e) {}
+
+      try {
+        const footballSaved = localStorage.getItem(FOOTBALL_CAROUSEL_STORAGE_KEY)
+        if (footballSaved) {
+          const parsed = JSON.parse(footballSaved)
+          if (Array.isArray(parsed) && parsed.length > 0) setFootballCarouselImages(parsed)
+        }
+      } catch (e) {}
     }
   }, [])
 
