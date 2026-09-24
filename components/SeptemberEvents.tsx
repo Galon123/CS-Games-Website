@@ -258,7 +258,7 @@ export default function SeptemberEvents() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 shadow-card bg-gradient-to-b from-ink-900 via-ink-800 to-ink-900">
+    <section className="relative overflow-hidden rounded-[24px] border border-white/10 shadow-card bg-gradient-to-b from-ink-900 via-ink-800 to-ink-900">
       {/* ─────────────────────────────────────────────────────────────
           CINEMATIC AUDITORIUM ATMOSPHERE BACKGROUND
           Dark stadium / theater seats with teal ambient light gradient
@@ -295,7 +295,7 @@ export default function SeptemberEvents() {
 
             {/* Prominent "events" Display Title */}
             <h2 className="text-5xl sm:text-6xl lg:text-7xl font-sans font-black text-paper tracking-tighter lowercase leading-[0.95]">
-              events
+              schedules
             </h2>
 
             <p className="text-xs sm:text-sm text-mist max-w-lg mt-2 font-sans leading-relaxed">
@@ -372,7 +372,7 @@ export default function SeptemberEvents() {
                   return (
                     <div
                       key={`empty-cell-${cell.index}`}
-                      className={`relative aspect-square rounded-2xl sm:rounded-3xl border transition-all duration-300 flex items-center justify-center select-none ${
+                      className={`relative aspect-square rounded-[16px] sm:rounded-[24px] border transition-all duration-300 flex items-center justify-center select-none ${
                         cell.isDarkGlass
                           ? 'bg-black/35 border-white/[0.06] backdrop-blur-xs'
                           : 'bg-white/[0.04] hover:bg-white/[0.07] border-white/[0.09] backdrop-blur-sm shadow-subtle'
@@ -415,7 +415,7 @@ export default function SeptemberEvents() {
                         setActiveEventModal(event)
                       }
                     }}
-                    className={`group relative aspect-square rounded-2xl sm:rounded-3xl p-3.5 sm:p-4.5 flex flex-col justify-between cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid select-none ${
+                    className={`group relative aspect-square rounded-[16px] sm:rounded-[24px] p-3.5 sm:p-4.5 flex flex-col justify-between cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid select-none ${
                       isNeon
                         ? 'bg-acid text-slate-950 shadow-[0_0_30px_rgba(215,242,43,0.4)] ring-1 ring-acid'
                         : 'bg-white text-slate-950 shadow-elevated hover:shadow-[0_12px_28px_rgba(0,0,0,0.4)]'
@@ -499,7 +499,7 @@ export default function SeptemberEvents() {
                   <div
                     key={evt.id}
                     onClick={() => setActiveEventModal(evt)}
-                    className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
+                    className={`p-4 sm:p-5 rounded-[16px] border transition-all cursor-pointer flex items-center justify-between gap-4 ${
                       isNeon
                         ? 'bg-acid text-slate-950 border-acid shadow-[0_0_20px_rgba(215,242,43,0.25)]'
                         : 'bg-ink-900/80 text-cream border-white/10 hover:border-white/20'
@@ -508,7 +508,7 @@ export default function SeptemberEvents() {
                     <div className="flex items-center space-x-4 min-w-0">
                       {/* Day Pill */}
                       <div
-                        className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 border ${
+                        className={`w-14 h-14 rounded-[16px] flex flex-col items-center justify-center shrink-0 border ${
                           isNeon
                             ? 'bg-black text-acid border-black'
                             : 'bg-white/10 text-paper border-white/15'
@@ -597,14 +597,14 @@ export default function SeptemberEvents() {
           onClick={() => setActiveEventModal(null)}
         >
           <div
-            className="relative w-full max-w-lg bg-ink-800 border border-white/15 rounded-3xl p-6 sm:p-8 space-y-6 shadow-elevated"
+            className="relative w-full max-w-lg bg-ink-800 border border-white/15 rounded-[24px] p-6 sm:p-8 space-y-6 shadow-elevated"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-start justify-between border-b border-white/10 pb-4">
               <div className="flex items-center space-x-3.5">
                 <div
-                  className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 border ${
+                  className={`w-14 h-14 rounded-[16px] flex flex-col items-center justify-center shrink-0 border ${
                     activeEventModal.isHighlighted
                       ? 'bg-acid text-slate-950 border-acid shadow-[0_0_16px_rgba(215,242,43,0.3)]'
                       : 'bg-white text-slate-950 border-white'
@@ -742,7 +742,7 @@ export default function SeptemberEvents() {
           onClick={() => setIsEditorOpen(false)}
         >
           <div
-            className="relative w-full max-w-2xl bg-ink-800 border border-white/15 rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto shadow-elevated"
+            className="relative w-full max-w-2xl bg-ink-800 border border-white/15 rounded-[24px] p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto shadow-elevated"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Title */}
@@ -773,7 +773,7 @@ export default function SeptemberEvents() {
 
             {/* Inline Add / Edit Form */}
             {editingEventId ? (
-              <form onSubmit={handleFormSubmit} className="space-y-4 bg-ink-900/90 p-5 rounded-2xl border border-white/10">
+              <form onSubmit={handleFormSubmit} className="space-y-4 bg-ink-900/90 p-5 rounded-[16px] border border-white/10">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-[11px] font-mono text-fog block mb-1">

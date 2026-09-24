@@ -157,13 +157,13 @@ export default function HeroPresentationCarousel() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden bg-ink-900 shadow-card select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-acid group"
+      className="relative w-full aspect-[1.22/1] md:aspect-[2.18/1] overflow-hidden bg-ink-900 shadow-card select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-acid group"
     >
       {/* ─────────────────────────────────────────────────────────────
           1. SLIDES VIEWPORT (Responsive aspect ratios: 4/3 mobile to 21/9 desktop)
           Ensures zero Cumulative Layout Shift (CLS) across viewports.
           ───────────────────────────────────────────────────────────── */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] min-h-[420px] sm:min-h-[480px] lg:min-h-[540px] overflow-hidden">
+      <div className="relative w-full h-full overflow-hidden">
         {CAROUSEL_SLIDES.map((slide, index) => {
           const isActive = index === currentIndex
           const isFailedImage = imageErrors[slide.id]

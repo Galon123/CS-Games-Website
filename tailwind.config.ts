@@ -51,10 +51,13 @@ const config: Config = {
           strong: 'var(--rule-strong)',
         },
       },
-      borderRadius: {
-        sm: '6px',
-        md: '12px',
-        lg: '18px',
+            borderRadius: {
+        sm: '0px',
+        md: '0px',
+        lg: '0px',
+        xl: '0px',
+        '2xl': '0px',
+        '3xl': '0px',
         pill: '999px',
       },
       boxShadow: {

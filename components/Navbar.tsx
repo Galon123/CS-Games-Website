@@ -4,277 +4,96 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTournament } from '@/context/TournamentContext'
-import {
-  Trophy,
-  Users,
-  Shield,
-  Menu,
-  X,
-  Flame,
-  Crosshair,
-  Gamepad2,
-} from 'lucide-react'
-import CSBrandMark from '@/components/CSBrandMark'
-import ThemeToggle from '@/components/ThemeToggle'
-import { getSportMeta, getSportSlug, isCsCupFootball } from '@/lib/sports-theme'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
-  const { isAdmin, sports } = useTournament()
+  const { isAdmin, liveMatch } = useTournament()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const navItems = [
-    { label: 'HOME', href: '/', icon: Flame },
-    { label: 'EVENTS', href: '/games', icon: Gamepad2 },
-    { label: 'SCHEDULE', href: '/schedule', icon: Trophy },
-    { label: 'ABOUT', href: '/about', icon: Users },
+    { label: 'home', href: '/#home' },
+    { label: 'events', href: '/#events' },
+    { label: 'schedules', href: '/#schedules' },
+    { label: 'about', href: '/#about' },
+    { label: 'admin', href: '/admin' },
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-ink-900/95 backdrop-blur-md border-b border-white/10 shadow-subtle">
-      {/* Primary Navigation Row */}
-      <nav aria-label="Main Navigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18">
-          {/* Brand Logo & Championship Lockup */}
-          <Link href="/" className="flex items-center space-x-3 group select-none">
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-black text-3xl tracking-tight text-paper" style={{ fontFamily: 'Impact, sans-serif' }}>
-                  CS GAMES 2026
-                </span>
-              </div>
-            </div>
+    <header className="fixed top-4 w-full z-50 px-4 transition-all duration-300 pointer-events-none">
+      <div className="max-w-4xl mx-auto pointer-events-auto">
+        {/* Floating Pill Container */}
+        <nav className={`flex items-center justify-between px-6 py-3 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-elevated rounded-pill transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
+          
+          {/* Brand */}
+          <Link href="/#home" className="flex items-center space-x-2 group select-none">
+            <span className="font-black text-xl tracking-tight text-ink-950 dark:text-paper font-grotesk lowercase">
+              cs games
+            </span>
           </Link>
 
           {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
-                    isActive
-                      ? 'bg-white/10 text-paper border border-white/20 shadow-xs'
-                      : 'text-mist hover:text-paper hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  <Icon
-                    className={`w-3.5 h-3.5 transition-colors ${
-                      isActive ? 'text-acid' : 'text-fog group-hover:text-mist'
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </Link>
-              )
-            })}
+          <div className="hidden md:flex items-center space-x-8">
+            {liveMatch && (
+              <div className="flex items-center space-x-2 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
+                <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute" />
+                <div className="w-2 h-2 rounded-full bg-rose-500 relative" />
+                <span className="text-xs font-mono font-bold text-rose-500 uppercase cursor-default">Live Match</span>
+              </div>
+            )}
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-sm font-bold lowercase tracking-wider text-ink-600 dark:text-mist hover:text-acid-hot transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Right: Admin Button */}
-          <div className="hidden md:flex items-center space-x-2.5">
-            <Link
-              href="/admin"
-              className={`flex items-center space-x-2 text-xs font-bold px-4 py-2 rounded-full transition-all duration-200 ${
-                pathname === '/admin'
-                  ? 'bg-acid text-acid-ink shadow-[0_0_16px_rgba(215,242,43,0.35)]'
-                  : isAdmin
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
-                  : 'bg-white/5 hover:bg-white/10 text-cream border border-white/15 hover:border-white/30'
-              }`}
-            >
-              <Shield
-                className={`w-3.5 h-3.5 ${
-                  pathname === '/admin'
-                    ? 'text-acid-ink'
-                    : isAdmin
-                    ? 'text-emerald-400'
-                    : 'text-mist'
-                }`}
-              />
-              <span className="tracking-wide">
-                {isAdmin ? 'Admin Console (Active)' : 'Admin Portal'}
-              </span>
-            </Link>
-          </div>
-
-          {/* Mobile Right: Menu Toggle */}
-          <div className="md:hidden flex items-center space-x-2">
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-cream hover:text-paper hover:bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-acid"
-              aria-label="Toggle Navigation Menu"
+              className="p-2 text-ink-600 dark:text-mist hover:text-acid-hot transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      {/* ─────────────────────────────────────────────────────────────
-          SECONDARY SPORTS STRIP (Instant 1-Click Game Switcher in Header)
-          Gives direct 1-click access to every game on every page
-          ───────────────────────────────────────────────────────────── */}
-
-      {/* ─────────────────────────────────────────────────────────────
-          MOBILE MENU DRAWER
-          Includes Overview, all individual games, standings, rosters, admin
-          ───────────────────────────────────────────────────────────── */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-white/10 bg-ink-800/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-4 shadow-elevated max-h-[85vh] overflow-y-auto">
-          {/* Main Nav Links */}
-          <div className="space-y-1">
-            <Link
-              href="/"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
-                pathname === '/'
-                  ? 'bg-white/10 text-paper border border-white/20'
-                  : 'text-mist hover:text-paper hover:bg-white/5'
-              }`}
-            >
-              <Flame className={`w-4 h-4 ${pathname === '/' ? 'text-acid' : 'text-fog'}`} />
-              <span>Overview</span>
-            </Link>
-          </div>
-
-          {/* Dedicated Individual Games Section */}
-          <div className="pt-2 border-t border-white/10 space-y-2">
-            <div className="flex items-center justify-between px-3">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-fog">
-                Tournament Games ({sports.length})
-              </span>
-              <Link
-                href="/games"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-[10px] font-mono font-bold text-acid hover:underline"
-              >
-                Directory &rarr;
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 gap-1">
-              {sports.map((sport) => {
-                const slug = getSportSlug(sport)
-                const meta = getSportMeta(sport)
-                const isCs = isCsCupFootball(sport.name)
-                const isCurrent = pathname === `/games/${slug}`
-                const Icon = meta.icon
-
-                return (
-                  <Link
-                    key={sport.id}
-                    href={`/games/${slug}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs transition-colors ${
-                      isCurrent
-                        ? 'bg-acid text-acid-ink font-bold shadow-xs'
-                        : 'text-mist hover:text-paper hover:bg-white/5'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2.5">
-                      <Icon
-                        className={`w-4 h-4 ${
-                          isCurrent ? 'text-acid-ink' : isCs ? 'text-acid' : 'text-fog'
-                        }`}
-                      />
-                      <span className="font-medium">
-                        {isCs ? 'CS Cup (Football)' : sport.name}
-                      </span>
-                      {isCs && <span className="text-xs font-bold">★</span>}
-                    </div>
-                    <span
-                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
-                        isCurrent ? 'bg-black/20 text-acid-ink font-bold' : 'bg-white/5 text-fog'
-                      }`}
-                    >
-                      {meta.badgeText}
-                    </span>
-                  </Link>
-                )
-              })}
+        {/* Mobile Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-2 p-4 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-none shadow-elevated">
+            <div className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="text-lg font-bold lowercase tracking-wider text-ink-900 dark:text-paper hover:text-acid-hot"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
-
-          {/* Secondary Hub Pages */}
-          <div className="pt-2 border-t border-white/10 space-y-1">
-            <Link
-              href="/leaderboards"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
-                pathname.startsWith('/leaderboards')
-                  ? 'bg-white/10 text-paper border border-white/20'
-                  : 'text-mist hover:text-paper hover:bg-white/5'
-              }`}
-            >
-              <Trophy
-                className={`w-4 h-4 ${
-                  pathname.startsWith('/leaderboards') ? 'text-acid' : 'text-fog'
-                }`}
-              />
-              <span>Tournament Standings</span>
-            </Link>
-
-            <Link
-              href="/roster"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
-                pathname.startsWith('/roster')
-                  ? 'bg-white/10 text-paper border border-white/20'
-                  : 'text-mist hover:text-paper hover:bg-white/5'
-              }`}
-            >
-              <Users
-                className={`w-4 h-4 ${
-                  pathname.startsWith('/roster') ? 'text-acid' : 'text-fog'
-                }`}
-              />
-              <span>Teams &amp; Rosters</span>
-            </Link>
-
-            <Link
-              href="/tactics"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
-                pathname.startsWith('/tactics')
-                  ? 'bg-white/10 text-paper border border-white/20'
-                  : 'text-mist hover:text-paper hover:bg-white/5'
-              }`}
-            >
-              <Crosshair
-                className={`w-4 h-4 ${
-                  pathname.startsWith('/tactics') ? 'text-acid' : 'text-fog'
-                }`}
-              />
-              <span>CS Cup Formations Studio</span>
-            </Link>
-          </div>
-
-          {/* Theme Mode Selector in Mobile Drawer */}
-          <div className="pt-3 border-t border-white/10">
-            <ThemeToggle variant="row" />
-          </div>
-
-          {/* Admin link */}
-          <div className="pt-2">
-            <Link
-              href="/admin"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-white/5 text-paper border border-white/15 hover:bg-white/10"
-            >
-              <Shield className="w-4 h-4 text-acid" />
-              <span>{isAdmin ? 'Admin Console (Active)' : 'Admin Login'}</span>
-            </Link>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   )
 }

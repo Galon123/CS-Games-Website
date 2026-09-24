@@ -16,6 +16,15 @@ import {
 } from '@/lib/mock-data'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
+export interface LiveMatchData {
+  teamA: string;
+  teamB: string;
+  scoreA: number;
+  scoreB: number;
+  time: string;
+  isActive: boolean;
+}
+
 interface TournamentContextType {
   sports: Sport[]
   teams: Team[]
@@ -37,6 +46,8 @@ interface TournamentContextType {
   updateBadmintonCarouselImages: (images: string[]) => Promise<void>
   resetBadmintonCarouselImages: () => Promise<void>
   refreshSupabaseData: () => Promise<void>
+  liveMatch: LiveMatchData | null
+  updateLiveMatch: (data: LiveMatchData | null) => void
   updateMatchScore: (
     matchId: string,
     teamAScore: number,
@@ -161,6 +172,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(false)
   const [supabaseConnected, setSupabaseConnected] = useState<boolean>(false)
   const [supabaseError, setSupabaseError] = useState<string | null>(null)
+  const [liveMatch, setLiveMatch] = useState<LiveMatchData | null>(null)
 
   // Fetch initial data from Supabase
   const fetchSupabaseData = useCallback(async () => {
@@ -755,6 +767,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   )
 
   
+  const updateLiveMatch = useCallback((data: LiveMatchData | null) => { 
+    setLiveMatch(data); 
+    if (data) { 
+      localStorage.setItem('cs-live-match', JSON.stringify(data)); 
+    } else { 
+      localStorage.removeItem('cs-live-match'); 
+    } 
+  }, []);
+
   const updateFootballCarouselImages = useCallback(
     async (images: string[]) => {
       setFootballCarouselImages(images)
@@ -1438,6 +1459,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     updateBadmintonCarouselImages,
     resetBadmintonCarouselImages,
     refreshSupabaseData: fetchSupabaseData,
+    liveMatch,
+    updateLiveMatch,
     updateMatchScore,
     updateMatchSchedule,
     updateLeaderboard,

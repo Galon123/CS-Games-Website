@@ -216,158 +216,68 @@ export default function SponsorsBox() {
     setBrokenImages((prev) => ({ ...prev, [id]: true }))
   }
 
-  return (
+    return (
     <>
-      {/* ─────────────────────────────────────────────────────────────
-          SPONSORS BAR / RIBBON ON HOMEPAGE
-          Compact horizontal strip showing partners
-          ───────────────────────────────────────────────────────────── */}
-      <div className="relative rounded-2xl bg-ink-800/80 border border-white/10 px-3.5 sm:px-4 py-2 sm:py-2.5 backdrop-blur-md shadow-subtle flex items-center justify-between gap-3">
-        {/* Left: Eyebrow kicker */}
-        <div className="flex items-center space-x-2 shrink-0 select-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-acid shadow-[0_0_6px_rgba(215,242,43,0.7)]" />
-          <span className="text-[10px] font-mono font-bold tracking-[0.16em] uppercase text-fog hidden xs:inline">
-            SPONSORS
-          </span>
-          <span className="h-4 w-px bg-white/10 hidden xs:inline" />
-        </div>
-
-        {/* Center: Horizontal Ribbon of Sponsors */}
-        <div className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto no-scrollbar py-0.5 flex-1 min-w-0">
-          {sponsors.map((sponsor) => {
-            const isFeatured = sponsor.isFeatured
-            const hasImage = sponsor.logoUrl && !brokenImages[sponsor.id]
-
-            const Content = (
-              <div
-                className={`group/item flex items-center space-x-2 px-2.5 py-1 rounded-xl border transition-all duration-200 shrink-0 select-none ${
-                  isFeatured
-                    ? 'bg-acid/10 border-acid/35 hover:border-acid hover:bg-acid/15'
-                    : 'bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.06]'
-                }`}
-              >
-                {/* Photo / Logo Thumbnail */}
-                <div
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center shrink-0 overflow-hidden p-0.5 border ${
-                    isFeatured
-                      ? 'bg-acid/20 border-acid/40'
-                      : 'bg-white/10 border-white/10'
-                  }`}
-                >
-                  {hasImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={sponsor.logoUrl}
-                      alt={sponsor.name}
-                      className="w-full h-full object-contain filter brightness-100 sponsor-logo-img"
-                      onError={() => handleImageError(sponsor.id)}
-                    />
-                  ) : (
-                    <span className="text-[10px] font-mono font-bold text-acid leading-none">
-                      {sponsor.name.charAt(0)}
-                    </span>
-                  )}
-                </div>
-
-                {/* Sponsor Name & Tier Pill */}
-                <span className="text-xs font-sans font-bold text-paper whitespace-nowrap group-hover/item:text-acid transition-colors">
-                  {sponsor.name}
-                </span>
-
-                <span
-                  className={`text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.2 rounded shrink-0 ${
-                    isFeatured
-                      ? 'bg-acid text-slate-950 font-black'
-                      : 'bg-white/5 text-mist'
-                  }`}
-                >
-                  {sponsor.tier}
-                </span>
-
-                {/* Non-admin external link icon */}
-                {!isAdmin && sponsor.websiteUrl && sponsor.websiteUrl !== '#' && (
-                  <ExternalLink className="w-2.5 h-2.5 text-fog group-hover/item:text-acid transition-colors shrink-0" />
-                )}
-
-                {/* Admin edit indicator icon */}
-                {isAdmin && (
-                  <span
-                    className="p-0.5 rounded text-acid/80 group-hover/item:text-acid transition-colors ml-0.5"
-                    title="Click to edit details in pop-up box"
-                  >
-                    <Edit3 className="w-2.5 h-2.5" />
-                  </span>
-                )}
-              </div>
-            )
-
-            // In admin mode, clicking any sponsor chip directly opens the edit pop-up for it
-            if (isAdmin) {
-              return (
-                <button
-                  key={sponsor.id}
-                  type="button"
-                  onClick={() => startEditSponsor(sponsor)}
-                  className="shrink-0 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-acid rounded-xl"
-                  title={`Click to edit ${sponsor.name}`}
-                >
-                  {Content}
-                </button>
-              )
-            }
-
-            // For visitors: Click opens external website if present
-            if (sponsor.websiteUrl && sponsor.websiteUrl !== '#') {
-              return (
-                <a
-                  key={sponsor.id}
-                  href={sponsor.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0"
-                >
-                  {Content}
-                </a>
-              )
-            }
-
-            return (
-              <div key={sponsor.id} className="shrink-0">
-                {Content}
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Right: Admin Controls (Configure button & Add button) */}
+      <div className="w-full flex flex-col items-center justify-center space-y-12 py-8 relative">
+        
         {isAdmin && (
-          <div className="flex items-center space-x-1.5 shrink-0 pl-1 border-l border-white/10 select-none">
+          <div className="absolute top-0 right-0 flex items-center space-x-2 z-10">
             <button
               onClick={handleOpenConfigure}
-              className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 text-cream hover:text-paper border border-white/15 text-[11px] font-mono font-semibold transition-colors shadow-xs"
-              title="Open pop up to edit sponsor details"
+              className="flex items-center space-x-1 px-3 py-1.5 rounded-none bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition-colors"
             >
-              <Edit3 className="w-3 h-3 text-acid" />
-              <span className="hidden sm:inline">Configure</span>
+              <Edit3 className="w-3.5 h-3.5 text-acid" />
+              <span>Configure</span>
             </button>
-
             <button
               onClick={startAddSponsor}
-              className="flex items-center space-x-1 px-2 py-1 rounded-full bg-acid text-acid-ink font-mono font-bold text-[11px] shadow-xs hover:bg-acid-hot transition-all"
-              title="Add a new sponsor"
+              className="flex items-center space-x-1 px-3 py-1.5 rounded-none bg-acid text-ink-950 font-mono font-bold text-xs hover:bg-white transition-colors"
             >
-              <Plus className="w-3 h-3" />
-              <span className="hidden sm:inline">Add</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add</span>
             </button>
           </div>
         )}
+
+        {/* Group by Tier */}
+        {Object.entries(
+          sponsors.reduce((acc, sponsor) => {
+            const tier = sponsor.tier || 'PARTNER';
+            if (!acc[tier]) acc[tier] = [];
+            acc[tier].push(sponsor);
+            return acc;
+          }, {} as Record<string, Sponsor[]>)
+        ).map(([tier, tierSponsors]) => (
+          <div key={tier} className="flex flex-col items-center space-y-6 w-full">
+            <h3 className="text-sm font-mono font-bold tracking-[0.2em] uppercase text-mist opacity-80">
+              {tier}
+            </h3>
+            <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-16">
+              {tierSponsors.map(sponsor => (
+                <div key={sponsor.id} className="group flex flex-col items-center cursor-pointer" onClick={() => {
+                  if (isAdmin) startEditSponsor(sponsor);
+                  else if (sponsor.websiteUrl && sponsor.websiteUrl !== '#') window.open(sponsor.websiteUrl, '_blank');
+                }}>
+                  {sponsor.logoUrl && !brokenImages[sponsor.id] ? (
+                    <img 
+                      src={sponsor.logoUrl} 
+                      alt={sponsor.name}
+                      className="h-12 sm:h-16 object-contain filter grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                      onError={() => handleImageError(sponsor.id)}
+                    />
+                  ) : (
+                    <span className="text-2xl font-black tracking-tight text-white/70 group-hover:text-white transition-colors">
+                      {sponsor.name}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
-          POP-UP MODAL BOX FOR EDITING SPONSORS
-          Portaled directly to document.body so it NEVER gets clipped
-          by parent backdrop-filter or overflow restrictions!
-          ───────────────────────────────────────────────────────────── */}
       {mounted && isEditorOpen && createPortal(
         <div
           role="dialog"
