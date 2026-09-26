@@ -841,7 +841,7 @@ END $$;`
             <div className="w-12 h-12 mx-auto rounded-xl bg-ink-900 border border-white/15 flex items-center justify-center text-acid shadow-subtle">
               <Lock className="w-6 h-6 text-acid" />
             </div>
-            <h1 className="text-2xl font-serif font-black text-paper tracking-tight">
+            <h1 className="text-2xl font-anton uppercase tracking-wider text-paper tracking-tight">
               Admin Access.
             </h1>
             <p className="text-xs text-mist">
@@ -921,7 +921,7 @@ END $$;`
           </div>
           <div>
             <div className="flex items-center space-x-2.5">
-              <h1 className="text-2xl font-serif font-black text-paper tracking-tight">
+              <h1 className="text-2xl font-anton uppercase tracking-wider text-paper tracking-tight">
                 Administration Console.
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -1113,7 +1113,7 @@ END $$;`
                   </span>
                   <span className="text-xs text-slate-400 font-mono">Men&apos;s &amp; Women&apos;s Doubles</span>
                 </div>
-                <h4 className="font-serif font-bold text-base text-white mt-0.5">
+                <h4 className="font-anton uppercase tracking-wider text-base text-white mt-0.5">
                   Badminton Doubles Official Knockout Bracket
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5 font-sans">
@@ -1145,7 +1145,7 @@ END $$;`
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div>
-                      <h3 className="font-serif font-bold text-slate-900 text-sm uppercase tracking-wide flex items-center space-x-2">
+                      <h3 className="font-anton uppercase tracking-wider text-slate-900 text-sm uppercase tracking-wide flex items-center space-x-2">
                         <Plus className="w-4 h-4 text-blue-600" />
                         <span>
                           {isQuad
@@ -1571,7 +1571,7 @@ END $$;`
           {/* Matches List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-slate-500">
-              <span className="font-serif font-bold uppercase tracking-wide text-slate-900">Scheduled Fixtures & Live Matches ({matches.length})</span>
+              <span className="font-anton uppercase tracking-wider uppercase tracking-wide text-slate-900">Scheduled Fixtures & Live Matches ({matches.length})</span>
               <span>Changes sync instantly across all clients</span>
             </div>
 
@@ -1660,7 +1660,7 @@ END $$;`
                       {isQuadCard ? (
                         <div className="bg-[#FAF8F5] p-3.5 rounded-lg border border-slate-200 space-y-3 shadow-2xs">
                           <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-700 border-b border-slate-200 pb-2">
-                            <span className="flex items-center space-x-1.5 text-violet-950 font-serif font-black uppercase tracking-wide">
+                            <span className="flex items-center space-x-1.5 text-violet-950 font-anton uppercase tracking-wider uppercase tracking-wide">
                               <span>🎯 4-Player 1v1v1v1 Board Match</span>
                             </span>
                             <span className="px-2 py-0.5 rounded bg-violet-100 text-violet-900 border border-violet-300 text-[10px] font-bold">
@@ -1889,7 +1889,7 @@ END $$;`
                       ) : isFfaCard ? (
                         <div className="bg-[#FBF9F5] p-4 rounded-lg border border-slate-200 space-y-2.5">
                           <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-700">
-                            <span className="flex items-center space-x-1.5 text-amber-900 font-serif font-black uppercase">
+                            <span className="flex items-center space-x-1.5 text-amber-900 font-anton uppercase tracking-wider uppercase">
                               <Swords className="w-4 h-4 text-amber-600" />
                               <span>All-Play Competitor Field</span>
                             </span>
@@ -2128,7 +2128,7 @@ END $$;`
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                     <div>
-                      <h3 className="font-serif font-bold text-slate-900 text-sm uppercase tracking-wide flex items-center space-x-2">
+                      <h3 className="font-anton uppercase tracking-wider text-slate-900 text-sm uppercase tracking-wide flex items-center space-x-2">
                         <Plus className="w-4 h-4 text-blue-600" />
                         <span>
                           {isTeamlessEnroll
@@ -2180,7 +2180,7 @@ END $$;`
                   {isTeamlessEnroll ? (
                     <div className="p-4 rounded-lg bg-[#FBF9F5] border-2 border-dashed border-[#E5E0D8] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="space-y-1">
-                        <div className="font-serif font-black text-slate-900 text-sm flex items-center space-x-2">
+                        <div className="font-anton uppercase tracking-wider text-slate-900 text-sm flex items-center space-x-2">
                           <span>👤 Individual Athlete Registration Active</span>
                         </div>
                         <p className="text-slate-600 text-xs max-w-xl leading-relaxed">
@@ -2304,7 +2304,7 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-serif font-bold text-slate-900 text-sm uppercase tracking-wide">
+                <h3 className="font-anton uppercase tracking-wider text-slate-900 text-sm uppercase tracking-wide">
                   Registered Participants &amp; Squads ({teams.length})
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -2487,7 +2487,7 @@ END $$;`
         <div className="bg-white border border-[#E5E0D8] rounded-lg overflow-hidden p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <div>
-              <h3 className="font-serif font-bold text-slate-900 text-sm">
+              <h3 className="font-anton uppercase tracking-wider text-slate-900 text-sm">
                 Standings Points &amp; Stats Controller
               </h3>
               <p className="text-xs text-slate-500">
@@ -2617,7 +2617,7 @@ END $$;`
         <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg flex items-center space-x-2">
+              <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg flex items-center space-x-2">
                 <Crosshair className="w-5 h-5 text-blue-600" />
                 <span>Tactical Formation Studio</span>
               </h3>
@@ -2935,7 +2935,7 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg flex items-center space-x-2">
+                <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg flex items-center space-x-2">
                   <Plus className="w-5 h-5 text-blue-600" />
                   <span>Enroll New Athlete to Squad</span>
                 </h3>
@@ -3032,7 +3032,7 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg">
+                <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg">
                   Registered Athletes ({players.length})
                 </h3>
                 <p className="text-xs text-slate-600 mt-0.5">
@@ -3147,7 +3147,7 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg flex items-center space-x-2">
+                <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg flex items-center space-x-2">
                   <Sparkles className="w-5 h-5 text-blue-600" />
                   <span>Enroll New Tournament Division</span>
                 </h3>
@@ -3232,7 +3232,7 @@ END $$;`
           <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg flex items-center space-x-2">
+                <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg flex items-center space-x-2">
                   <Trophy className="w-5 h-5 text-blue-600" />
                   <span>Active Registered Divisions ({sports.length})</span>
                 </h3>
@@ -3314,7 +3314,7 @@ END $$;`
 
                     <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-serif font-bold text-base text-[#1A1A1A] flex items-center space-x-2">
+                        <h4 className="font-anton uppercase tracking-wider text-base text-[#1A1A1A] flex items-center space-x-2">
                           <span>{sport.name}</span>
                         </h4>
                         <p className="text-xs text-slate-600 mt-1 leading-relaxed line-clamp-2">
@@ -3681,7 +3681,7 @@ END $$;`
       {activeTab === 'supabase' && (
         <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-xs p-6 space-y-6">
           <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-serif tracking-tight font-black text-[#1A1A1A] text-lg flex items-center space-x-2">
+            <h3 className="font-anton uppercase tracking-wider text-[#1A1A1A] text-lg flex items-center space-x-2">
               <Database className="w-5 h-5 text-blue-600" />
               <span>Supabase Backend Integration &amp; Permissions</span>
             </h3>
@@ -3844,7 +3844,7 @@ CREATE POLICY "Allow Photo Updates" ON storage.objects FOR UPDATE TO anon, authe
           <div className="bg-white border border-[#E5E0D8] rounded-lg p-6 max-w-xl w-full shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-lg font-serif font-black text-[#1A1A1A] flex items-center space-x-2">
+                <h3 className="text-lg font-anton uppercase tracking-wider text-[#1A1A1A] flex items-center space-x-2">
                   <span>Edit Athlete Profile</span>
                   {editingPlayer.is_icon && <span className="text-amber-600 text-xs font-semibold font-sans">⭐ Icon</span>}
                 </h3>

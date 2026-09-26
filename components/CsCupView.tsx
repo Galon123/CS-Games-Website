@@ -122,7 +122,7 @@ export default function CsCupView() {
           <div className="w-full space-y-16 animate-fade-in">
             {/* Upcoming Fixtures */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 upcoming fixtures
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -134,11 +134,11 @@ export default function CsCupView() {
                     </div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="font-serif font-bold text-lg">{match.teamA}</span>
+                        <span className="font-anton uppercase text-lg tracking-wide">{match.teamA}</span>
                         <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-fog">VS</div>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="font-serif font-bold text-lg">{match.teamB}</span>
+                        <span className="font-anton uppercase text-lg tracking-wide">{match.teamB}</span>
                       </div>
                     </div>
                   </div>
@@ -148,7 +148,7 @@ export default function CsCupView() {
 
             {/* Meet The Teams */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 meet the teams
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -158,7 +158,7 @@ export default function CsCupView() {
                       <img src={team.image} alt={team.name} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-transparent to-transparent opacity-90" />
                       <div className="absolute bottom-0 left-0 p-6 w-full flex justify-between items-end">
-                        <h3 className="text-2xl font-black font-serif text-paper drop-shadow-md">{team.name}</h3>
+                        <h3 className="text-3xl font-anton uppercase tracking-wide text-paper drop-shadow-md">{team.name}</h3>
                         <span className="text-[10px] font-mono text-acid bg-acid/10 px-2 py-1 rounded border border-acid/20 opacity-0 group-hover:opacity-100 transition-opacity">VIEW SQUAD</span>
                       </div>
                     </div>
@@ -174,21 +174,21 @@ export default function CsCupView() {
           <div className="w-full space-y-16 animate-fade-in">
             {/* Day 2 Fixtures */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 day 2 fixtures
               </h2>
               <div className="flex flex-col space-y-4">
                 {DAY2_FIXTURES.map((match, idx) => (
                   <div key={idx} className="bg-ink-900 border border-white/10 rounded-xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-center md:items-center hover:bg-ink-800 transition-colors">
                     <div className="flex-1 flex justify-end items-center pr-4 md:pr-8 w-full md:w-auto">
-                      <span className="font-serif font-bold text-lg md:text-xl text-center md:text-right">{match.teamA}</span>
+                      <span className="font-anton uppercase text-lg md:text-xl tracking-wide text-center md:text-right">{match.teamA}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center px-4 md:px-8 border-y md:border-y-0 md:border-x border-white/10 min-w-[120px] py-4 md:py-0 w-full md:w-auto my-4 md:my-0">
                       <span className="text-acid font-mono font-bold text-sm mb-1">{match.time}</span>
                       <span className="text-xs text-mist font-bold uppercase tracking-widest">VS</span>
                     </div>
                     <div className="flex-1 flex justify-start items-center pl-4 md:pl-8 w-full md:w-auto">
-                      <span className="font-serif font-bold text-lg md:text-xl text-center md:text-left">{match.teamB}</span>
+                      <span className="font-anton uppercase text-lg md:text-xl tracking-wide text-center md:text-left">{match.teamB}</span>
                     </div>
                   </div>
                 ))}
@@ -197,14 +197,14 @@ export default function CsCupView() {
 
             {/* Day 1 Results */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 day 1 results
               </h2>
               <div className="flex flex-col space-y-4">
                 {DAY1_RESULTS.map((match, idx) => (
                   <div key={idx} onClick={() => setSelectedMatch(match)} className="bg-ink-900 border border-white/10 rounded-xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-center md:items-center hover:bg-ink-800 transition-colors cursor-pointer group">
                     <div className="flex-1 flex justify-end items-center pr-4 md:pr-8 w-full md:w-auto">
-                      <span className="font-serif font-bold text-lg md:text-xl text-center md:text-right">{match.teamA}</span>
+                      <span className="font-anton uppercase text-lg md:text-xl tracking-wide text-center md:text-right">{match.teamA}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center space-y-2 px-4 md:px-8 border-y md:border-y-0 md:border-x border-white/10 min-w-[140px] py-4 md:py-0 w-full md:w-auto my-4 md:my-0 group-hover:border-acid/30 transition-colors">
                       <div className="flex items-center space-x-4">
@@ -215,7 +215,7 @@ export default function CsCupView() {
                       <span className="text-[10px] font-mono text-acid bg-acid/10 px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">VIEW STATS</span>
                     </div>
                     <div className="flex-1 flex justify-start items-center pl-4 md:pl-8 w-full md:w-auto">
-                      <span className="font-serif font-bold text-lg md:text-xl text-center md:text-left">{match.teamB}</span>
+                      <span className="font-anton uppercase text-lg md:text-xl tracking-wide text-center md:text-left">{match.teamB}</span>
                     </div>
                   </div>
                 ))}
@@ -227,13 +227,13 @@ export default function CsCupView() {
         {/* POINTS TABLE TAB */}
         {activeTab === 'points' && (
           <div className="w-full space-y-8 animate-fade-in">
-            <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+            <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
               points table
             </h2>
             <div className="bg-ink-900 border border-white/10 rounded-2xl overflow-hidden shadow-card overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
-                  <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-mono font-bold uppercase tracking-wider text-mist">
+                  <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-anton uppercase tracking-wider text-mist text-sm">
                     <th className="p-4 text-center">Pos</th>
                     <th className="p-4">Team</th>
                     <th className="p-4 text-center">P</th>
@@ -250,7 +250,7 @@ export default function CsCupView() {
                   {POINTS_TABLE.map((row) => (
                     <tr key={row.pos} className="hover:bg-white/[0.02] transition-colors">
                       <td className="p-4 text-center font-mono font-bold text-fog">{row.pos}</td>
-                      <td className="p-4 font-serif font-bold text-paper whitespace-nowrap">{row.team}</td>
+                      <td className="p-4 font-anton uppercase text-paper tracking-wide text-lg whitespace-nowrap">{row.team}</td>
                       <td className="p-4 text-center font-mono text-fog">{row.p}</td>
                       <td className="p-4 text-center font-mono text-fog">{row.w}</td>
                       <td className="p-4 text-center font-mono text-fog">{row.d}</td>
@@ -272,13 +272,13 @@ export default function CsCupView() {
           <div className="w-full space-y-16 animate-fade-in">
             {/* Top Scorers */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 top scorers
               </h2>
               <div className="bg-ink-900 border border-white/10 rounded-2xl overflow-hidden shadow-card overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[500px]">
                   <thead>
-                    <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-mono font-bold uppercase tracking-wider text-mist">
+                    <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-anton uppercase tracking-wider text-mist text-sm">
                       <th className="p-4 text-center">Rank</th>
                       <th className="p-4">Player</th>
                       <th className="p-4">Team</th>
@@ -290,7 +290,7 @@ export default function CsCupView() {
                     {TOP_SCORERS.map((row) => (
                       <tr key={row.rank} className="hover:bg-white/[0.02] transition-colors">
                         <td className="p-4 text-center font-mono font-bold text-fog">{row.rank}</td>
-                        <td className="p-4 font-serif font-bold text-paper whitespace-nowrap">{row.player}</td>
+                        <td className="p-4 font-anton uppercase text-paper tracking-wide text-lg whitespace-nowrap">{row.player}</td>
                         <td className="p-4 font-mono text-sm text-fog">{row.team}</td>
                         <td className="p-4 text-center font-mono font-black text-acid">{row.goals}</td>
                         <td className="p-4 text-center font-mono text-fog">{row.assists}</td>
@@ -303,13 +303,13 @@ export default function CsCupView() {
 
             {/* Goalkeepers */}
             <div className="space-y-8">
-              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-anton tracking-wider">
+              <h2 className="text-3xl font-black lowercase text-paper border-b border-white/10 pb-4 font-grotesk tracking-tight">
                 goalkeepers
               </h2>
               <div className="bg-ink-900 border border-white/10 rounded-2xl overflow-hidden shadow-card overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[600px]">
                   <thead>
-                    <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-mono font-bold uppercase tracking-wider text-mist">
+                    <tr className="bg-ink-950/50 border-b border-white/10 text-xs font-anton uppercase tracking-wider text-mist text-sm">
                       <th className="p-4 text-center">Rank</th>
                       <th className="p-4">Player</th>
                       <th className="p-4">Team</th>
@@ -323,7 +323,7 @@ export default function CsCupView() {
                     {GOALKEEPERS.map((row) => (
                       <tr key={row.rank} className="hover:bg-white/[0.02] transition-colors">
                         <td className="p-4 text-center font-mono font-bold text-fog">{row.rank}</td>
-                        <td className="p-4 font-serif font-bold text-paper whitespace-nowrap">{row.player}</td>
+                        <td className="p-4 font-anton uppercase text-paper tracking-wide text-lg whitespace-nowrap">{row.player}</td>
                         <td className="p-4 font-mono text-sm text-fog">{row.team}</td>
                         <td className="p-4 text-center font-mono text-fog">{row.played}</td>
                         <td className="p-4 text-center font-mono font-black text-acid">{row.saves}</td>
@@ -351,7 +351,7 @@ export default function CsCupView() {
                 <span className="text-xs font-mono font-bold text-acid tracking-widest uppercase">Match Stats</span>
                 <div className="flex items-center justify-between w-full max-w-md">
                   <div className="flex-1 text-right">
-                    <span className="font-serif font-black text-xl md:text-2xl text-paper">{selectedMatch.teamA}</span>
+                    <span className="font-anton uppercase tracking-wide text-xl md:text-2xl text-paper">{selectedMatch.teamA}</span>
                   </div>
                   <div className="flex flex-col items-center justify-center px-6">
                     <div className="flex items-center space-x-3 text-4xl font-black font-mono">
@@ -361,7 +361,7 @@ export default function CsCupView() {
                     </div>
                   </div>
                   <div className="flex-1 text-left">
-                    <span className="font-serif font-black text-xl md:text-2xl text-paper">{selectedMatch.teamB}</span>
+                    <span className="font-anton uppercase tracking-wide text-xl md:text-2xl text-paper">{selectedMatch.teamB}</span>
                   </div>
                 </div>
               </div>
@@ -404,7 +404,7 @@ export default function CsCupView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/80 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-4xl bg-ink-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
             <div className="p-4 border-b border-white/10 flex justify-between items-center bg-ink-950">
-              <h3 className="font-serif font-black text-xl text-paper">{selectedTeam.name} Squad</h3>
+              <h3 className="font-anton uppercase tracking-wide text-xl text-paper">{selectedTeam.name} Squad</h3>
               <button onClick={() => setSelectedTeam(null)} className="p-2 text-fog hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>

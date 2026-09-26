@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import { Anton } from 'next/font/google'
+import { Anton, DM_Sans, Plus_Jakarta_Sans } from 'next/font/google'
 
 const anton = Anton({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-anton',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dmsans',
+})
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
 })
 import './globals.css'
 import { ThemeProvider } from '@/context/ThemeContext'
@@ -24,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`dark ${anton.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`dark ${anton.variable} ${dmSans.variable} ${plusJakarta.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
