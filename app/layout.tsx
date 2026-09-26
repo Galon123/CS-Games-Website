@@ -1,4 +1,11 @@
 import type { Metadata } from 'next'
+import { Anton } from 'next/font/google'
+
+const anton = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-anton',
+})
 import './globals.css'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { TournamentProvider } from '@/context/TournamentContext'
@@ -17,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={`dark ${anton.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

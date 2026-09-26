@@ -11,6 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        anton: ['var(--font-anton)', 'sans-serif'],
         serif: ['Fraunces', 'Playfair Display', 'Georgia', 'serif'],
         grotesk: ['Plus Jakarta Sans', 'Inter Tight', 'system-ui', 'sans-serif'],
         sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],

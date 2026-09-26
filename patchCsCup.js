@@ -1,4 +1,6 @@
-'use client'
+const fs = require('fs');
+
+const content = `'use client'
 
 import React, { useState } from 'react'
 import FootballHeroCarousel from '@/components/FootballHeroCarousel'
@@ -100,13 +102,13 @@ export default function CsCupView() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+                className={\`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all \${
                   isActive
                     ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)]'
                     : 'bg-white/5 text-mist hover:text-paper hover:bg-white/10'
-                }`}
+                }\`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-acid-ink' : 'text-fog'}`} />
+                <Icon className={\`w-4 h-4 \${isActive ? 'text-acid-ink' : 'text-fog'}\`} />
                 <span>{tab.label}</span>
               </button>
             )
@@ -257,7 +259,7 @@ export default function CsCupView() {
                       <td className="p-4 text-center font-mono text-fog">{row.l}</td>
                       <td className="p-4 text-center font-mono text-fog">{row.gf}</td>
                       <td className="p-4 text-center font-mono text-fog">{row.ga}</td>
-                      <td className="p-4 text-center font-mono text-fog">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
+                      <td className="p-4 text-center font-mono text-fog">{row.gd > 0 ? \`+\${row.gd}\` : row.gd}</td>
                       <td className="p-4 text-center font-mono font-black text-acid">{row.pts}</td>
                     </tr>
                   ))}
@@ -410,7 +412,7 @@ export default function CsCupView() {
               </button>
             </div>
             <div className="flex-1 overflow-auto p-4 bg-ink-950">
-              <img src={selectedTeam.squadImage} alt={`${selectedTeam.name} Squad`} className="w-full h-auto rounded-xl object-contain border border-white/5" />
+              <img src={selectedTeam.squadImage} alt={\`\${selectedTeam.name} Squad\`} className="w-full h-auto rounded-xl object-contain border border-white/5" />
             </div>
           </div>
         </div>
@@ -421,3 +423,6 @@ export default function CsCupView() {
     </div>
   )
 }
+`;
+
+fs.writeFileSync('components/CsCupView.tsx', content);
