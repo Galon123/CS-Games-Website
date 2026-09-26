@@ -41,7 +41,7 @@ export default function Navbar() {
           
           {/* Brand */}
           <Link href="/#home" className="flex items-center space-x-2 group select-none">
-            <span className="font-black text-xl tracking-tight text-ink-950 dark:text-paper font-grotesk lowercase">
+            <span className="font-black text-xl tracking-tight text-ink-950 dark:text-paper font-anton uppercase">
               cs games
             </span>
           </Link>
