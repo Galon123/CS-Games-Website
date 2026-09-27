@@ -6,7 +6,7 @@ export interface CalendarEvent {
   isHighlighted: boolean
   venue?: string
   category?: string
-  description?: string
+  
 }
 
 export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
@@ -18,8 +18,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: true,
     venue: 'Main Turf',
     category: 'Football',
-    description: 'Day 1 of the flagship CS Cup 6v6 Football Tournament.',
-  },
+      },
   {
     id: 'event-23',
     day: 23,
@@ -28,8 +27,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: false,
     venue: 'Indoor Stadium',
     category: 'Badminton',
-    description: 'Badminton Doubles knockouts begin.',
-  },
+      },
   {
     id: 'event-24',
     day: 24,
@@ -38,8 +36,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: true,
     venue: 'Main Turf',
     category: 'Football',
-    description: 'Finals and concluding matches for the CS Cup.',
-  },
+      },
   {
     id: 'event-25',
     day: 25,
@@ -48,8 +45,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: false,
     venue: 'Indoor Arena',
     category: 'Indoor Games',
-    description: 'Chess and Carroms tournaments.',
-  },
+      },
   {
     id: 'event-28-badminton',
     day: 28,
@@ -58,8 +54,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: false,
     venue: 'Indoor Stadium',
     category: 'Badminton',
-    description: 'Badminton Doubles finals.',
-  },
+      },
   {
     id: 'event-28-minimilitia',
     day: 28,
@@ -68,8 +63,7 @@ export const INITIAL_SEPTEMBER_EVENTS: CalendarEvent[] = [
     isHighlighted: true,
     venue: 'E-Sports Arena',
     category: 'Esports',
-    description: 'Mini Militia competitive tournament.',
-  },
+      },
 ]
 
 export const EVENTS_STORAGE_KEY = 'cs_september_events_v2'
