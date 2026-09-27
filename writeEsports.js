@@ -1,4 +1,6 @@
+const fs = require('fs');
 
+const newText = `
 import React, { useState } from 'react'
 import EsportsHeroCarousel from '@/components/EsportsHeroCarousel'
 import { Activity, X, Info, ExternalLink } from 'lucide-react'
@@ -19,14 +21,14 @@ const ESPORTS_EVENTS: EsportsEvent[] = [
     name: 'E-Football',
     type: '1v1 Knockout',
     image: '/posters/EFOOTBALL.jpg',
-    description: `Think you've got the best tactics on eFootball? Prove it! 🎮⚽
+    description: \`Think you've got the best tactics on eFootball? Prove it! 🎮⚽
 
 The CSE Department presents CS Games: eFootball Tournament. Show off your skills, outsmart your rivals, and claim the ultimate bragging rights (and the prize pool)!
 
 💰Prize Pool: ₹1,000
 Registration Fee: ₹25
 
-Eligibility: Open to all departments!`,
+Eligibility: Open to all departments!\`,
     registrationLink: 'https://forms.gle/SLbEvsmQwcKZDBDB9'
   },
   {
@@ -34,7 +36,7 @@ Eligibility: Open to all departments!`,
     name: 'Mini Militia',
     type: 'Free-for-all',
     image: '/posters/MINI MILITIA.jpg',
-    description: `Lock, load and gear up! 💣🔫
+    description: \`Lock, load and gear up! 💣🔫
 
 The Department of Computer Science and Engineering brings back the ultimate local multiplayer battlefield with the Mini Militia Tournament! Grab your weapons, dodge the bombs, and outgun the competition to claim victory.
 
@@ -42,7 +44,7 @@ The Department of Computer Science and Engineering brings back the ultimate loca
 🎁 Prizes Worth: ₹500
 🎟️ Registration Fee: ₹20/-
 🌐 Eligibility: Open to all departments
-📞 Contact: Ashwin D Sreenivas – 94472 04941`,
+📞 Contact: Ashwin D Sreenivas – 94472 04941\`,
     registrationLink: 'https://forms.gle/Lr3qSSceKs99PVf97'
   }
 ]
@@ -177,3 +179,6 @@ export default function EsportsView() {
     </div>
   )
 }
+`;
+
+fs.writeFileSync('components/EsportsView.tsx', newText, 'utf8');
