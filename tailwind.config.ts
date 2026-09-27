@@ -18,6 +18,12 @@ const config: Config = {
         mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
       },
       colors: {
+        blue: {
+          400: '#1ad6ff',
+          500: '#04d9ff', // <--- EDIT THIS LINE TO CHANGE THE BLUE COLOR
+          600: '#04d9ff', // <--- EDIT THIS LINE TO CHANGE THE BLUE COLOR
+          700: '#02838e',
+        },
         canvas: 'rgb(var(--canvas) / <alpha-value>)',
         ink: {
           950: 'rgb(var(--ink-950) / <alpha-value>)',

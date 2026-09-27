@@ -1,19 +1,22 @@
 import React from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function AboutSection() {
   return (
     <section className="py-16">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-12">
         
-        {/* Visual / Abstract Element (like the Cassette Tape in reference) */}
+        {/* Visual / Poster */}
         <div className="w-full md:w-5/12 flex justify-center relative">
-          <div className="w-64 h-64 md:w-80 md:h-80 bg-ink-800 border-2 border-acid flex items-center justify-center transform -rotate-3 transition-transform hover:rotate-0 duration-500 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-[carousel-progress_3s_linear_infinite]" />
-            <span className="font-black text-6xl text-ink-950 tracking-tighter mix-blend-difference z-10 group-hover:scale-110 transition-transform duration-500 select-none">
-              CS '26
-            </span>
-            <div className="absolute top-4 left-4 w-3 h-3 bg-acid animate-pulse" />
-            <div className="absolute bottom-4 right-4 w-3 h-3 bg-acid animate-pulse delay-75" />
+          <div className="w-full max-w-sm aspect-[3/4] relative rounded-md overflow-hidden border border-white/10 shadow-2xl group">
+            <Image 
+              src="/posters/main_poster.jpg"
+              alt="CS GAMES 2026 Poster"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-transparent opacity-80" />
           </div>
         </div>
 
@@ -29,22 +32,19 @@ export default function AboutSection() {
 
           <div className="space-y-6 text-sm md:text-base font-grotesk text-mist leading-relaxed relative z-10">
             <p>
-              CS GAMES 2026 is a prestigious intra-departmental tournament for tech-enthusiast students 
-              to showcase their athletic skills, strategic thinking, and team synergy. Across its 
-              previous editions, CS GAMES has recorded massive participation, generating immense 
-              excitement and building a tightly-knit community.
+              CS GAMES 2026 is the annual intra-departmental sporting and gaming championship of the Computer Science and Engineering department, bringing together students to compete, collaborate, and celebrate the spirit of sportsmanship.
             </p>
             <p>
-              Notably, this edition witnesses the introduction of live telemetry, advanced tactical 
-              boards for the CS Cup, and a sprawling expansion into competitive e-sports. 
-              Establishing the event as a credible and impactful student-led initiative, we aim 
-              to push the boundaries of what a collegiate sports event can be.
+              Building on the enthusiasm and participation of previous editions, this year brings together a diverse range of competitions spanning traditional sports, strategic board games, and competitive esports.
+            </p>
+            <p>
+              More than just a tournament, CS GAMES is a celebration of teamwork, strategy, sportsmanship, and the vibrant community that defines the department.
             </p>
           </div>
 
-          <button className="relative z-10 px-8 py-3 bg-acid text-ink-950 font-bold lowercase tracking-widest hover:bg-white hover:text-ink-950 transition-colors border border-transparent hover:border-acid">
+          <Link href="/#events" className="inline-block relative z-10 px-8 py-3 bg-acid text-ink-950 font-bold lowercase tracking-widest hover:bg-white hover:text-ink-950 transition-colors border border-transparent hover:border-acid">
             explore
-          </button>
+          </Link>
         </div>
 
       </div>

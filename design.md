@@ -77,17 +77,16 @@ Two coordinated tracks share one neutral spine. Pick a track per surface; do not
 
 ## 3. Typography
 
-Three display voices exist, split across two tracks, plus a neutral body/meta face. **One display voice per composition.**
+The site utilizes a strict multi-track typographic system, blending brutalist display elements with premium editorial styling.
 
-### 3.1 Families & roles
+### 3.1 Families & Roles (Current Spec)
 
-| Role | Token | Primary → fallback | Where |
-|---|---|---|---|
-| Display — Editorial | `--font-serif` | `"Canela Display","Freight Display Pro","Tiempos Headline","Playfair Display",Georgia,serif` | `Startelvan.`, `Formation`, `Fixtures`, jersey numbers + names, poster meta |
-| Display — Product | `--font-grotesk` | `"Helvetica Now Display","Neue Haas Grotesk","Archivo","Inter Tight",system-ui,sans-serif` | Padel `Motion./Discipline./Result.`, section heads, stat numbers |
-| Display — Rounded | `--font-geo` | `"Poppins","Sora","Outfit","Gilroy",system-ui,sans-serif` | `events` wordmark, calendar numerals |
-| Body | `--font-body` | `"Inter","Helvetica Neue",system-ui,sans-serif` | Paragraphs, card copy, nav |
-| Meta / Kicker | `--font-meta` | `--font-body`, uppercase, `letter-spacing:.14em`, weight 500 | Dates, venues, pipe‑lists, eyebrows |
+| Role | Token / Font | Where It Is Used |
+|---|---|---|
+| **Brutalist Display** | `Anton` (`--font-anton`) | The main Navbar brand logo ("CS GAMES") and major section headers across the CS Cup view (e.g., "upcoming fixtures", "meet the teams", "points table"). Typically rendered in lowercase. |
+| **Editorial Display** | `Fraunces` (`--font-serif`) | Hero text, match card team names, and primary administration console titles. Provides a premium, magazine-like feel. |
+| **Product / UI** | `Plus Jakarta Sans` (`--font-grotesk` / `--font-sans`) | General body text, navigation menu links, small UI labels, and buttons. |
+| **Data / Tactical** | `JetBrains Mono` (`--font-mono`) | Match scorelines, player statistics, leaderboard numbers, live telemetry badges, and metadata tags. |
 
 ### 3.2 Scale (clamp‑based, fluid)
 

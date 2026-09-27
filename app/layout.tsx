@@ -1,10 +1,15 @@
 import type { Metadata } from 'next'
-import { Anton } from 'next/font/google'
+import { Anton, DM_Sans } from 'next/font/google'
 
 const anton = Anton({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-anton',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dmsans',
 })
 import './globals.css'
 import { ThemeProvider } from '@/context/ThemeContext'
@@ -24,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`dark ${anton.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`dark ${anton.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -57,35 +62,51 @@ export default function RootLayout({
             <main className="flex-1 w-full">
             {children}
           </main>
-          <footer className="border-t border-white/10 bg-ink-900 py-10 text-xs text-mist">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-              
-              {/* Left Section: Convenors */}
-              <div className="flex flex-col space-y-2 text-center sm:text-left">
-                <span className="font-serif font-black text-paper tracking-tight text-sm">
-                  CS GAMES 2026
-                </span>
-                <div className="text-[11px] text-mist tracking-wide space-y-1">
-                  <p><strong className="text-cream">Convenor:</strong> Name (Phone)</p>
-                  <p><strong className="text-cream">Joint Convenors:</strong> Name 1 (Phone), Name 2 (Phone)</p>
+          <footer className="border-t border-white/10 bg-ink-900 py-12 text-xs text-mist">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                
+                {/* Left Section: Convenor */}
+                <div className="flex flex-col space-y-1 text-left items-start">
+                  <div className="font-anton text-paper tracking-wider text-xl uppercase leading-tight">
+                    CONVENOR
+                  </div>
+                  <div className="font-sans text-paper text-sm">
+                    SREEHARI A
+                  </div>
+                  <div className="font-sans text-mist text-sm">
+                    88482 04727
+                  </div>
                 </div>
+  
+                {/* Center Section: Title & Socials */}
+                <div className="flex flex-col items-center justify-center gap-4 text-center">
+                  <span className="font-anton text-paper tracking-wider text-3xl sm:text-4xl uppercase">
+                    CS GAMES 2026
+                  </span>
+                  <a href="https://www.instagram.com/cse_gec/" target="_blank" rel="noopener noreferrer" className="hover:text-acid transition-colors text-fog flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                  </a>
+                </div>
+  
+                {/* Right Section: Joint Convenors */}
+                <div className="flex flex-col space-y-3 text-right items-end">
+                  <div className="font-anton text-paper tracking-wider text-xl uppercase leading-tight">
+                    JOINT CONVENORS
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col">
+                      <span className="font-sans text-paper text-sm uppercase">ASHWIN D SREENIVAS</span>
+                      <span className="font-sans text-mist text-sm">94472 04941</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-sans text-paper text-sm uppercase">CHRISTEENA GEEJO</span>
+                      <span className="font-sans text-mist text-sm">89213 57607</span>
+                    </div>
+                  </div>
+                </div>
+                
               </div>
-
-              {/* Center Section: Socials */}
-              <div className="flex flex-col items-center justify-center gap-2 text-[11px] font-mono tracking-widest uppercase text-fog">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-acid transition-colors flex items-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                  <span>Instagram</span>
-                </a>
-              </div>
-
-              {/* Right Section: Telemetry */}
-              <div className="flex items-center space-x-2 text-xs text-mist">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
-                <span className="font-mono text-[11px] text-paper font-medium">System Telemetry Live</span>
-              </div>
-            </div>
-          </footer>
+            </footer>
         </TournamentProvider>
       </ThemeProvider>
     </body>
