@@ -1,4 +1,5 @@
 
+'use client'
 import React, { useState } from 'react'
 import EsportsHeroCarousel from '@/components/EsportsHeroCarousel'
 import { Activity, X, Info, ExternalLink } from 'lucide-react'
