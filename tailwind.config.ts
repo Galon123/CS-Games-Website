@@ -12,10 +12,10 @@ const config: Config = {
     extend: {
       fontFamily: {
         anton: ['var(--font-anton)', 'sans-serif'],
-        serif: ['Fraunces', 'Playfair Display', 'Georgia', 'serif'],
+        serif: ['var(--font-anton)', 'sans-serif'],
         grotesk: ['Plus Jakarta Sans', 'Inter Tight', 'system-ui', 'sans-serif'],
         sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+        mono: ['var(--font-dmsans)', 'sans-serif'],
       },
       colors: {
         blue: {
