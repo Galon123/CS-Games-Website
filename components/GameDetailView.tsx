@@ -175,7 +175,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
 
           <div className="pt-4">
             <Link
-              href="/games"
+              href="/#games"
               className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-acid text-acid-ink text-xs font-black tracking-wider uppercase shadow-xs hover:bg-acid-hot transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -208,7 +208,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
               Home
             </Link>
             <span>/</span>
-            <Link href="/games" className="text-mist hover:text-acid transition-colors">
+            <Link href="/#games" className="text-mist hover:text-acid transition-colors">
               Games
             </Link>
             <span>/</span>
@@ -228,7 +228,7 @@ export default function GameDetailView({ sportSlug }: GameDetailViewProps) {
             </button>
 
             <Link
-              href="/games"
+              href="/#games"
               className="group flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono font-semibold text-mist hover:text-paper transition-all"
             >
               <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />

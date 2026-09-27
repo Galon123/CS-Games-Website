@@ -2,6 +2,7 @@
 'use client'
 import React, { useState } from 'react'
 import EsportsHeroCarousel from '@/components/EsportsHeroCarousel'
+import EsportsBlurredBackground from '@/components/EsportsBlurredBackground'
 import { Activity, X, Info, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 
@@ -53,6 +54,7 @@ export default function EsportsView() {
 
   return (
     <div className="w-full flex flex-col min-h-screen bg-canvas text-cream selection:bg-acid selection:text-acid-ink font-sans">
+      <EsportsBlurredBackground />
       
       {/* Hero Section */}
       <section className="w-full">
@@ -60,7 +62,8 @@ export default function EsportsView() {
       </section>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24 space-y-12">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+        <div className="bg-ink-950/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/10 shadow-2xl space-y-12 mb-12">
         
         {/* Tournament Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5 relative z-10 w-full">
@@ -91,8 +94,8 @@ export default function EsportsView() {
         <div className="space-y-8 animate-fade-in relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {ESPORTS_EVENTS.map((event) => (
-              <div key={event.id} className="bg-ink-900 rounded-2xl overflow-hidden border border-white/10 group shadow-card flex flex-col h-[400px]">
-                <div className="flex-1 relative overflow-hidden">
+              <div key={event.id} className="bg-ink-900 rounded-2xl overflow-hidden border border-white/10 group shadow-card cursor-pointer">
+                <div className="aspect-[3/4] relative overflow-hidden">
                   <img src={event.image} alt={event.name} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent opacity-90" />
                   
@@ -115,6 +118,8 @@ export default function EsportsView() {
                       <Link 
                         href={event.registrationLink}
                         className="flex-1 flex justify-center items-center space-x-2 bg-acid hover:bg-acid/90 text-acid-ink px-4 py-2.5 rounded-lg text-xs font-mono font-bold transition-colors shadow-[0_0_15px_rgba(215,242,43,0.3)]"
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         <span>REGISTER NOW</span>
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -126,6 +131,7 @@ export default function EsportsView() {
             ))}
           </div>
         </div>
+      </div>
       </main>
 
       {/* EVENT INFO MODAL */}
