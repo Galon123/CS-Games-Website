@@ -28,23 +28,23 @@ const SLIDE_DURATION_MS = 6000
 const chess_PRESET_SUGGESTIONS = [
   {
     name: 'chess Match Play',
-    url: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=2000&auto=format&fit=crop&q=85',
+    url: '/posters/chess.jpg',
   },
   {
     name: 'Stadium Night Lights',
-    url: 'https://images.unsplash.com/photo-1626926938421-90124a4b83fa?w=2000&auto=format&fit=crop&q=85',
+    url: '/posters/chess.jpg',
   },
   {
     name: 'Goal Celebration',
-    url: 'https://images.unsplash.com/photo-1687597778602-624a9438fe0b?w=2000&auto=format&fit=crop&q=85',
+    url: '/posters/chess.jpg',
   },
   {
     name: 'Soccer Ball on Pitch',
-    url: 'https://images.unsplash.com/photo-1724941407869-f8fb46a3cc38?w=2000&auto=format&fit=crop&q=85',
+    url: '/posters/chess.jpg',
   },
   {
     name: 'Team Formation',
-    url: 'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=2000&auto=format&fit=crop&q=85',
+    url: '/posters/chess.jpg',
   },
 ]
 

@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import FootballHeroCarousel from '@/components/FootballHeroCarousel'
 import FootballBlurredBackground from '@/components/FootballBlurredBackground'
-import SponsorsBox from '@/components/SponsorsBox'
 import { Home, Calendar, Trophy, Activity, X } from 'lucide-react'
 
 const TEAMS = [
@@ -322,7 +321,8 @@ export default function CsCupView() {
             </div>
           </div>
         )}
-      </main>
+        </div>
+        </main>
 
       {/* MATCH STATS MODAL */}
       {selectedMatch && (
@@ -402,7 +402,7 @@ export default function CsCupView() {
       )}
 
       {/* Sponsors Section */}
-      <SponsorsBox />
+      
     </div>
   )
 }

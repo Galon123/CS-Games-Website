@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import ChessHeroCarousel from '@/components/ChessHeroCarousel'
 import ChessBlurredBackground from '@/components/ChessBlurredBackground'
-import SponsorsBox from '@/components/SponsorsBox'
 import { Trophy, Calendar, CheckCircle2, Circle, XCircle, MinusCircle } from 'lucide-react'
 
 // --- DATA ---
@@ -123,11 +122,11 @@ export default function ChessView() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-12">
         
         
-        {/* Category Toggle (Badminton Style) */}
-        <div className="flex bg-white/5 p-1 rounded-xl items-center mx-auto w-fit mb-8 z-10 relative backdrop-blur-sm">
+                {/* Category Toggle (Badminton Style) */}
+        <div className="flex bg-ink-900 border border-white/5 p-1 rounded-xl items-center mx-auto w-full max-w-2xl mb-8 z-10 relative backdrop-blur-sm shadow-xl">
           <button
             onClick={() => setCategory('mens')}
-            className={`flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg font-mono font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-lg font-mono font-bold transition-all ${
               category === 'mens'
                 ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
                 : 'text-mist hover:text-paper hover:bg-white/5'
@@ -137,7 +136,7 @@ export default function ChessView() {
           </button>
           <button
             onClick={() => setCategory('womens')}
-            className={`flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg font-mono font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-lg font-mono font-bold transition-all ${
               category === 'womens'
                 ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
                 : 'text-mist hover:text-paper hover:bg-white/5'
@@ -174,8 +173,8 @@ export default function ChessView() {
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-12 z-10 relative">
 
-        {/* Content Area */}
-        <div className="animate-fade-in min-h-[50vh]">
+                {/* Content Area */}
+        <div className="animate-fade-in min-h-[50vh] bg-ink-950/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/10 shadow-2xl">
           {activeTab === 'standings' ? (
             <div className="space-y-6">
               <h2 className="text-3xl font-black lowercase text-paper tracking-wider">
@@ -266,7 +265,7 @@ export default function ChessView() {
       </main>
 
       {/* Sponsors Section */}
-      <SponsorsBox />
+      
     </div>
   )
 }

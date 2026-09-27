@@ -62,7 +62,7 @@ export default function RootLayout({
             <main className="flex-1 w-full">
             {children}
           </main>
-          <footer className="border-t border-white/10 bg-ink-900 py-12 text-xs text-mist">
+          <footer className="border-t border-white/10 bg-ink-950 relative z-20 py-12 text-xs text-mist">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 
                 {/* Left Section: Convenor */}

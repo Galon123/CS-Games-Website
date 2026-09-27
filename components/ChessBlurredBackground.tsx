@@ -14,7 +14,7 @@ export default function ChessBlurredBackground({
   const [imageFailed, setImageFailed] = useState(false)
 
   const defaultImage =
-    'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=2400&auto=format&fit=crop&q=85'
+    '/posters/chess.jpg'
 
   const activeImage = customImageUrl || defaultImage
 
@@ -37,19 +37,7 @@ export default function ChessBlurredBackground({
       <div className="absolute top-1/3 -right-10 w-[600px] h-[550px] rounded-full bg-emerald-500/25 blur-[130px] mix-blend-screen pointer-events-none" />
       <div className="absolute bottom-10 left-1/3 w-[650px] h-[450px] rounded-full bg-acid/20 blur-[150px] mix-blend-screen pointer-events-none" />
 
-      {/* Chess board geometry */}
-      <div className="absolute inset-0 opacity-15 dark:opacity-20 pointer-events-none flex items-center justify-center">
-        <svg className="w-[800px] h-[800px] max-w-full max-h-full text-white opacity-40" viewBox="0 0 800 800" fill="currentColor">
-          {Array.from({ length: 8 }).map((_, row) => 
-            Array.from({ length: 8 }).map((_, col) => 
-              (row + col) % 2 === 0 ? (
-                <rect key={`${row}-${col}`} x={col * 100} y={row * 100} width="100" height="100" />
-              ) : null
-            )
-          )}
-          <rect x="0" y="0" width="800" height="800" fill="none" stroke="currentColor" strokeWidth="8" />
-        </svg>
-      </div>
+      
 
       <div className="absolute inset-0 bg-gradient-to-b from-canvas/20 via-transparent to-canvas/60 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-canvas/30 via-transparent to-canvas/30 pointer-events-none" />
