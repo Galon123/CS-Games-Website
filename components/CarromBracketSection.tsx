@@ -108,8 +108,8 @@ export default function CarromBracketSection() {
   }
 
   return (
-    <section className="w-full relative py-12 md:py-24 bg-canvas overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section className="w-full relative py-12 md:py-24 overflow-hidden z-10 mb-12">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 bg-ink-950/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/10 shadow-2xl">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5 relative z-10">
           <div className="space-y-4">

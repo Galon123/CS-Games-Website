@@ -6,7 +6,7 @@ import Image from 'next/image'
 const CAROUSEL_IMAGES = [
   {
     id: 'carrom-1',
-    url: '/posters/main_poster.jpg',
+    url: '/posters/carroms.png',
     alt: 'Carrom Tournament 2026',
     title: 'CARROM SHOWDOWN',
     description: 'Precision, Angles, and Strikes.',
