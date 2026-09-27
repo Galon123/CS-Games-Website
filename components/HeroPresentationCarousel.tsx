@@ -50,7 +50,7 @@ const CAROUSEL_SLIDES: PresentationSlide[] = [
     id: 'esports-arena',
     title: 'Esports.',
     subtitle: 'Competitive departmental LAN and arena showdown',
-    href: '/games',
+    href: '/games/esports',
     imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=2000&auto=format&fit=crop&q=85',
     fallbackGradient: 'from-violet-950/70 via-ink-900 to-ink-950',
   },
