@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import ChessHeroCarousel from '@/components/ChessHeroCarousel'
+import ChessBlurredBackground from '@/components/ChessBlurredBackground'
 import SponsorsBox from '@/components/SponsorsBox'
 import { Trophy, Calendar, CheckCircle2, Circle, XCircle, MinusCircle } from 'lucide-react'
 
@@ -69,8 +70,35 @@ const MENS_ROUNDS = [
   }
 ]
 
-const WOMENS_STANDINGS: any[] = []
-const WOMENS_ROUNDS: any[] = []
+const WOMENS_STANDINGS = [
+  { pos: 1, name: 'C jayanthi', pts: 3 },
+  { pos: 2, name: 'Anagha', pts: 2 },
+  { pos: 3, name: 'Anna Caroline', pts: 1 },
+  { pos: 4, name: 'Lakshmi U', pts: 0 },
+]
+const WOMENS_ROUNDS = [
+  {
+    round: 1,
+    matches: [
+      { id: '1-1', p1: 'C jayanthi', p1c: 'White', s1: 1, p2: 'Anna Caroline', p2c: 'Black', s2: 0 },
+      { id: '1-2', p1: 'Anagha', p1c: 'White', s1: 1, p2: 'Lakshmi U', p2c: 'Black', s2: 0 },
+    ]
+  },
+  {
+    round: 2,
+    matches: [
+      { id: '2-1', p1: 'Anagha', p1c: 'White', s1: 0, p2: 'C jayanthi', p2c: 'Black', s2: 1 },
+      { id: '2-2', p1: 'Lakshmi U', p1c: 'White', s1: 0, p2: 'Anna Caroline', p2c: 'Black', s2: 1 },
+    ]
+  },
+  {
+    round: 3,
+    matches: [
+      { id: '3-1', p1: 'C jayanthi', p1c: 'White', s1: 1, p2: 'Lakshmi U', p2c: 'Black', s2: 0 },
+      { id: '3-2', p1: 'Anna Caroline', p1c: 'White', s1: 0, p2: 'Anagha', p2c: 'Black', s2: 1 },
+    ]
+  }
+]
 
 // --- COMPONENTS ---
 
@@ -83,6 +111,8 @@ export default function ChessView() {
 
   return (
     <div className="w-full flex flex-col min-h-screen bg-canvas text-cream selection:bg-acid selection:text-acid-ink font-sans">
+      <ChessBlurredBackground />
+
       
       {/* Hero Section */}
       <section className="w-full">
@@ -92,50 +122,57 @@ export default function ChessView() {
       {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-12">
         
-        {/* Category & Section Toggles */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-white/10 pb-6">
-          {/* Mens/Womens Toggle */}
-          <div className="flex bg-white/5 p-1 rounded-xl">
-            <button
-              onClick={() => setCategory('mens')}
-              className={`px-6 py-2.5 rounded-lg font-bold font-mono text-sm transition-all ${
-                category === 'mens' ? 'bg-acid text-acid-ink shadow-md' : 'text-fog hover:text-white'
-              }`}
-            >
-              Men's
-            </button>
-            <button
-              onClick={() => setCategory('womens')}
-              className={`px-6 py-2.5 rounded-lg font-bold font-mono text-sm transition-all ${
-                category === 'womens' ? 'bg-acid text-acid-ink shadow-md' : 'text-fog hover:text-white'
-              }`}
-            >
-              Women's
-            </button>
-          </div>
-
-          {/* Standings/Rounds Toggle */}
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setActiveTab('standings')}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-full font-bold font-mono text-sm transition-all ${
-                activeTab === 'standings' ? 'bg-white/10 text-paper border border-white/20' : 'text-fog hover:bg-white/5'
-              }`}
-            >
-              <Trophy className="w-4 h-4" />
-              <span>Standings</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('rounds')}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-full font-bold font-mono text-sm transition-all ${
-                activeTab === 'rounds' ? 'bg-white/10 text-paper border border-white/20' : 'text-fog hover:bg-white/5'
-              }`}
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Rounds</span>
-            </button>
-          </div>
+        
+        {/* Category Toggle (Badminton Style) */}
+        <div className="flex bg-white/5 p-1 rounded-xl items-center mx-auto w-fit mb-8 z-10 relative backdrop-blur-sm">
+          <button
+            onClick={() => setCategory('mens')}
+            className={`flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg font-mono font-bold transition-all ${
+              category === 'mens'
+                ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+                : 'text-mist hover:text-paper hover:bg-white/5'
+            }`}
+          >
+            <span>Men's Chess</span>
+          </button>
+          <button
+            onClick={() => setCategory('womens')}
+            className={`flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg font-mono font-bold transition-all ${
+              category === 'womens'
+                ? 'bg-acid text-acid-ink shadow-[0_0_12px_rgba(215,242,43,0.3)] font-black'
+                : 'text-mist hover:text-paper hover:bg-white/5'
+            }`}
+          >
+            <span>Women's Chess</span>
+          </button>
         </div>
+      </main>
+
+      {/* Dedicated Navbar (CS Cup Style) */}
+      <div className="sticky top-0 z-40 w-full bg-ink-950/80 backdrop-blur-md border-b border-white/10">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-center space-x-2 md:space-x-8 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setActiveTab('standings')}
+            className={`flex items-center space-x-2 px-5 py-2.5 rounded-full font-bold font-mono text-sm transition-all whitespace-nowrap ${
+              activeTab === 'standings' ? 'bg-white/10 text-paper border border-white/20' : 'text-fog hover:bg-white/5'
+            }`}
+          >
+            <Trophy className="w-4 h-4" />
+            <span>Standings</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('rounds')}
+            className={`flex items-center space-x-2 px-5 py-2.5 rounded-full font-bold font-mono text-sm transition-all whitespace-nowrap ${
+              activeTab === 'rounds' ? 'bg-white/10 text-paper border border-white/20' : 'text-fog hover:bg-white/5'
+            }`}
+          >
+            <Calendar className="w-4 h-4" />
+            <span>Rounds</span>
+          </button>
+        </div>
+      </div>
+
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-12 z-10 relative">
 
         {/* Content Area */}
         <div className="animate-fade-in min-h-[50vh]">

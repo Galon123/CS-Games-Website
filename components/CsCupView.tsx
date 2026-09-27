@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import FootballHeroCarousel from '@/components/FootballHeroCarousel'
+import FootballBlurredBackground from '@/components/FootballBlurredBackground'
 import SponsorsBox from '@/components/SponsorsBox'
 import { Home, Calendar, Trophy, Activity, X } from 'lucide-react'
 
@@ -118,6 +119,8 @@ export default function CsCupView() {
 
   return (
     <div className="w-full flex flex-col min-h-screen bg-canvas text-cream selection:bg-acid selection:text-acid-ink font-sans">
+      <FootballBlurredBackground />
+
       
       {/* Hero Section */}
       <section className="w-full">
