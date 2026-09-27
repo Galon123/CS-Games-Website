@@ -1,4 +1,6 @@
-'use client'
+import os
+
+file_content = """'use client'
 
 import React, { useState } from 'react'
 import FootballHeroCarousel from '@/components/FootballHeroCarousel'
@@ -403,3 +405,7 @@ export default function CsCupView() {
     </div>
   )
 }
+"""
+
+with open('components/CsCupView.tsx', 'w', encoding='utf-8') as f:
+    f.write(file_content)
