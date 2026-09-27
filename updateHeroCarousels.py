@@ -1,12 +1,13 @@
-'use client'
+def generate_carousel_code(name, image_url):
+    return """'use client'
 
 import React, { useState, useEffect } from 'react'
 
 const CAROUSEL_IMAGES = [
-  'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=2400&auto=format&fit=crop'
+  'IMAGE_URL_HERE'
 ]
 
-export default function EsportsHeroCarousel() {
+export default function NAME_HEREHeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
   const slides = CAROUSEL_IMAGES
@@ -24,7 +25,7 @@ export default function EsportsHeroCarousel() {
     <section
       role="region"
       aria-roledescription="carousel"
-      aria-label="Esports Presentation Showcase"
+      aria-label="NAME_HERE Presentation Showcase"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="relative w-full rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden bg-ink-900 shadow-card select-none group"
@@ -46,7 +47,7 @@ export default function EsportsHeroCarousel() {
               <div className="absolute inset-0 overflow-hidden">
                 <img
                   src={imageUrl}
-                  alt="Esports Showcase"
+                  alt="NAME_HERE Showcase"
                   loading={index === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                   className={`w-full h-full object-cover object-center transition-transform duration-[10000ms] ease-linear ${
@@ -86,3 +87,10 @@ export default function EsportsHeroCarousel() {
     </section>
   )
 }
+""".replace('NAME_HERE', name).replace('IMAGE_URL_HERE', image_url)
+
+with open('components/CarromHeroCarousel.tsx', 'w', encoding='utf-8') as f:
+    f.write(generate_carousel_code('Carrom', '/posters/carroms.png'))
+
+with open('components/EsportsHeroCarousel.tsx', 'w', encoding='utf-8') as f:
+    f.write(generate_carousel_code('Esports', 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=2400&auto=format&fit=crop'))
