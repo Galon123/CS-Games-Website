@@ -151,6 +151,7 @@ export default function CsCupView() {
       </div>
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <div className="bg-ink-950/60 backdrop-blur-md rounded-3xl p-4 sm:p-6 md:p-10 border border-white/10 shadow-2xl relative z-10">
         
         {/* HOME TAB */}
         {activeTab === 'home' && (
@@ -322,7 +323,7 @@ export default function CsCupView() {
           </div>
         )}
         </div>
-        </main>
+      </main>
 
       {/* MATCH STATS MODAL */}
       {selectedMatch && (
