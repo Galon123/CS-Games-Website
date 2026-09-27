@@ -48,7 +48,7 @@ const chess_PRESET_SUGGESTIONS = [
   },
 ]
 
-export default function chessHeroCarousel() {
+export default function ChessHeroCarousel() {
   const {
     footballCarouselImages,
     updateFootballCarouselImages,
