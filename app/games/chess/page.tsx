@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import GameDetailView from '@/components/GameDetailView'
+import ChessView from '@/components/ChessView'
 
 export const metadata: Metadata = {
   title: 'Chess Masters 1v1 | CS Games 2026',
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function ChessGamePage() {
-  return <GameDetailView sportSlug="chess" />
+  return <ChessView />
 }
