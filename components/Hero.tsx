@@ -17,7 +17,7 @@ export default function Hero() {
     { title: 'cs cup', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop&q=80', href: findSportSlug(['football', 'cs cup']) },
     { title: 'badminton', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&auto=format&fit=crop&q=80', href: findSportSlug(['badminton']) },
     { title: 'chess', image: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop&q=80', href: findSportSlug(['chess']) },
-    { title: 'carroms', image: 'https://images.unsplash.com/photo-1626880053935-430c4826b5d9?w=800&auto=format&fit=crop&q=80', href: findSportSlug(['carrom']) },
+    { title: 'carroms', image: '/posters/carroms.png', href: findSportSlug(['carrom']) },
     { title: 'e-sports', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80', href: '/games/esports' },
   ]
 

@@ -724,7 +724,7 @@ export default function BadmintonBracketSection() {
             ───────────────────────────────────────────────────────────── */}
         <div className="mt-6 pt-6 border-t border-white/10 w-full">
           {/* Men's vs Women's Doubles Tab Switcher */}
-          <div className="w-full grid grid-cols-2 gap-2 bg-ink-900/80 p-1.5 rounded-xl border border-white/10">
+          <div className="w-full grid grid-cols-2 gap-2 mt-6">
             <button
               onClick={() => {
                 setCategory('mens')
