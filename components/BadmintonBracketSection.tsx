@@ -322,32 +322,7 @@ export default function BadmintonBracketSection() {
     setMatches(resolved)
     saveBadmintonMatches(resolved)
 
-    // Sync to Supabase if connected
-    if (isSupabaseConfigured() && supabase) {
-      try {
-        const target = resolved.find((m) => m.id === editingMatch.id)
-        if (target) {
-          await supabase
-            .from('badminton_bracket_matches')
-            .update({
-              status: target.status,
-              winner_team: target.winnerTeam || null,
-              team1_name: target.team1.name,
-              team1_score: target.team1.score ?? 0,
-              team2_name: target.team2.name,
-              team2_score: target.team2.score ?? 0,
-              scheduled_date: target.date,
-              scheduled_time: target.time,
-              venue: target.venue,
-              court: target.court,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', target.id)
-        }
-      } catch (err) {
-        console.warn('Failed to sync match update to Supabase:', err)
-      }
-    }
+    // Removed supabase save
 
     const winnerName =
       editWinner === 1

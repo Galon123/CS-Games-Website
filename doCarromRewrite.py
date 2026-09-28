@@ -1,113 +1,9 @@
-'use client'
+import re
 
-import React from 'react'
-import { Activity } from 'lucide-react'
+with open('components/CarromBracketSection.tsx', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-type CarromRoundKey = 'quarter_finals' | 'semi_finals' | 'finals'
-
-interface CarromMatch {
-  id: string
-  round: CarromRoundKey
-  roundTitle: string
-  team1: { name: string }
-  team2: { name: string }
-  winnerTeam?: 1 | 2
-}
-
-const CARROM_MATCHES: CarromMatch[] = [
-  // Quarters
-  {
-    id: 'q1', round: 'quarter_finals', roundTitle: 'Quarter Finals',
-    team1: { name: 'Team Shivas' }, team2: { name: 'Team Samit' }, winnerTeam: 1,
-  },
-  {
-    id: 'q2', round: 'quarter_finals', roundTitle: 'Quarter Finals',
-    team1: { name: 'Team Sooraj' }, team2: { name: 'Team Prideson' }, winnerTeam: 1,
-  },
-  {
-    id: 'q3', round: 'quarter_finals', roundTitle: 'Quarter Finals',
-    team1: { name: 'Team Rohith' }, team2: { name: 'Team Lakshmi U' }, winnerTeam: 1,
-  },
-  {
-    id: 'q4', round: 'quarter_finals', roundTitle: 'Quarter Finals',
-    team1: { name: 'Team Daniel' }, team2: { name: 'Team Amal' }, winnerTeam: 2,
-  },
-  // Semis
-  {
-    id: 's1', round: 'semi_finals', roundTitle: 'Semi Finals',
-    team1: { name: 'Team Shivas' }, team2: { name: 'Team Sooraj' }, winnerTeam: 2,
-  },
-  {
-    id: 's2', round: 'semi_finals', roundTitle: 'Semi Finals',
-    team1: { name: 'Team Rohith' }, team2: { name: 'Team Amal' }, winnerTeam: 1,
-  },
-  // Final
-  {
-    id: 'f1', round: 'finals', roundTitle: 'Finals',
-    team1: { name: 'Team Sooraj' }, team2: { name: 'Team Rohith' }, winnerTeam: 1,
-  }
-]
-
-export default function CarromBracketSection() {
-  const matchesByRound: Record<CarromRoundKey, CarromMatch[]> = {
-    quarter_finals: CARROM_MATCHES.filter(m => m.round === 'quarter_finals'),
-    semi_finals: CARROM_MATCHES.filter(m => m.round === 'semi_finals'),
-    finals: CARROM_MATCHES.filter(m => m.round === 'finals'),
-  }
-
-  const renderMatchCard = (match?: CarromMatch) => {
-    if (!match) return null
-    const team1Won = match.winnerTeam === 1
-    const team2Won = match.winnerTeam === 2
-
-    return (
-      <div className="relative w-full md:w-72 shrink-0 bg-ink-900 border border-white/10 rounded-2xl shadow-xl p-3 z-10 flex flex-col justify-between h-[162px]">
-        <div className="flex justify-between items-center mb-1 px-1">
-          <span className="text-[10px] font-mono text-fog font-bold uppercase tracking-wider">
-            {match.roundTitle}
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          {/* Team 1 */}
-          <div className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
-              team1Won ? 'bg-acid/20 border border-acid/50 text-paper font-bold' : 'bg-ink-900/70 border border-white/5 text-mist'
-            }`}>
-            <div className="flex items-center space-x-2 min-w-0 pr-2">
-              <span className={`w-4 h-4 rounded-full text-[9px] font-mono font-bold flex items-center justify-center shrink-0 ${
-                team1Won ? 'bg-acid text-acid-ink font-black' : 'bg-white/10 text-fog'
-              }`}>
-                {team1Won ? '✓' : '1'}
-              </span>
-              <span className="text-sm truncate">
-                {match.team1.name}
-              </span>
-            </div>
-            {team1Won && <span className="text-xs text-acid font-mono font-bold uppercase">WIN</span>}
-          </div>
-
-          {/* Team 2 */}
-          <div className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
-              team2Won ? 'bg-acid/20 border border-acid/50 text-paper font-bold' : 'bg-ink-900/70 border border-white/5 text-mist'
-            }`}>
-            <div className="flex items-center space-x-2 min-w-0 pr-2">
-              <span className={`w-4 h-4 rounded-full text-[9px] font-mono font-bold flex items-center justify-center shrink-0 ${
-                team2Won ? 'bg-acid text-acid-ink font-black' : 'bg-white/10 text-fog'
-              }`}>
-                {team2Won ? '✓' : '2'}
-              </span>
-              <span className="text-sm truncate">
-                {match.team2.name}
-              </span>
-            </div>
-            {team2Won && <span className="text-xs text-acid font-mono font-bold uppercase">WIN</span>}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
+new_return = """  return (
     <section className="w-full relative py-12 md:py-24 overflow-hidden z-10 mb-12">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 bg-ink-950/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/10 shadow-2xl">
         {/* Header */}
@@ -139,19 +35,22 @@ export default function CarromBracketSection() {
         <div className="w-full overflow-x-auto pb-16 no-scrollbar relative z-10 cursor-grab active:cursor-grabbing">
           <div className="flex min-w-max md:justify-center p-4">
             <div className="flex items-stretch gap-0 relative">
+              
               {/* Quarter Finals */}
               <div className="w-72 shrink-0 flex flex-col justify-around flex-grow space-y-8">
+                {/* Pair A: QF-1 & QF-2 */}
                 <div className="space-y-16 p-2 rounded-xl bg-white/[0.015] border border-white/5 relative z-10">
                   {matchesByRound.quarter_finals[0] && renderMatchCard(matchesByRound.quarter_finals[0])}
                   {matchesByRound.quarter_finals[1] && renderMatchCard(matchesByRound.quarter_finals[1])}
                 </div>
+                {/* Pair B: QF-3 & QF-4 */}
                 <div className="space-y-16 p-2 rounded-xl bg-white/[0.015] border border-white/5 relative z-10">
                   {matchesByRound.quarter_finals[2] && renderMatchCard(matchesByRound.quarter_finals[2])}
                   {matchesByRound.quarter_finals[3] && renderMatchCard(matchesByRound.quarter_finals[3])}
                 </div>
               </div>
 
-              {/* Connector from QF to SF */}
+              {/* Connector QF to SF */}
               <div className="w-10 shrink-0 hidden md:flex flex-col">
                 <div className="flex flex-col justify-around flex-grow space-y-8 select-none pointer-events-none">
                   {[0, 1].map((pairIdx) => (
@@ -174,7 +73,7 @@ export default function CarromBracketSection() {
                 </div>
               </div>
 
-              {/* Connector from SF to F */}
+              {/* Connector SF to F */}
               <div className="w-10 shrink-0 hidden md:flex flex-col">
                 <div className="flex flex-col justify-around flex-grow select-none pointer-events-none">
                   <div className="h-[600px] flex items-center">
@@ -188,13 +87,12 @@ export default function CarromBracketSection() {
               </div>
 
               {/* Finals */}
-              <div className="flex flex-col justify-center relative w-72 shrink-0">
-                {matchesByRound.finals.map((match) => (
-                  <div key={match.id} className="relative z-10">
-                    {renderMatchCard(match)}
-                  </div>
-                ))}
+              <div className="w-72 shrink-0 flex flex-col justify-center relative">
+                <div className="relative z-10 p-2">
+                  {matchesByRound.finals[0] && renderMatchCard(matchesByRound.finals[0])}
+                </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -202,3 +100,14 @@ export default function CarromBracketSection() {
     </section>
   )
 }
+"""
+
+content = re.sub(r'  return \(\s*<section className="w-full relative.*?\)\s*}', new_return, content, flags=re.DOTALL)
+
+# Ensure match card has exactly h-[162px]
+old_card_class = """className={`relative w-full md:w-72 shrink-0 bg-ink-900 border border-white/10 rounded-2xl shadow-xl p-3 z-10 flex flex-col space-y-2`}>"""
+new_card_class = """className={`relative w-full md:w-72 shrink-0 bg-ink-900 border border-white/10 rounded-2xl shadow-xl p-3 z-10 flex flex-col justify-between h-[162px]`}>"""
+content = content.replace(old_card_class, new_card_class)
+
+with open('components/CarromBracketSection.tsx', 'w', encoding='utf-8') as f:
+    f.write(content)

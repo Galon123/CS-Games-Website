@@ -209,7 +209,7 @@ export const INITIAL_BADMINTON_MATCHES: BadmintonDoublesMatch[] = [
   },
 ]
 
-export const BADMINTON_STORAGE_KEY = 'cs_badminton_doubles_bracket_v3'
+export const BADMINTON_STORAGE_KEY = 'cs_badminton_doubles_bracket_v4'
 
 /**
  * Rounds order for display & bracket organization
