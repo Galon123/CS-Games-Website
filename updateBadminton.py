@@ -1,39 +1,4 @@
-export type BadmintonCategory = 'mens' | 'womens'
-
-export type BadmintonRoundKey =
-  | 'preliminary'
-  | 'round_of_16'
-  | 'quarter_finals'
-  | 'semi_finals'
-  | 'finals'
-
-export interface BadmintonTeamSlot {
-  name: string
-  score?: number
-  isPlaceholder?: boolean
-  sourceMatchId?: string
-}
-
-export interface BadmintonDoublesMatch {
-  id: string
-  matchCode: string
-  category: BadmintonCategory
-  round: BadmintonRoundKey
-  roundTitle: string
-  team1: BadmintonTeamSlot
-  team2: BadmintonTeamSlot
-  winnerTeam?: 1 | 2
-  status: 'upcoming' | 'live' | 'completed'
-  date: string
-  time: string
-  venue: string
-  nextMatchId?: string
-  nextMatchSlot?: 'team1' | 'team2'
-  notes?: string
-  court?: string
-}
-
-
+new_matches_str = """
 export const INITIAL_BADMINTON_MATCHES: BadmintonDoublesMatch[] = [
   // =========================================================================
   // MEN'S DOUBLES
@@ -208,142 +173,24 @@ export const INITIAL_BADMINTON_MATCHES: BadmintonDoublesMatch[] = [
     status: 'upcoming', date: '25 Sep 2026', time: '6:00 PM', venue: 'Indoor Arena', court: 'Centre Court'
   },
 ]
+"""
 
-export const BADMINTON_STORAGE_KEY = 'cs_badminton_doubles_bracket_v3'
+import re
 
-/**
- * Rounds order for display & bracket organization
- */
-export const MENS_ROUNDS: { key: BadmintonRoundKey; label: string; short: string }[] = [
-  { key: 'preliminary', label: 'Preliminary Round', short: 'Prelim' },
-  { key: 'round_of_16', label: 'Round of 16', short: 'R16' },
-  { key: 'quarter_finals', label: 'Quarter Finals', short: 'QF' },
-  { key: 'semi_finals', label: 'Semi-Finals', short: 'SF' },
-  { key: 'finals', label: 'Championship Final', short: 'Final' },
-]
+with open('lib/badminton-doubles-data.ts', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-export const WOMENS_ROUNDS: { key: BadmintonRoundKey; label: string; short: string }[] = [
-  { key: 'preliminary', label: 'Preliminary Round', short: 'Prelim' },
-  { key: 'quarter_finals', label: 'Quarter Finals', short: 'QF' },
-  { key: 'semi_finals', label: 'Semi-Finals', short: 'SF' },
-  { key: 'finals', label: 'Championship Final', short: 'Final' },
-]
+# Replace INITIAL_BADMINTON_MATCHES
+content = re.sub(
+    r'export const INITIAL_BADMINTON_MATCHES: BadmintonDoublesMatch\[\] = \[.*?\]\n',
+    new_matches_str,
+    content,
+    flags=re.DOTALL
+)
 
-/**
- * Resolves tournament progression recursively.
- * Whenever a match has a winner (or score leads to winner), this function propagates
- * the winning player/team to the next designated match and slot.
- */
-export function resolveBracketProgression(
-  rawMatches: BadmintonDoublesMatch[]
-): BadmintonDoublesMatch[] {
-  // Deep clone to avoid mutating input
-  const matchMap = new Map<string, BadmintonDoublesMatch>()
-  rawMatches.forEach((m) => {
-    matchMap.set(m.id, {
-      ...m,
-      team1: { ...m.team1 },
-      team2: { ...m.team2 },
-    })
-  })
+# Bump version key
+content = content.replace("export const BADMINTON_STORAGE_KEY = 'cs_badminton_doubles_bracket_v2'", "export const BADMINTON_STORAGE_KEY = 'cs_badminton_doubles_bracket_v3'")
 
-  // Topological / multi-pass forward propagation
-  // Since preliminary -> r16 -> qf -> sf -> final is acyclic, 5 passes guarantee full propagation
-  for (let pass = 0; pass < 5; pass++) {
-    matchMap.forEach((match) => {
-      if (!match.nextMatchId || !match.nextMatchSlot) return
+with open('lib/badminton-doubles-data.ts', 'w', encoding='utf-8') as f:
+    f.write(content)
 
-      const nextMatch = matchMap.get(match.nextMatchId)
-      if (!nextMatch) return
-
-      const slotKey = match.nextMatchSlot
-      const defaultPlaceholder = `Winner ${match.matchCode}`
-
-      if (match.winnerTeam) {
-        const winningTeam = match.winnerTeam === 1 ? match.team1 : match.team2
-        const winnerName = winningTeam.name
-
-        // Only advance if winner name is a real name (not an unassigned placeholder)
-        if (winnerName && !winningTeam.isPlaceholder && !winnerName.startsWith('Winner ')) {
-          nextMatch[slotKey] = {
-            ...nextMatch[slotKey],
-            name: winnerName,
-            isPlaceholder: false,
-            sourceMatchId: match.id,
-          }
-        } else {
-          nextMatch[slotKey] = {
-            ...nextMatch[slotKey],
-            name: defaultPlaceholder,
-            isPlaceholder: true,
-            sourceMatchId: match.id,
-          }
-        }
-      } else {
-        // No winner yet: ensure it stays as placeholder if previously advanced
-        if (nextMatch[slotKey]?.sourceMatchId === match.id) {
-          nextMatch[slotKey] = {
-            ...nextMatch[slotKey],
-            name: defaultPlaceholder,
-            isPlaceholder: true,
-            sourceMatchId: match.id,
-          }
-        }
-      }
-    })
-  }
-
-  return Array.from(matchMap.values())
-}
-
-/**
- * Loads badminton matches from local storage or returns initial seed.
- */
-export function loadBadmintonMatches(): BadmintonDoublesMatch[] {
-  if (typeof window === 'undefined') {
-    return resolveBracketProgression(INITIAL_BADMINTON_MATCHES)
-  }
-
-  try {
-    const saved = localStorage.getItem(BADMINTON_STORAGE_KEY)
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // Merge with initial seed to ensure all expected matches exist
-        const idSet = new Set(parsed.map((m: any) => m.id))
-        const missing = INITIAL_BADMINTON_MATCHES.filter((m) => !idSet.has(m.id))
-        return resolveBracketProgression([...parsed, ...missing])
-      }
-    }
-  } catch (err) {
-    console.warn('Failed loading badminton matches from localStorage:', err)
-  }
-
-  return resolveBracketProgression(INITIAL_BADMINTON_MATCHES)
-}
-
-/**
- * Saves badminton matches to local storage.
- */
-export function saveBadmintonMatches(matches: BadmintonDoublesMatch[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem(BADMINTON_STORAGE_KEY, JSON.stringify(matches))
-  } catch (err) {
-    console.warn('Failed saving badminton matches to localStorage:', err)
-  }
-}
-
-/**
- * Clears local storage and resets to initial PDF tournament draw.
- */
-export function resetBadmintonMatchesToDefault(): BadmintonDoublesMatch[] {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.removeItem(BADMINTON_STORAGE_KEY)
-    } catch (err) {
-      // ignore
-    }
-  }
-  return resolveBracketProgression(INITIAL_BADMINTON_MATCHES)
-}
